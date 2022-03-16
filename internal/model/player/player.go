@@ -1,15 +1,19 @@
 package player
 
-import "goblins-and-gold/internal/model/stats"
+import (
+	"goblins-and-gold/internal/model/equipment"
+	"goblins-and-gold/internal/model/stats"
+)
 
 type Player struct {
-	BaseStats    stats.BaseStats
-	DerivedStats stats.DerivedStats
-	VisionType   VisionType
-	Lvl          int
-	Spd          int
-	Hp           int
-	//_proficiencies []Proficiency
+	BaseStats       stats.BaseStats
+	DerivedStats    stats.DerivedStats
+	VisionType      VisionType
+	Lvl             int
+	Spd             int
+	Hp              int
+	Proficiencies   []string
+	EquippedWeapons []equipment.Weapon
 	//_equipment     []Equipment
 	//_inventory     []Item
 }
