@@ -1,8 +1,8 @@
 package model
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/internal/model/room"
 	"github.com/stretchr/testify/assert"
-	"goblins-and-gold/internal/model/room"
 	"testing"
 )
 

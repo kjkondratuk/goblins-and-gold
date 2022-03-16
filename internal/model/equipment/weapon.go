@@ -34,6 +34,6 @@ const (
 func Shortsword() Weapon {
 	return Weapon{
 		Name: "Shortword",
-		NoDice:
+		//NoDice:
 	}
 }

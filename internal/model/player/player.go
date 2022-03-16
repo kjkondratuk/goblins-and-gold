@@ -1,7 +1,7 @@
 package player
 
 import (
-	"goblins-and-gold/internal/model/stats"
+	"github.com/kjkondratuk/goblins-and-gold/internal/model/stats"
 )
 
 type player struct {
@@ -105,9 +105,15 @@ func WithHp(hp int) Option {
 	}
 }
 
-// TODO: need to track hitpoints, hitpoint max, and temp hitpoints separately
 func (p *player) Heal(heal int) bool {
+	p._currHp += heal
 
+	if p._currHp > p._hp {
+		p._currHp = p._hp
+		return false
+	}
+
+	return true
 }
 
 func (p *player) Damage(dmg int) bool {
