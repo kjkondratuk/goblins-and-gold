@@ -25,6 +25,7 @@ type Player interface {
 	Lvl() int
 	BaseStats() stats.BaseStats
 	Damage(dmg int) bool
+	Heal(heal int) bool
 	LevelUp()
 }
 
@@ -123,7 +124,7 @@ func (p *player) Damage(dmg int) bool {
 		p._currHp = 0
 	}
 
-	return p._hp > 0
+	return p._currHp > 0
 }
 
 func (p *player) LevelUp() {
