@@ -1,26 +1,38 @@
 package player
 
 import (
-	"goblins-and-gold/internal/model/equipment"
 	"goblins-and-gold/internal/model/stats"
 )
 
-type Player struct {
-	BaseStats       stats.BaseStats
-	DerivedStats    stats.DerivedStats
-	VisionType      VisionType
-	Lvl             int
-	Spd             int
-	Hp              int
-	Proficiencies   []string
-	EquippedWeapons []equipment.Weapon
+type player struct {
+	_baseStats    stats.BaseStats
+	_derivedStats stats.DerivedStats
+	_visionType   VisionType
+	_lvl          int
+	_spd          int
+
+	// Hitpoints, in all their incarnations
+	_hp     int
+	_currHp int
+	_tempHp int
+	//_proficiencies []Proficiency
 	//_equipment     []Equipment
 	//_inventory     []Item
+}
+
+type Player interface {
+	Hp() int
+	Lvl() int
+	BaseStats() stats.BaseStats
+	Damage(dmg int) bool
+	LevelUp()
 }
 
 type VisionType int
 
 const (
+	MAX_LEVEL = 20
+
 	VT_STANDARD = iota
 	VT_DARKVISION
 	VT_ADV_DARKVISION
@@ -53,7 +65,7 @@ var (
 	}
 )
 
-type Option func(Player) Player
+type Option func(player) player
 
 func NewPlayer(opts ...Option) Player {
 	base := stats.BaseStats{
@@ -64,13 +76,15 @@ func NewPlayer(opts ...Option) Player {
 		Wis: 10,
 		Cha: 10,
 	}
-	p := Player{
-		BaseStats:    base,
-		DerivedStats: stats.NewDerivedStats(base),
-		VisionType:   0,
-		Lvl:          1,
-		Spd:          30,
-		Hp:           1,
+	p := player{
+		_baseStats:    base,
+		_derivedStats: stats.NewDerivedStats(base),
+		_visionType:   0,
+		_lvl:          1,
+		_spd:          30,
+		_hp:           1,
+		_currHp:       1,
+		_tempHp:       0,
 		//_proficiencies: nil,
 		//_equipment:     nil,
 		//_inventory:     nil,
@@ -80,12 +94,47 @@ func NewPlayer(opts ...Option) Player {
 		p = opt(p)
 	}
 
-	return p
+	return &p
 }
 
 func WithHp(hp int) Option {
-	return func(p Player) Player {
-		p.Hp = hp
+	return func(p player) player {
+		p._hp = hp
+		p._currHp = hp
 		return p
 	}
+}
+
+// TODO: need to track hitpoints, hitpoint max, and temp hitpoints separately
+func (p *player) Heal(heal int) bool {
+
+}
+
+func (p *player) Damage(dmg int) bool {
+	p._currHp -= dmg
+
+	if p._currHp < 0 {
+		p._currHp = 0
+	}
+
+	return p._hp > 0
+}
+
+func (p *player) LevelUp() {
+	p._lvl += 1
+	if p._lvl > MAX_LEVEL {
+		p._lvl = MAX_LEVEL
+	}
+}
+
+func (p *player) Hp() int {
+	return p._currHp
+}
+
+func (p *player) Lvl() int {
+	return p._lvl
+}
+
+func (p *player) BaseStats() stats.BaseStats {
+	return p._baseStats
 }
