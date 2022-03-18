@@ -8,7 +8,6 @@ type player struct {
 	_baseStats    stats.BaseStats
 	_derivedStats stats.DerivedStats
 	_visionType   VisionType
-	_lvl          int
 	_spd          int
 
 	// Hitpoints, in all their incarnations

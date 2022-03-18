@@ -15,6 +15,15 @@ type DerivedStats struct {
 	Saves  saves
 }
 
+type modifiers struct {
+	Str modifier
+	Dex modifier
+	Con modifier
+	Int modifier
+	Wis modifier
+	Cha modifier
+}
+
 type modifier struct {
 	Bonus int
 	Prof  Proficiency

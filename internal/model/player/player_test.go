@@ -37,10 +37,9 @@ func TestPlayer_LevelUp(t *testing.T) {
 	assert.Equal(t, 2, p.Lvl(), "Level should be incremented")
 
 	p = &player{
-		_baseStats:    stats.BaseStats{},
+		_baseStats:    stats.NewBaseStats(),
 		_derivedStats: stats.DerivedStats{},
 		_visionType:   0,
-		_lvl:          20,
 		_spd:          0,
 		_hp:           0,
 		_currHp:       0,
