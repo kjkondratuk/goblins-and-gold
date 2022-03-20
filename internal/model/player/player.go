@@ -21,11 +21,9 @@ type player struct {
 
 type Player interface {
 	Hp() int
-	Lvl() int
 	BaseStats() stats.BaseStats
 	Damage(dmg int) bool
 	Heal(heal int) bool
-	LevelUp()
 }
 
 type VisionType int
@@ -68,23 +66,24 @@ var (
 type Option func(player) player
 
 func NewPlayer(opts ...Option) Player {
-	base := stats.BaseStats{
-		Str: 10,
-		Dex: 10,
-		Con: 10,
-		Int: 10,
-		Wis: 10,
-		Cha: 10,
-	}
+	base := stats.NewBaseStats(
+		stats.WithLvl(1),
+		stats.WithStr(10),
+		stats.WithDex(10),
+		stats.WithCon(10),
+		stats.WithInt(10),
+		stats.WithInt(10),
+		stats.WithCha(10),
+	)
 	p := player{
 		_baseStats:    base,
 		_derivedStats: stats.NewDerivedStats(base),
 		_visionType:   0,
-		_lvl:          1,
-		_spd:          30,
-		_hp:           1,
-		_currHp:       1,
-		_tempHp:       0,
+		//_lvl:          1,
+		_spd:    30,
+		_hp:     1,
+		_currHp: 1,
+		_tempHp: 0,
 		//_proficiencies: nil,
 		//_equipment:     nil,
 		//_inventory:     nil,
@@ -126,19 +125,8 @@ func (p *player) Damage(dmg int) bool {
 	return p._currHp > 0
 }
 
-func (p *player) LevelUp() {
-	p._lvl += 1
-	if p._lvl > MAX_LEVEL {
-		p._lvl = MAX_LEVEL
-	}
-}
-
 func (p *player) Hp() int {
 	return p._currHp
-}
-
-func (p *player) Lvl() int {
-	return p._lvl
 }
 
 func (p *player) BaseStats() stats.BaseStats {

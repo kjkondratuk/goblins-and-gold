@@ -1,7 +1,6 @@
 package player
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/internal/model/stats"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,7 +8,7 @@ import (
 func TestNewPlayer(t *testing.T) {
 	p := NewPlayer()
 	assert.Equal(t, p.Hp(), 1, "HP should be equal to 1 by default")
-	assert.Equal(t, p.Lvl(), 1, "Level should be equal to 1 by default")
+	assert.Equal(t, p.BaseStats().Lvl(), 1, "Level should be equal to 1 by default")
 	assert.Equal(t, p.BaseStats().Str, 10, "Stats should default to 10")
 
 	p = NewPlayer(WithHp(3473))
@@ -29,25 +28,6 @@ func TestPlayer_Damage(t *testing.T) {
 	} else {
 		assert.Equal(t, 0, p.Hp(), "HP should be zero if decremented below zero")
 	}
-}
-
-func TestPlayer_LevelUp(t *testing.T) {
-	p := NewPlayer()
-	p.LevelUp()
-	assert.Equal(t, 2, p.Lvl(), "Level should be incremented")
-
-	p = &player{
-		_baseStats:    stats.NewBaseStats(),
-		_derivedStats: stats.DerivedStats{},
-		_visionType:   0,
-		_spd:          0,
-		_hp:           0,
-		_currHp:       0,
-		_tempHp:       0,
-	}
-
-	p.LevelUp()
-	assert.Equal(t, 20, p.Lvl(), "Should not level above max level")
 }
 
 func TestPlayer_Heal(t *testing.T) {

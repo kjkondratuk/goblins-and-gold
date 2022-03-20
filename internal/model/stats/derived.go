@@ -69,32 +69,32 @@ func NewDerivedStats(stats BaseStats) DerivedStats {
 	return DerivedStats{
 		Mod: modifiers{
 			Str: modifier{
-				statify(stats.Str),
+				statify(stats.Str()),
 				P_NO_PROF,
 			},
 			Dex: modifier{
-				statify(stats.Dex),
+				statify(stats.Dex()),
 				P_NO_PROF,
 			},
 			Con: modifier{
-				statify(stats.Con),
+				statify(stats.Con()),
 				P_NO_PROF,
 			},
 			Int: modifier{
-				statify(stats.Int),
+				statify(stats.Int()),
 				P_NO_PROF,
 			},
 			Wis: modifier{
-				statify(stats.Wis),
+				statify(stats.Wis()),
 				P_NO_PROF,
 			},
 			Cha: modifier{
-				statify(stats.Cha),
+				statify(stats.Cha()),
 				P_NO_PROF,
 			},
 		},
 		Init: 0,
-		AC:   stats.Dex,
+		AC:   stats.Dex(),
 		SDC:  0,
 		Skills: skills{
 			Acrobatics:     modifier{},
@@ -118,27 +118,27 @@ func NewDerivedStats(stats BaseStats) DerivedStats {
 		},
 		Saves: saves{
 			Str: modifier{
-				statify(stats.Str),
+				statify(stats.Str()),
 				P_NO_PROF,
 			},
 			Dex: modifier{
-				statify(stats.Dex),
+				statify(stats.Dex()),
 				P_NO_PROF,
 			},
 			Con: modifier{
-				statify(stats.Con),
+				statify(stats.Con()),
 				P_NO_PROF,
 			},
 			Int: modifier{
-				statify(stats.Int),
+				statify(stats.Int()),
 				P_NO_PROF,
 			},
 			Wis: modifier{
-				statify(stats.Wis),
+				statify(stats.Wis()),
 				P_NO_PROF,
 			},
 			Cha: modifier{
-				statify(stats.Cha),
+				statify(stats.Cha()),
 				P_NO_PROF,
 			},
 		},

@@ -16,6 +16,7 @@ type baseStats struct {
 
 type BaseStats interface {
 	Lvl() int
+	LevelUp() int
 	Str() int
 	Dex() int
 	Con() int
@@ -94,6 +95,11 @@ func WithCha(cha int) Option {
 }
 
 func (s *baseStats) Lvl() int {
+	return s._lvl
+}
+
+func (s *baseStats) LevelUp() int {
+	s._lvl += 1
 	return s._lvl
 }
 
