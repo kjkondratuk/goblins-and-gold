@@ -1,4 +1,5 @@
 generated
-bin
+bin/*
+!bin/*.sh
 .idea
 *.iml

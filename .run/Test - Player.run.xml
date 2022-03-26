@@ -5,7 +5,7 @@
     <kind value="FILE" />
     <package value="github.com/kjkondratuk/goblins-and-gold" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/internal/model/player/player_test.go" />
+    <filePath value="$PROJECT_DIR$/src/model/player/player_test.go" />
     <framework value="gotest" />
     <method v="2" />
   </configuration>
