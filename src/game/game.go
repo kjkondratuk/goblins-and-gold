@@ -11,6 +11,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -19,6 +21,10 @@ const (
 )
 
 func Start() {
+	// setup exit listener
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
+
 	w := readConfig[world.WorldData](worldFile)
 	p := readConfig[player.PlayerData](playerFile)
 
@@ -27,7 +33,15 @@ func Start() {
 
 	fmt.Printf("World: %+v\n", w)
 	fmt.Printf("Player: %+v\n", p)
-	os.Exit(0)
+
+	fmt.Printf("Game Client Initialized\n")
+
+	go func() {
+		select {}
+	}()
+
+	sig := <-exit
+	fmt.Printf("%s received, exiting...\n", sig)
 }
 
 type configDataType interface {
