@@ -3,9 +3,9 @@ package model
 import (
 	"testing"
 
-	"github.com/kjkondratuk/goblins-and-gold/internal/model/player"
-	"github.com/kjkondratuk/goblins-and-gold/internal/model/room"
-	"github.com/kjkondratuk/goblins-and-gold/internal/model/stats"
+	"github.com/kjkondratuk/goblins-and-gold/src/model/player"
+	"github.com/kjkondratuk/goblins-and-gold/src/model/room"
+	"github.com/kjkondratuk/goblins-and-gold/src/model/stats"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,6 +15,5 @@ func TestAll(t *testing.T) {
 
 	p := player.NewPlayer(player.WithHp(12), player.WithBaseStats(stats.NewBaseStats(
 		stats.WithLvl(1),
-		stats.
 	)))
 }

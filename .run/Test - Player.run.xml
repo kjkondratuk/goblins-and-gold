@@ -1,14 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Test - All" type="GoTestRunConfiguration" factoryName="Go Test">
+  <configuration default="false" name="Test - Player" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="goblins-and-gold" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-cover" />
-    <kind value="DIRECTORY" />
+    <kind value="FILE" />
     <package value="github.com/kjkondratuk/goblins-and-gold" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/internal/model/player/player_test.go" />
     <framework value="gotest" />
-    <pattern value="./..." />
     <method v="2" />
   </configuration>
 </component>

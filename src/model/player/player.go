@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/internal/model/stats"
+	"github.com/kjkondratuk/goblins-and-gold/src/model/stats"
 )
 
 type player struct {
