@@ -22,6 +22,13 @@ func NewRoom(opts ...Option) Room {
 	return &r
 }
 
+func WithRoomData(d RoomData) Option {
+	return func(r room) room {
+		r._description = d.Description
+		return r
+	}
+}
+
 func WithDescription(d string) Option {
 	return func(r room) room {
 		r._description = d

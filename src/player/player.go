@@ -96,6 +96,24 @@ func NewPlayer(opts ...Option) Player {
 	return &p
 }
 
+func WithPlayerData(pd PlayerData) Option {
+	return func(p player) player {
+		p._hp = pd.HP
+		p._currHp = pd.HP
+		// TODO : there are starting to be a lot of places where we do this... maybe it's better to just use a struct?
+		p._baseStats = stats2.NewBaseStats(
+			stats2.WithLvl(pd.BaseStats.Lvl),
+			stats2.WithStr(pd.BaseStats.Str),
+			stats2.WithDex(pd.BaseStats.Dex),
+			stats2.WithCon(pd.BaseStats.Con),
+			stats2.WithInt(pd.BaseStats.Int),
+			stats2.WithCha(pd.BaseStats.Cha),
+			stats2.WithWis(pd.BaseStats.Wis),
+		)
+		return p
+	}
+}
+
 func WithHp(hp int) Option {
 	return func(p player) player {
 		p._hp = hp
