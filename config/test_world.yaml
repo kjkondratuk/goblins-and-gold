@@ -1,0 +1,11 @@
+#---
+#
+#&initRoom:
+#  description: |
+#    The room is empty except for a single door on the opposite wall.  The floor and walls appear to be made of rough-hewn
+#    stone.  It is dark save for a single torch burning to the left of the door opposite you.
+#---
+initRoom: &initRoom
+  description: The room is empty.
+---
+startingRoom: *initRoom
