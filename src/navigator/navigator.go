@@ -1,3 +1,4 @@
+// Package navigator supplies programmatic structures to navigate a player through the world.
 package navigator
 
 import (
@@ -10,6 +11,7 @@ type navigator struct {
 	_r room.Room
 }
 
+// Navigator :
 type Navigator interface {
 	Player() player.Player
 	Room() room.Room

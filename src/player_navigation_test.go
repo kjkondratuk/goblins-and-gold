@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPlayerNavigates(t *testing.T) {
+func TestPlayerNavigates_RoomToRoom(t *testing.T) {
 	r := room.NewRoom(room.WithDescription("This is a new room"))
 	assert.Equal(t, "This is a new room", r.Description())
 

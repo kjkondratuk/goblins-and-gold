@@ -1,3 +1,4 @@
+// Package dice provides a service for rolling outcomes for either players or enemies.
 package dice
 
 import (
@@ -9,16 +10,24 @@ import (
 	"time"
 )
 
+// Roller : An interface to abstract the rolling of dice.  If specific rolls are needed for enemies or
+// something of that nature, alternative implementations might be created.
 type Roller interface {
+	// Roll : Rolls a number of dice based on a dice expression of the format:
+	//    <number of dice>d<number of sides>
+	//
+	// Returns an error when the expression is improperly formatted
 	Roll(exp string) (int, error)
 }
 
 type roller struct{}
 
 var (
+	// DefaultRoller : The default roller.  Currently there is no other way to create one, so we just expose this one.
 	DefaultRoller = &roller{}
-	emptyResult   = make([]int, 0)
-	once          sync.Once
+
+	emptyResult = make([]int, 0)
+	once        sync.Once
 )
 
 func (r *roller) Roll(exp string) ([]int, error) {
