@@ -17,7 +17,7 @@ func Start() {
 	}
 
 	var w world.WorldData
-	err = yaml.UnmarshalWithOptions(yamlFile, &w, yaml.ReferenceFiles("config/test_world.yaml"))
+	err = yaml.UnmarshalWithOptions(yamlFile, &w, yaml.ReferenceFiles("./config/test_world.yaml"))
 	if err != nil {
 		log.Fatalf("Unmarshal: %v", err)
 	}
