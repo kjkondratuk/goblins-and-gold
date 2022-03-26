@@ -1,4 +1,4 @@
-package model
+package src
 
 type Interactable interface {
 }

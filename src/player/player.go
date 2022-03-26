@@ -1,12 +1,12 @@
 package player
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/src/model/stats"
+	stats2 "github.com/kjkondratuk/goblins-and-gold/src/stats"
 )
 
 type player struct {
-	_baseStats    stats.BaseStats
-	_derivedStats stats.DerivedStats
+	_baseStats    stats2.BaseStats
+	_derivedStats stats2.DerivedStats
 	_visionType   VisionType
 	_spd          int
 
@@ -21,7 +21,7 @@ type player struct {
 
 type Player interface {
 	Hp() int
-	BaseStats() stats.BaseStats
+	BaseStats() stats2.BaseStats
 	Damage(dmg int) bool
 	Heal(heal int) bool
 }
@@ -66,18 +66,18 @@ var (
 type Option func(player) player
 
 func NewPlayer(opts ...Option) Player {
-	base := stats.NewBaseStats(
-		stats.WithLvl(1),
-		stats.WithStr(10),
-		stats.WithDex(10),
-		stats.WithCon(10),
-		stats.WithInt(10),
-		stats.WithInt(10),
-		stats.WithCha(10),
+	base := stats2.NewBaseStats(
+		stats2.WithLvl(1),
+		stats2.WithStr(10),
+		stats2.WithDex(10),
+		stats2.WithCon(10),
+		stats2.WithInt(10),
+		stats2.WithInt(10),
+		stats2.WithCha(10),
 	)
 	p := player{
 		_baseStats:    base,
-		_derivedStats: stats.NewDerivedStats(base),
+		_derivedStats: stats2.NewDerivedStats(base),
 		_visionType:   0,
 		//_lvl:          1,
 		_spd:    30,
@@ -104,7 +104,7 @@ func WithHp(hp int) Option {
 	}
 }
 
-func WithBaseStats(stats stats.BaseStats) Option {
+func WithBaseStats(stats stats2.BaseStats) Option {
 	return func(p player) player {
 		p._baseStats = stats
 		return p
@@ -136,6 +136,6 @@ func (p *player) Hp() int {
 	return p._currHp
 }
 
-func (p *player) BaseStats() stats.BaseStats {
+func (p *player) BaseStats() stats2.BaseStats {
 	return p._baseStats
 }

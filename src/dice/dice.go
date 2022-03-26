@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 type Roller interface {
@@ -16,9 +18,15 @@ type roller struct{}
 var (
 	DefaultRoller = &roller{}
 	emptyResult   = make([]int, 0)
+	once          sync.Once
 )
 
 func (r *roller) Roll(exp string) ([]int, error) {
+	// Lazily seed our RNG source
+	once.Do(func() {
+		rand.Seed(time.Now().UnixNano())
+	})
+
 	if strings.Contains(exp, "d") {
 		pts := strings.Split(exp, "d")
 		if len(pts) == 2 {
@@ -42,7 +50,6 @@ func (r *roller) Roll(exp string) ([]int, error) {
 func rollAll(num int, sides int) []int {
 	r := make([]int, num)
 	for i := 0; i < num; i++ {
-		// r = append(r, roll(sides))
 		r[i] = roll(sides)
 	}
 	return r

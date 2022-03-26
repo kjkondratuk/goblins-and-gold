@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/src/stats"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,11 @@ func TestNewPlayer(t *testing.T) {
 
 	p = NewPlayer(WithHp(3473))
 	assert.Equal(t, p.Hp(), 3473, "HP should equal the HP option specified")
+}
+
+func TestPlayer_BaseStats(t *testing.T) {
+	p := NewPlayer(WithBaseStats(stats.NewBaseStats(stats.WithLvl(182))))
+	assert.Equal(t, 182, p.BaseStats().Lvl(), "Player base stats should match those it was constructed with.")
 }
 
 func TestPlayer_Damage(t *testing.T) {
