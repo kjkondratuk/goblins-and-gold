@@ -3,6 +3,7 @@ package game
 
 import (
 	"fmt"
+	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/src/world"
 	"io/ioutil"
 	"log"
