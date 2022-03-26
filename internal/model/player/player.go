@@ -104,6 +104,13 @@ func WithHp(hp int) Option {
 	}
 }
 
+func WithBaseStats(stats stats.BaseStats) Option {
+	return func(p player) player {
+		p._baseStats = stats
+		return p
+	}
+}
+
 func (p *player) Heal(heal int) bool {
 	p._currHp += heal
 

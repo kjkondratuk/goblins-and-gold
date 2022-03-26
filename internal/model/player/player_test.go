@@ -1,15 +1,16 @@
 package player
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewPlayer(t *testing.T) {
 	p := NewPlayer()
 	assert.Equal(t, p.Hp(), 1, "HP should be equal to 1 by default")
 	assert.Equal(t, p.BaseStats().Lvl(), 1, "Level should be equal to 1 by default")
-	assert.Equal(t, p.BaseStats().Str, 10, "Stats should default to 10")
+	assert.Equal(t, p.BaseStats().Str(), 10, "Stats should default to 10")
 
 	p = NewPlayer(WithHp(3473))
 	assert.Equal(t, p.Hp(), 3473, "HP should equal the HP option specified")
