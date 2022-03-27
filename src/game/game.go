@@ -50,7 +50,7 @@ func Start() {
 
 	//go func() {
 	reader, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m » \033[0m ",
+		Prompt:          pterm.LightYellow(" > "),
 		HistoryFile:     "/tmp/readline.tmp",
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
@@ -69,7 +69,11 @@ func Start() {
 	if err != nil {
 		log.Fatalf("Could not initiate REPL.  Exiting.")
 	}
+	defer reader.Close()
+
 	pterm.DefaultHeader.WithFullWidth().Println("goblins-and-gold")
+
+mainLoop:
 	for {
 		line, err := reader.Readline()
 		// handle error/exit conditions
@@ -91,13 +95,13 @@ func Start() {
 		case strings.HasPrefix(line, "help"):
 			usage(0, reader.Stdout())
 		case strings.HasPrefix(line, "quit"):
-			break
+			exit <- syscall.SIGINT
+			break mainLoop
 		default:
 			fmt.Printf(pterm.Red(fmt.Sprintf("\"%s\" is not a valid command.\n", line)))
 			usage(0, reader.Stdout())
 		}
 	}
-	//}()
 
 	sig := <-exit
 	fmt.Printf("%s received, exiting...\n", sig)
@@ -106,7 +110,7 @@ func Start() {
 func usage(level int, w io.Writer) {
 	_, _ = io.WriteString(w, "Usage:\n")
 	buf := bytes.NewBufferString("")
-	completer.Print("    ", level-1, buf)
+	completer.Print("    ", level, buf)
 	_, _ = io.WriteString(w, buf.String())
 }
 
