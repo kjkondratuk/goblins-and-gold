@@ -2,23 +2,34 @@
 package game
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/chzyer/readline"
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/src/navigator"
 	"github.com/kjkondratuk/goblins-and-gold/src/player"
 	"github.com/kjkondratuk/goblins-and-gold/src/room"
 	"github.com/kjkondratuk/goblins-and-gold/src/world"
-	"github.com/olekukonko/ts"
+	"github.com/pterm/pterm"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
 const (
 	worldFile  = "./config/test_world.yaml"
 	playerFile = "./config/test_player.yaml"
+)
+
+var (
+	completer = readline.NewPrefixCompleter(
+		readline.PcItem("help"),
+		readline.PcItem("exit"),
+	)
 )
 
 func Start() {
@@ -37,18 +48,66 @@ func Start() {
 
 	fmt.Printf("Game Client Initialized\n")
 
-	go func() {
-		// TODO : do I really want to check terminal size in this way?  Maybe we shouldn't be updating the terminal buffer...
-		size, err := ts.GetSize()
-		if err != nil {
-			log.Fatalf("Could not get terminal size: %+v", err)
+	//go func() {
+	reader, err := readline.NewEx(&readline.Config{
+		Prompt:          "\033[31m » \033[0m ",
+		HistoryFile:     "/tmp/readline.tmp",
+		AutoComplete:    completer,
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+		FuncFilterInputRune: func(r rune) (rune, bool) {
+			switch r {
+			// block CtrlZ feature
+			case readline.CharCtrlZ:
+				return r, false
+			}
+			return r, true
+		},
+	})
+	if err != nil {
+		log.Fatalf("Could not initiate REPL.  Exiting.")
+	}
+	pterm.DefaultHeader.WithFullWidth().Println("goblins-and-gold")
+	for {
+		line, err := reader.Readline()
+		// handle error/exit conditions
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
 		}
-		fmt.Printf("width: %d - height: %d\n", size.Col(), size.Row())
-		select {}
-	}()
+
+		// clean up leading/trailing spaces
+		line = strings.TrimSpace(line)
+
+		// process commands
+		switch {
+		case strings.HasPrefix(line, "help"):
+			usage(0, reader.Stdout())
+		case strings.HasPrefix(line, "quit"):
+			break
+		default:
+			fmt.Printf(pterm.Red(fmt.Sprintf("\"%s\" is not a valid command.\n", line)))
+			usage(0, reader.Stdout())
+		}
+	}
+	//}()
 
 	sig := <-exit
 	fmt.Printf("%s received, exiting...\n", sig)
+}
+
+func usage(level int, w io.Writer) {
+	_, _ = io.WriteString(w, "Usage:\n")
+	buf := bytes.NewBufferString("")
+	completer.Print("    ", level-1, buf)
+	_, _ = io.WriteString(w, buf.String())
 }
 
 type configDataType interface {
