@@ -8,6 +8,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/src/player"
 	"github.com/kjkondratuk/goblins-and-gold/src/room"
 	"github.com/kjkondratuk/goblins-and-gold/src/world"
+	"github.com/olekukonko/ts"
 	"io/ioutil"
 	"log"
 	"os"
@@ -37,6 +38,12 @@ func Start() {
 	fmt.Printf("Game Client Initialized\n")
 
 	go func() {
+		// TODO : do I really want to check terminal size in this way?  Maybe we shouldn't be updating the terminal buffer...
+		size, err := ts.GetSize()
+		if err != nil {
+			log.Fatalf("Could not get terminal size: %+v", err)
+		}
+		fmt.Printf("width: %d - height: %d\n", size.Col(), size.Row())
 		select {}
 	}()
 
