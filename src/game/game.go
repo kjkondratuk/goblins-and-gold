@@ -28,7 +28,7 @@ const (
 var (
 	completer = readline.NewPrefixCompleter(
 		readline.PcItem("help"),
-		readline.PcItem("exit"),
+		readline.PcItem("quit"),
 	)
 )
 

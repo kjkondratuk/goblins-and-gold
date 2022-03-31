@@ -3,20 +3,21 @@ module github.com/kjkondratuk/goblins-and-gold
 go 1.18
 
 require (
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/google/uuid v1.3.0
-	github.com/olekukonko/ts v0.0.0-20171002115256-78ecb04241c0
+	github.com/pterm/pterm v0.12.39
 	github.com/stretchr/testify v1.7.0
 )
 
 require (
 	github.com/atomicgo/cursor v0.0.1 // indirect
-	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
+	github.com/chzyer/logex v1.2.0 // indirect
+	github.com/chzyer/test v0.0.0-20210722231415-061457976a23 // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/gookit/color v1.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/pterm/pterm v0.12.39 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
