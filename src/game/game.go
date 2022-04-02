@@ -27,8 +27,13 @@ const (
 
 var (
 	completer = readline.NewPrefixCompleter(
-		readline.PcItem("help"),
-		readline.PcItem("quit"),
+		readline.PcItem("help - print this message"),
+		readline.PcItem("quit - exit the game"),
+		readline.PcItem("look - examine your surroundings", readline.PcItemDynamic(func(item string) []string {
+			return []string{
+				"<some item> - examine a specific item in the room",
+			}
+		})),
 	)
 )
 
@@ -41,7 +46,7 @@ func Start() {
 	p := readConfig[player.PlayerData](playerFile)
 
 	startRoom := room.NewRoom(room.WithRoomData(w.StartRoom))
-	/*nav :=*/ navigator.NewNavigatorFrom(player.NewPlayer(player.WithPlayerData(p)), startRoom)
+	nav := navigator.NewNavigatorFrom(player.NewPlayer(player.WithPlayerData(p)), startRoom)
 
 	fmt.Printf("World: %+v\n", w)
 	fmt.Printf("Player: %+v\n", p)
@@ -92,6 +97,16 @@ mainLoop:
 
 		// process commands
 		switch {
+		case strings.HasPrefix(line, "look"):
+			tok := strings.Split(line, " ")
+			if len(tok) == 1 {
+				fmt.Println(nav.Look())
+			} else if len(tok) == 2 {
+				switch tok[1] {
+				case "help":
+					fmt.Println(completer.Tree("look"))
+				}
+			}
 		case strings.HasPrefix(line, "help"):
 			usage(0, reader.Stdout())
 		case strings.HasPrefix(line, "quit"):

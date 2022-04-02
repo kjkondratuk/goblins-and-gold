@@ -16,6 +16,7 @@ type Navigator interface {
 	Player() player.Player
 	Room() room.Room
 	MoveTo(r room.Room)
+	Look() string
 }
 
 // NewNavigatorFrom : creates a new navigator with the given player starting in the given room.
@@ -37,4 +38,8 @@ func (n *navigator) Player() player.Player {
 
 func (n *navigator) Room() room.Room {
 	return n._r
+}
+
+func (n *navigator) Look() string {
+	return n._r.Description()
 }
