@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run gng",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "cmd/game/gng.go",
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
             "name": "Launch Package",
             "type": "go",
             "request": "launch",

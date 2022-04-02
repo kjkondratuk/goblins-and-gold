@@ -4,13 +4,6 @@ package game
 import (
 	"bytes"
 	"fmt"
-	"github.com/chzyer/readline"
-	"github.com/goccy/go-yaml"
-	"github.com/kjkondratuk/goblins-and-gold/src/navigator"
-	"github.com/kjkondratuk/goblins-and-gold/src/player"
-	"github.com/kjkondratuk/goblins-and-gold/src/room"
-	"github.com/kjkondratuk/goblins-and-gold/src/world"
-	"github.com/pterm/pterm"
 	"io"
 	"io/ioutil"
 	"log"
@@ -18,6 +11,14 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/chzyer/readline"
+	"github.com/goccy/go-yaml"
+	"github.com/kjkondratuk/goblins-and-gold/src/navigator"
+	"github.com/kjkondratuk/goblins-and-gold/src/player"
+	"github.com/kjkondratuk/goblins-and-gold/src/room"
+	"github.com/kjkondratuk/goblins-and-gold/src/world"
+	"github.com/pterm/pterm"
 )
 
 const (
@@ -25,22 +26,10 @@ const (
 	playerFile = "./config/test_player.yaml"
 )
 
-var (
-	completer = readline.NewPrefixCompleter(
-		readline.PcItem("help - print this message"),
-		readline.PcItem("quit - exit the game"),
-		readline.PcItem("look - examine your surroundings", readline.PcItemDynamic(func(item string) []string {
-			return []string{
-				"<some item> - examine a specific item in the room",
-			}
-		})),
-	)
-)
-
 func Start() {
 	// setup exit listener
 	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
+	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
 	w := readConfig[world.WorldData](worldFile)
 	p := readConfig[player.PlayerData](playerFile)
@@ -52,6 +41,19 @@ func Start() {
 	fmt.Printf("Player: %+v\n", p)
 
 	fmt.Printf("Game Client Initialized\n")
+
+	var completer = readline.NewPrefixCompleter(
+		readline.PcItem("help"),
+		readline.PcItem("quit"),
+		readline.PcItem("exit"),
+		readline.PcItem("look", readline.PcItemDynamic(func(item string) []string {
+			return []string{
+				// TODO : dynamically populate this with things that can be looked at
+				"<some item>",
+				"<some other item>",
+			}
+		})),
+	)
 
 	//go func() {
 	reader, err := readline.NewEx(&readline.Config{
@@ -108,13 +110,13 @@ mainLoop:
 				}
 			}
 		case strings.HasPrefix(line, "help"):
-			usage(0, reader.Stdout())
-		case strings.HasPrefix(line, "quit"):
+			usage(completer, 0, reader.Stdout())
+		case strings.HasPrefix(line, "quit") || strings.HasPrefix(line, "exit"):
 			exit <- syscall.SIGINT
 			break mainLoop
 		default:
-			fmt.Printf(pterm.Red(fmt.Sprintf("\"%s\" is not a valid command.\n", line)))
-			usage(0, reader.Stdout())
+			fmt.Print(pterm.Red(fmt.Sprintf("\"%s\" is not a valid command.\n", line)))
+			usage(completer, 0, reader.Stdout())
 		}
 	}
 
@@ -122,7 +124,7 @@ mainLoop:
 	fmt.Printf("%s received, exiting...\n", sig)
 }
 
-func usage(level int, w io.Writer) {
+func usage(completer readline.PrefixCompleterInterface, level int, w io.Writer) {
 	_, _ = io.WriteString(w, "Usage:\n")
 	buf := bytes.NewBufferString("")
 	completer.Print("    ", level, buf)
