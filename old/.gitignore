@@ -1,0 +1,5 @@
+generated
+bin/*
+!bin/*.sh
+.idea
+*.iml

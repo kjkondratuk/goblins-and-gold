@@ -1,5 +1,4 @@
-generated
-bin/*
-!bin/*.sh
-.idea
-*.iml
+old/
+
+# ignore any binary produced by the Makefile
+goblins-and-gold

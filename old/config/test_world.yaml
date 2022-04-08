@@ -1,0 +1,5 @@
+rooms:
+  - initRoom: &initRoom
+    description: The room is empty.
+
+startingRoom: *initRoom
