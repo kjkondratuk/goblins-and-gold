@@ -1,6 +1,6 @@
 package stats
 
-type BaseStatData struct {
+type BaseStats struct {
 	Lvl int `yaml:"lvl"`
 	Str int `yaml:"str"`
 	Dex int `yaml:"dex"`

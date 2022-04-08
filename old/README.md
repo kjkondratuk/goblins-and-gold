@@ -1,2 +1,0 @@
-# goblins-and-gold
-

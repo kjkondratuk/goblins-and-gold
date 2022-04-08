@@ -1,4 +1,4 @@
-old/
+.old/
 
 # ignore any binary produced by the Makefile
 goblins-and-gold

@@ -1,0 +1,26 @@
+rooms:
+  C9CEA549-8E62-439A-B971-5C4ED0EFAFBE:
+    name: Dead End
+    description: The room is empty except for the door you entered through
+  9A7FEDE2-CBC3-463F-A6D5-60B07C9722BC:
+    name: Treasure Room
+    description: There are three chests located against the far wall.
+  31A024F7-4EC7-4D50-A510-FF328F5DB166:
+    name: Dirt Hall
+    description: This is an empty room with a compacted dirt floor and stone walls
+    pathways:
+      - E3E08527-34EC-4480-8059-6D1443833C94
+  1DE426E7-5547-4681-8BA4-35953168D9F5:
+    name: Dirt Hall 2
+    description: This is an empty room with a compacted dirt floor and stone walls
+    pathways:
+      - 31A024F7-4EC7-4D50-A510-FF328F5DB166
+  E3E08527-34EC-4480-8059-6D1443833C94:
+    name: Two Door Room
+    description: The room is empty, except for doors on the right and left walls
+    pathways:
+      - C9CEA549-8E62-439A-B971-5C4ED0EFAFBE
+      - 9A7FEDE2-CBC3-463F-A6D5-60B07C9722BC
+      - 1DE426E7-5547-4681-8BA4-35953168D9F5
+
+startingRoom: E3E08527-34EC-4480-8059-6D1443833C94
