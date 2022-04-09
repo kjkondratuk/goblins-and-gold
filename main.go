@@ -1,10 +1,10 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"github.com/chzyer/readline"
 	"github.com/goccy/go-yaml"
+	commands2 "github.com/kjkondratuk/goblins-and-gold/commands"
 	"github.com/kjkondratuk/goblins-and-gold/config"
 	"github.com/kjkondratuk/goblins-and-gold/player"
 	"github.com/kjkondratuk/goblins-and-gold/state"
@@ -13,7 +13,6 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
 )
@@ -51,10 +50,8 @@ func main() {
 			Aliases:     []string{"l"},
 			Usage:       "Look at your surroundings",
 			Description: "Look at your surroundings",
-			Action: func(c *cli.Context) error {
-				fmt.Println(s.CurrRoom.Description)
-				return nil
-			},
+			Category:    "Info",
+			Action:      commands2.Look(&s),
 		},
 		{
 			Name:        "go",
@@ -62,33 +59,15 @@ func main() {
 			Usage:       "Travel down a path",
 			Description: "Travel down a path",
 			ArgsUsage:   "[location number]",
-			Action: func(c *cli.Context) error {
-				if len(c.Args()) == 0 {
-					fmt.Println("Paths:")
-					for i, p := range s.CurrRoom.Paths {
-						fmt.Println(strconv.Itoa(i) + " - " + p.Description)
-					}
-				} else if len(c.Args()) == 1 {
-					pi, err := strconv.Atoi(c.Args()[0])
-					if err != nil {
-						return errors.New("argument should be numeric")
-					}
-					s.CurrRoom, _ = w.Room(s.CurrRoom.Paths[pi].Room)
-				} else {
-					return errors.New("invalid number of arguments")
-				}
-				return nil
-			},
+			Category:    "Actions",
+			Action:      commands2.Go(&s, &w),
 		},
 		{
-			Name:    "stat",
-			Aliases: []string{"s"},
-			Usage:   "Interrogate your player stats",
-			Action: func(c *cli.Context) error {
-				ps, _ := yaml.Marshal(s.Player)
-				fmt.Println(pterm.Green(string(ps)))
-				return nil
-			},
+			Name:     "stat",
+			Aliases:  []string{"s"},
+			Usage:    "Interrogate your player stats",
+			Category: "Info",
+			Action:   commands2.Stats(&s),
 		},
 		{
 			Name:    "quit",
@@ -106,9 +85,10 @@ func main() {
 	// if we're debugging add some additional debug commands that spoil the magic
 	if isDebug {
 		commands = append(commands, cli.Command{
-			Name:    "world",
-			Aliases: []string{"w"},
-			Usage:   "Print general info about the world.",
+			Name:     "world",
+			Aliases:  []string{"w"},
+			Usage:    "Print general info about the world.",
+			Category: "Debug",
 			Action: func(c *cli.Context) error {
 				ws, _ := yaml.Marshal(w)
 				fmt.Println(pterm.Green(string(ws)))
@@ -120,8 +100,7 @@ func main() {
 	app := &cli.App{
 		Name: defaultApp,
 		Action: func(c *cli.Context) error {
-			//fmt.Println("Running app...")
-			return errors.New("")
+			return cli.ShowAppHelp(c)
 		},
 		Commands: commands,
 	}

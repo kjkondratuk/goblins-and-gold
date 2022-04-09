@@ -6,39 +6,39 @@ common_descriptors:
   fancy_treasure_door_easy: &fancy_treasure_door_easy An iron door with a gold filligree frame stands before you.
 
 rooms:
-  C9CEA549-8E62-439A-B971-5C4ED0EFAFBE:
+  dead-end-room-1:
     name: Dead End
     description: The room is empty except for the door you entered through
     paths:
-      - room: E3E08527-34EC-4480-8059-6D1443833C94
+      - room: starting-room
         description: *empty_archway
-  9A7FEDE2-CBC3-463F-A6D5-60B07C9722BC:
+  treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.
     paths:
-      - room: E3E08527-34EC-4480-8059-6D1443833C94
+      - room: starting-room
         description: *fancy_treasure_door_easy
-  31A024F7-4EC7-4D50-A510-FF328F5DB166:
+  dirt-hall-1:
     name: Dirt Hall
     description: *stone_tunnel
     paths:
-      - room: E3E08527-34EC-4480-8059-6D1443833C94
+      - room: starting-room
         description: *flimsy_door
-  1DE426E7-5547-4681-8BA4-35953168D9F5:
+  dirt-hall-2:
     name: Dirt Hall 2
     description: *stone_tunnel
     paths:
-      - room: 31A024F7-4EC7-4D50-A510-FF328F5DB166
+      - room: dirt-hall-1
         description: *simple_door
-  E3E08527-34EC-4480-8059-6D1443833C94:
+  starting-room:
     name: Two Door Room
     description: The room is empty, except for doors on three of the walls.
     paths:
-      - room: C9CEA549-8E62-439A-B971-5C4ED0EFAFBE
+      - room: dead-end-room-1
         description: *empty_archway
-      - room: 9A7FEDE2-CBC3-463F-A6D5-60B07C9722BC
+      - room: treasure-room-1
         description: *fancy_treasure_door_easy
-      - room: 1DE426E7-5547-4681-8BA4-35953168D9F5
+      - room: dirt-hall-2
         description: *simple_door
 
-startingRoom: E3E08527-34EC-4480-8059-6D1443833C94
+startingRoom: starting-room
