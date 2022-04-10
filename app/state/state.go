@@ -6,6 +6,6 @@ import (
 )
 
 type GameState struct {
-	Player   player.Player
-	CurrRoom room.Room
+	Player   *player.Player
+	CurrRoom *room.Room
 }

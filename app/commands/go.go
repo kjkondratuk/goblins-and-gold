@@ -2,26 +2,30 @@ package commands
 
 import (
 	"errors"
-	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/world"
+	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
-	"strconv"
 )
 
 func Go(s *state.GameState, w *world.World) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		if len(c.Args()) == 0 {
-			fmt.Println("Paths:")
-			for i, p := range s.CurrRoom.Paths {
-				fmt.Println(strconv.Itoa(i) + " - " + p.Description)
+			var options []string
+			options = append(options, "Stay here")
+			for _, p := range s.CurrRoom.Paths {
+				options = append(options, p.Description)
 			}
-		} else if len(c.Args()) == 1 {
-			pi, err := strconv.Atoi(c.Args()[0])
-			if err != nil {
-				return errors.New("argument should be numeric")
+			p := promptui.Select{
+				Label: "Go",
+				Items: options,
 			}
-			s.CurrRoom, _ = w.Room(s.CurrRoom.Paths[pi].Room)
+			i, _, _ := p.Run()
+			if i != 0 {
+				// Update the current room based on the selection, unless the user cancels navigation
+				nr, _ := w.Room(s.CurrRoom.Paths[i-1].Room)
+				s.CurrRoom = &nr
+			}
 		} else {
 			return errors.New("invalid number of arguments")
 		}

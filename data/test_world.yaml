@@ -18,6 +18,8 @@ rooms:
     containers:
       - type: Chest
         description: A small wooden chest
+        interactions:
+          - Open
         items:
           - type: Gold
             description: A few glittering coins
