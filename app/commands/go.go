@@ -3,7 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/state"
+	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/world"
 	"github.com/urfave/cli"
 	"strconv"

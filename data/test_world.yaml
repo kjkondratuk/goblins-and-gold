@@ -15,6 +15,29 @@ rooms:
   treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.
+    containers:
+      - type: Chest
+        description: A small wooden chest
+        items:
+          - type: Gold
+            description: A few glittering coins
+            quantity: 5
+            unit: Coins
+      - type: Chest
+        locked:
+          dc: 15
+          type: Dexterity
+          crit_success:
+            description: You deftly pick the lock and reveal the items hidden within.
+          success:
+            description: You are able to pick the lock, but damage it beyond repair.
+          fail:
+            description: You fail to pick the lock.  The chest remains shut.
+          crit_fail:
+            damage: 1
+            description: You fail to pick the lock and hurt your finger in the process.
+        description: A strongly built wooden chest with a strong iron lock.
+        items:
     paths:
       - room: starting-room
         description: *fancy_treasure_door_easy

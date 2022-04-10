@@ -1,6 +1,6 @@
 package world
 
-import "github.com/kjkondratuk/goblins-and-gold/room"
+import "github.com/kjkondratuk/goblins-and-gold/world/room"
 
 type World struct {
 	Rooms     map[string]room.Room `yaml:"rooms"`

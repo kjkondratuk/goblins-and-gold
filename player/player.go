@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 )
 
@@ -8,6 +9,7 @@ type Player struct {
 	// TODO : this should probably be moved into BaseStats since it's dependent upon class and Con
 	HP        int             `yaml:"hp"`
 	BaseStats stats.BaseStats `yaml:"stats"`
+	Inventory []item.Item     `yaml:"inventory"`
 }
 
 // Dmg : applies damage to a player's hitpoints.

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/state"
+	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/urfave/cli"
 )
 
