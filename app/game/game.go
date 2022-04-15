@@ -74,7 +74,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Interact with your surroundings",
 			Description: "Interact with your surroundings",
 			Category:    "Actions",
-			Action:      commands.Interact(s, w),
+			Action:      commands.Interact(s),
 		},
 		{
 			Name:        "stats",

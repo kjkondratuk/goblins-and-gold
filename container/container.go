@@ -24,7 +24,7 @@ type Container struct {
 
 func (c Container) Interactions() map[interaction.Type]interaction.Func {
 	return map[interaction.Type]interaction.Func{
-		"Open": func(c *context.Context) interaction.Result {
+		"Open": func(c context.Context) interaction.Result {
 			return interaction.Result{}
 		},
 	}

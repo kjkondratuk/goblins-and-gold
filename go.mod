@@ -3,21 +3,21 @@ module github.com/kjkondratuk/goblins-and-gold
 go 1.18
 
 require (
-	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
+	github.com/c-bata/go-prompt v0.2.6
 	github.com/goccy/go-yaml v1.9.5
+	github.com/manifoldco/promptui v0.9.0
 	github.com/pterm/pterm v0.12.40
 	github.com/urfave/cli v1.22.5
 )
 
 require (
 	github.com/atomicgo/cursor v0.0.1 // indirect
-	github.com/c-bata/go-prompt v0.2.6 // indirect
 	github.com/chzyer/logex v1.2.0 // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/chzyer/test v0.0.0-20210722231415-061457976a23 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/gookit/color v1.5.0 // indirect
-	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
