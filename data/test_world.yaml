@@ -25,6 +25,7 @@ rooms:
             quantity: 5
             unit: Coins
       - type: Chest
+        interactions: [Open, Loot]
         locked:
           dc: 15
           type: Dexterity
@@ -35,10 +36,16 @@ rooms:
           fail:
             description: You fail to pick the lock.  The chest remains shut.
           crit_fail:
-            damage: 1
+            damage:
+              hp: 1
+              type: Slashing
             description: You fail to pick the lock and hurt your finger in the process.
         description: A strongly built wooden chest with a strong iron lock.
         items:
+          - type: Gold
+            description: A pile of gold coins
+            quantity: 150
+            unit: Coins
     paths:
       - room: starting-room
         description: *fancy_treasure_door_easy

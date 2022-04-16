@@ -1,6 +1,9 @@
 package challenge
 
-import "github.com/kjkondratuk/goblins-and-gold/item"
+import (
+	"github.com/kjkondratuk/goblins-and-gold/damage"
+	"github.com/kjkondratuk/goblins-and-gold/item"
+)
 
 const (
 	Strength     = "Strength"
@@ -46,7 +49,7 @@ type SkillChallenge struct {
 }
 
 type Outcome struct {
-	Items       []item.Item `yaml:"items"`
-	Damage      int         `yaml:"damage"`
-	Description string      `yaml:"description"`
+	Items       []item.Item   `yaml:"items"`
+	Damage      damage.Damage `yaml:"damage"`
+	Description string        `yaml:"description"`
 }

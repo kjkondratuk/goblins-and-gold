@@ -3,15 +3,16 @@ package state
 import (
 	interaction2 "github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/player"
-	"github.com/kjkondratuk/goblins-and-gold/world/room"
+	"github.com/kjkondratuk/goblins-and-gold/world"
 )
 
-type GameState struct {
+type State struct {
 	Player   *player.Player
-	CurrRoom *room.Room
+	CurrRoom *world.Room
+	World    *world.World
 }
 
-func (s *GameState) Apply(r interaction2.Result) {
+func (s *State) Apply(r interaction2.Result) {
 	for _, i := range r.AcquiredItems {
 		s.Player.Inventory = append(s.Player.Inventory, i)
 	}

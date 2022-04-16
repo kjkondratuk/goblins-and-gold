@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Interact(s *state.GameState) cli.ActionFunc {
+func Interact(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		if len(c.Args()) == 0 {
 			// coerce to ux.Described
@@ -30,8 +30,10 @@ func Interact(s *state.GameState) cli.ActionFunc {
 				return err
 			}
 
-			// Apply to game state
-			s.Apply(result.(interaction2.Result))
+			// Apply to game state, if there was an applicable result
+			if result != nil {
+				s.Apply(result.(interaction2.Result))
+			}
 		}
 		return nil
 	}
@@ -42,7 +44,7 @@ func actionSelector(ctx context.Context, idx int, val string, err error) (interf
 	a := interaction2.Type(val)
 
 	// get interactions available for this container
-	containerInteractions := ctx.Value(interaction2.ContainerDataKey).(container.Container)
+	containerInteractions := ctx.Value(interaction2.ContainerDataKey).(*container.Container)
 
 	// TODO : probably need to better handle un-mapped actions here as well
 	/*result*/
@@ -58,7 +60,7 @@ func actionSelector(ctx context.Context, idx int, val string, err error) (interf
 // prompts a user for the actionItemData they'd like to take on the item based on its supported interactions.
 func interactionSelector(ctx context.Context, idx int, val string, err error) (interface{}, error) {
 	pterm.Success.Printf("Selected: %s\n", val)
-	selection := ctx.Value(interaction2.InteractionDataKey).([]container.Container)[idx-1]
+	selection := ctx.Value(interaction2.InteractionDataKey).([]*container.Container)[idx-1]
 
 	// coerce to ux.Described
 	ia := selection.SupportedInteractions

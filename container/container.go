@@ -32,36 +32,43 @@ type Container struct {
 }
 
 // Interactions : returns a map of interaction types to interaction functions that enumerates
-func (c Container) interactions() map[interaction.Type]interaction.Func {
+func (c *Container) interactions() map[interaction.Type]interaction.Func {
 	return map[interaction.Type]interaction.Func{
 		I_Open: c.open,
 		I_Loot: c.loot,
 	}
 }
 
-func (c Container) Do(ctx context.Context, t interaction.Type) (interaction.Result, error) {
+func (c *Container) Do(ctx context.Context, t interaction.Type) (interaction.Result, error) {
 	if action, ok := c.interactions()[t]; ok {
 		return action(ctx)
 	}
 	return interaction.Result{}, errors.New(fmt.Sprintf("%s is not a valid action type for a container", t))
 }
 
-func (c Container) removeItem(i int) []item.Item {
+func (c *Container) removeItem(i int) []item.Item {
 	return append(c.Items[:i], c.Items[i+1:]...)
 }
 
-func (c Container) open(ctx context.Context) (interaction.Result, error) {
-	pterm.Success.Printf("%s: %s!\n", I_Open+"ed", c.Description)
+func (c *Container) open(ctx context.Context) (interaction.Result, error) {
+	if c.Locked == nil {
+		pterm.Success.Printf("%s: %s!\n", I_Open+"ed", c.Description)
 
-	pterm.Info.Println("Contents:")
-	for _, a := range c.Items {
-		pterm.Info.Printf(" - %s\n", a.Describe())
+		pterm.Info.Println("Contents:")
+		for _, a := range c.Items {
+			pterm.Info.Printf(" - %s\n", a.Describe())
+		}
+
+		return interaction.Result{}, nil
+	} else {
+		pterm.Error.Println("This container needs to be unlocked first")
+		return interaction.Result{
+			Type: interaction.RT_Failure,
+		}, nil
 	}
-
-	return interaction.Result{}, nil
 }
 
-func (c Container) loot(ctx context.Context) (interaction.Result, error) {
+func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 	if c.Locked == nil {
 		d := make([]ux.Described, len(c.Items))
 		for i, x := range c.Items {

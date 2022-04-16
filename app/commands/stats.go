@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Stats(s *state.GameState) cli.ActionFunc {
+func Stats(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		ps, _ := yaml.Marshal(s.Player)
 		fmt.Println(pterm.Green(string(ps)))

@@ -44,9 +44,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 	})
 
 	sr, _ := w.Room(w.StartRoom)
-	s := &state.GameState{
+	s := &state.State{
 		Player:   p,
 		CurrRoom: &sr,
+		World:    w,
 	}
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()
@@ -67,7 +68,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Description: "Travel down a path",
 			ArgsUsage:   "[location number]",
 			Category:    "Actions",
-			Action:      commands.Go(s, w),
+			Action:      commands.Go(s),
 		}, {
 			Name:        "interact",
 			Aliases:     []string{"i"},
@@ -107,11 +108,13 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Print general info about the world.",
 			Description: "Print general info about the world.",
 			Category:    "Debug",
-			Action: func(c *cli.Context) error {
-				ws, _ := yaml.Marshal(w)
-				pterm.Debug.Println(pterm.Green(string(ws)))
-				return nil
-			},
+			Action: func(world *world.World) cli.ActionFunc {
+				return func(c *cli.Context) error {
+					ws, _ := yaml.Marshal(world)
+					pterm.Debug.Println(pterm.Green(string(ws)))
+					return nil
+				}
+			}(w),
 		})
 	}
 

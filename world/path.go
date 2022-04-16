@@ -1,4 +1,4 @@
-package path
+package world
 
 type Path struct {
 	Room        string `yaml:"room"`
