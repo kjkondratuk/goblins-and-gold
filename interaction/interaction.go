@@ -1,6 +1,15 @@
 package interaction
 
-import "context"
+import (
+	"context"
+	"github.com/kjkondratuk/goblins-and-gold/damage"
+	"github.com/kjkondratuk/goblins-and-gold/item"
+)
+
+const (
+	InteractionDataKey = iota
+	ContainerDataKey
+)
 
 type Type string
 
@@ -8,7 +17,17 @@ func (t Type) Describe() string {
 	return string(t)
 }
 
-type Func func(c context.Context) Result
+type Func func(c context.Context) (Result, error)
+
+type ResultType string
+
+const (
+	RT_Success = ResultType("Success")
+	RT_Failure = ResultType("Failure")
+)
 
 type Result struct {
+	Type          ResultType
+	AcquiredItems []item.Item
+	Damage        damage.Damage
 }

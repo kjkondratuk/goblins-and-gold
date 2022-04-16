@@ -9,7 +9,7 @@ type Described interface {
 	Describe() string
 }
 
-type SelectAction func(ctx context.Context, idx int, val string, err error) error
+type SelectAction func(ctx context.Context, idx int, val string, err error) (interface{}, error)
 
 type selector struct {
 	cancel  string
@@ -18,7 +18,7 @@ type selector struct {
 }
 
 type Select interface {
-	Run(ctx context.Context, items []Described) error
+	Run(ctx context.Context, items []Described) (interface{}, error)
 }
 
 func NewSelector(c string, l string, h SelectAction) Select {
@@ -29,7 +29,7 @@ func NewSelector(c string, l string, h SelectAction) Select {
 	}
 }
 
-func (c *selector) Run(ctx context.Context, items []Described) error {
+func (c *selector) Run(ctx context.Context, items []Described) (interface{}, error) {
 	var options []string
 	options = append(options, c.cancel)
 	for _, i := range items {
@@ -40,5 +40,5 @@ func (c *selector) Run(ctx context.Context, items []Described) error {
 	if i > 0 {
 		return c.handler(ctx, i, v, err)
 	}
-	return nil
+	return nil, nil
 }

@@ -8,3 +8,7 @@ type Item struct {
 	Quantity    int    `yaml:"quantity"`
 	Unit        string `yaml:"unit"`
 }
+
+func (i Item) Describe() string {
+	return i.Description
+}
