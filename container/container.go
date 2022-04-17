@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
@@ -18,8 +19,6 @@ const (
 	I_Open = interaction.Type("Open")
 	I_Loot = interaction.Type("Loot")
 )
-
-var ()
 
 type Type string
 
@@ -93,6 +92,13 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 			Type: interaction.RT_Failure,
 		}, nil
 	}
+}
+
+func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
+	if c.Locked == nil {
+		return interaction.Result{Type: interaction.RT_Failure}, nil
+	}
+
 }
 
 func (c Container) Describe() string {
