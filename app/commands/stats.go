@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/pterm/pterm"
@@ -11,7 +10,7 @@ import (
 func Stats(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		ps, _ := yaml.Marshal(s.Player)
-		fmt.Println(pterm.Green(string(ps)))
+		pterm.Success.Println(string(ps))
 		return nil
 	}
 }

@@ -28,7 +28,7 @@ rooms:
         interactions: [Open, Loot, Unlock]
         locked:
           dc: 15
-          type: Dexterity
+          type: Dex
           crit_success:
             description: You deftly pick the lock and reveal the items hidden within.
           success:
@@ -55,11 +55,15 @@ rooms:
     paths:
       - room: starting-room
         description: *flimsy_door
+      - room: dirt-hall-2
+        description: *simple_door
   dirt-hall-2:
     name: Dirt Hall 2
     description: *stone_tunnel
     paths:
       - room: dirt-hall-1
+        description: *simple_door
+      - room: starting-room
         description: *simple_door
   starting-room:
     name: Two Door Room
@@ -70,6 +74,8 @@ rooms:
       - room: treasure-room-1
         description: *fancy_treasure_door_easy
       - room: dirt-hall-2
+        description: *simple_door
+      - room: dirt-hall-1
         description: *simple_door
 
 startingRoom: starting-room

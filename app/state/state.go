@@ -7,13 +7,11 @@ import (
 )
 
 type State struct {
-	Player   *player.Player
+	Player   *player.PlayerStruct
 	CurrRoom *world.Room
 	World    *world.World
 }
 
 func (s *State) Apply(r interaction2.Result) {
-	for _, i := range r.AcquiredItems {
-		s.Player.Inventory = append(s.Player.Inventory, i)
-	}
+	s.Player.Acquire(r.AcquiredItems...)
 }

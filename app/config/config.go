@@ -9,7 +9,7 @@ import (
 )
 
 type configDataType interface {
-	world.World | player.Player
+	world.World | player.PlayerStruct
 }
 
 func Read[T configDataType](f string) T {

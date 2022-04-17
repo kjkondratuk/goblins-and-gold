@@ -22,6 +22,7 @@ func Interact(s *state.State) cli.ActionFunc {
 
 			// Pass the available containers on context to the interactionData selector
 			c := context.WithValue(context.Background(), interaction2.InteractionDataKey, s.CurrRoom.Containers)
+			c = context.WithValue(c, interaction2.PlayerDataKey, s.Player)
 
 			// Prompt for selection of the interactable
 			result, err := ux.NewSelector("None of these", "Interact with", interactionSelector).Run(c, d)
@@ -37,8 +38,10 @@ func Interact(s *state.State) cli.ActionFunc {
 				switch r.Type {
 				case interaction2.RT_Success:
 					pterm.Success.Println(r.Message)
-				default:
+				case interaction2.RT_Failure:
 					pterm.Error.Println(r.Message)
+				default:
+					pterm.Info.Println(r.Message)
 				}
 			}
 		}
@@ -53,8 +56,6 @@ func actionSelector(ctx context.Context, idx int, val string, err error) (interf
 	// get interactions available for this container
 	containerInteractions := ctx.Value(interaction2.ContainerDataKey).(*container.Container)
 
-	// TODO : probably need to better handle un-mapped actions here as well
-	/*result*/
 	result, err := containerInteractions.Do(ctx, a)
 	if err != nil {
 		return interaction2.Result{}, err

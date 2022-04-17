@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
-	"github.com/pterm/pterm"
+	"github.com/kjkondratuk/goblins-and-gold/player"
 )
 
 const (
@@ -80,7 +79,6 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 		}
 
 		result, err := ux.NewSelector("Cancel", "Items", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
-			pterm.Info.Printf("Selected item: %s\n", val)
 			it := c.Items[idx-1]
 			c.Items = c.removeItem(idx - 1)
 
@@ -107,6 +105,14 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 			Message: "The container is already unlocked\n",
 		}, nil
 	}
+
+	p := ctx.Value(interaction.PlayerDataKey).(player.Player)
+	// Get skill check type: c.Locked.Type
+	// Get the player's modifier for the specified skill
+	// Roll the check
+	// Add together the player's bonus and the roll
+	// Determine whether the check passed or failed
+	p.Roll("")
 
 	// Unset locked skill check to unlock the container
 	c.Locked = nil
