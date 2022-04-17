@@ -48,3 +48,7 @@ actually implementing these:
 ## How does it work?
 
 * [Interactions](./interaction/interactions.md)
+
+## How do I make maps?
+
+Check out the [test map](./data/worlds/test_world.md) ([Source](./data/worlds/test_world.yaml))
