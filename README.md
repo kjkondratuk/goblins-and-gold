@@ -44,3 +44,7 @@ actually implementing these:
 
 1. A graphical tool to build worlds
 2. Multiplayer
+
+## How does it work?
+
+* [Interactions](./interaction/interactions.md)
