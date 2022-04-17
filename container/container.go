@@ -16,8 +16,9 @@ const (
 	Chest = Type("Chest")
 	Body  = Type("Body")
 
-	I_Open = interaction.Type("Open")
-	I_Loot = interaction.Type("Loot")
+	InteractionTypeOpen   = interaction.Type("Open")
+	InteractionTypeLoot   = interaction.Type("Loot")
+	InteractionTypeUnlock = interaction.Type("Unlock")
 )
 
 type Type string
@@ -33,8 +34,9 @@ type Container struct {
 // Interactions : returns a map of interaction types to interaction functions that enumerates
 func (c *Container) interactions() map[interaction.Type]interaction.Func {
 	return map[interaction.Type]interaction.Func{
-		I_Open: c.open,
-		I_Loot: c.loot,
+		InteractionTypeOpen:   c.open,
+		InteractionTypeLoot:   c.loot,
+		InteractionTypeUnlock: c.unlock,
 	}
 }
 
@@ -51,18 +53,21 @@ func (c *Container) removeItem(i int) []item.Item {
 
 func (c *Container) open(ctx context.Context) (interaction.Result, error) {
 	if c.Locked == nil {
-		pterm.Success.Printf("%s: %s!\n", I_Open+"ed", c.Description)
+		s := fmt.Sprintf("%s: %s!\n", InteractionTypeOpen+"ed", c.Description)
 
-		pterm.Info.Println("Contents:")
+		s = s + fmt.Sprint("Contents:\n")
 		for _, a := range c.Items {
-			pterm.Info.Printf(" - %s\n", a.Describe())
+			s = s + fmt.Sprintf(" - %s\n", a.Describe())
 		}
 
-		return interaction.Result{}, nil
-	} else {
-		pterm.Error.Println("This container needs to be unlocked first")
 		return interaction.Result{
-			Type: interaction.RT_Failure,
+			Type:    interaction.RT_Success,
+			Message: s,
+		}, nil
+	} else {
+		return interaction.Result{
+			Type:    interaction.RT_Failure,
+			Message: "This container needs to be unlocked first",
 		}, nil
 	}
 }
@@ -75,30 +80,41 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 		}
 
 		result, err := ux.NewSelector("Cancel", "Items", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
-			pterm.Success.Printf("Selected item: %s\n", val)
+			pterm.Info.Printf("Selected item: %s\n", val)
 			it := c.Items[idx-1]
 			c.Items = c.removeItem(idx - 1)
 
 			return interaction.Result{
 				Type:          interaction.RT_Success,
+				Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
 				AcquiredItems: []item.Item{it},
 			}, nil
 		}).Run(ctx, d)
 
 		return result.(interaction.Result), err
 	} else {
-		pterm.Error.Println("This container needs to be opened first")
 		return interaction.Result{
-			Type: interaction.RT_Failure,
+			Type:    interaction.RT_Failure,
+			Message: "This container needs to be opened first",
 		}, nil
 	}
 }
 
 func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 	if c.Locked == nil {
-		return interaction.Result{Type: interaction.RT_Failure}, nil
+		return interaction.Result{
+			Type:    interaction.RT_Failure,
+			Message: "The container is already unlocked\n",
+		}, nil
 	}
 
+	// Unset locked skill check to unlock the container
+	c.Locked = nil
+
+	return interaction.Result{
+		Type:    interaction.RT_Success,
+		Message: "Conatiner successfully unlocked!\n",
+	}, nil
 }
 
 func (c Container) Describe() string {

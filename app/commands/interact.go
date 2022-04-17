@@ -32,7 +32,14 @@ func Interact(s *state.State) cli.ActionFunc {
 
 			// Apply to game state, if there was an applicable result
 			if result != nil {
-				s.Apply(result.(interaction2.Result))
+				r := result.(interaction2.Result)
+				s.Apply(r)
+				switch r.Type {
+				case interaction2.RT_Success:
+					pterm.Success.Println(r.Message)
+				default:
+					pterm.Error.Println(r.Message)
+				}
 			}
 		}
 		return nil

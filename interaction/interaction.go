@@ -28,6 +28,7 @@ const (
 
 type Result struct {
 	Type          ResultType
+	Message       string
 	AcquiredItems []item.Item
 	Damage        damage.Damage
 }
