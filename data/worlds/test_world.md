@@ -13,7 +13,7 @@ flowchart TD
         sr_empty(Empty)
     end
     starting_room---dead_end_room_1
-    subgraph dead_end_room_1
+    subgraph dead_end_room_1 [Dead End Room]
         der1_empty(Empty)
     end
     starting_room---treasure_room_1
@@ -22,11 +22,11 @@ flowchart TD
         tr1_locked_chest(Locked Chest)
     end
     starting_room---dirt_hall_2
-    subgraph dirt_hall_2
+    subgraph dirt_hall_2 [Dirt Hall 2]
         dh2_empty(Empty)
     end
     starting_room---dirt_hall_1
-    subgraph dirt_hall_1
+    subgraph dirt_hall_1 [Dirt Hall]
         dh1_empty(Empty)
     end
     dirt_hall_2---dirt_hall_1
