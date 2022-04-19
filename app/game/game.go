@@ -30,15 +30,15 @@ func Run(appArgs []string, exit chan os.Signal) {
 	start, _ := pterm.DefaultProgressbar.WithTotal(4).WithTitle("Starting...").Start()
 
 	var w *world.World
-	p := player.NewPlayerStruct()
+	var p player.Player
 	async.InParallel(func() {
-		wl := config.Read[world.World]("./data/test_world.yaml")
+		wl := config.Read[world.World]("./data/worlds/test_world.yaml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 		start.Increment()
 	}, func() {
-		ps := config.Read[player.PlayerStruct]("./data/test_player.yaml")
-		p = &ps
+		ps := config.Read[player.PlayerData]("./data/test_player.yaml")
+		p = player.NewPlayerStruct(ps)
 		pterm.Success.Println("Player loaded.")
 		start.Increment()
 	})

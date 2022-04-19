@@ -108,6 +108,7 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 
 	p := ctx.Value(interaction.PlayerDataKey).(player.Player)
 	// Get skill check type: c.Locked.Type
+	//value, _ := p.BaseStats().GetByName(string(c.Locked.Type))
 	// Get the player's modifier for the specified skill
 	// Roll the check
 	// Add together the player's bonus and the roll

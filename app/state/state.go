@@ -7,7 +7,7 @@ import (
 )
 
 type State struct {
-	Player   *player.PlayerStruct
+	Player   player.Player
 	CurrRoom *world.Room
 	World    *world.World
 }

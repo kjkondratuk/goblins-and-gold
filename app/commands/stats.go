@@ -9,7 +9,7 @@ import (
 
 func Stats(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
-		ps, _ := yaml.Marshal(s.Player)
+		ps, _ := yaml.Marshal(s.Player.PlayerData())
 		pterm.Success.Println(string(ps))
 		return nil
 	}
