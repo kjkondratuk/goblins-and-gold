@@ -1,0 +1,10 @@
+monsters:
+  death-slaad: &death-slaad
+    hp: 170
+    stats:
+      str: 20
+      dex: 15
+      con: 19
+      int: 15
+      wis: 10
+      cha: 16

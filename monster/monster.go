@@ -25,7 +25,7 @@ type Monster interface {
 	Dmg(hp int) bool
 	Acquire(item ...item.Item)
 	BaseStats() stats.BaseStats
-	PlayerData() MonsterData
+	MonsterData() MonsterData
 	Roll(rollExp string) int
 }
 
@@ -67,7 +67,7 @@ func (p *monster) BaseStats() stats.BaseStats {
 	return p._baseStats
 }
 
-func (p *monster) PlayerData() MonsterData {
+func (p *monster) MonsterData() MonsterData {
 	return MonsterData{
 		HP:        p._hp,
 		BaseStats: p._baseStats,
