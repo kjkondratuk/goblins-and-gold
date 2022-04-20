@@ -40,3 +40,15 @@ func (s BaseStats) GetByName(name string) (int, bool) {
 		return 0, false
 	}
 }
+
+func (s BaseStats) ModifierByName(name string) (int, bool) {
+	if mod, ok := s.GetByName(name); ok {
+		return calcModifier(mod), true
+	}
+	return 0, false
+}
+
+func calcModifier(value int) int {
+	v := (value - 10) / 2
+	return v
+}

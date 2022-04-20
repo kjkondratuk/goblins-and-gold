@@ -41,7 +41,9 @@ func Interact(s *state.State) cli.ActionFunc {
 				case interaction2.RT_Failure:
 					pterm.Error.Println(r.Message)
 				default:
-					pterm.Info.Println(r.Message)
+					if r.Message != "" {
+						pterm.Info.Println(r.Message)
+					}
 				}
 			}
 		}
@@ -67,7 +69,7 @@ func actionSelector(ctx context.Context, idx int, val string, err error) (interf
 // interactionSelector : Selects an object to interact with provided a context with interactables.  Further
 // prompts a user for the actionItemData they'd like to take on the item based on its supported interactions.
 func interactionSelector(ctx context.Context, idx int, val string, err error) (interface{}, error) {
-	pterm.Success.Printf("Selected: %s\n", val)
+	//pterm.Success.Printf("Selected: %s\n", val)
 	selection := ctx.Value(interaction2.InteractionDataKey).([]*container.Container)[idx-1]
 
 	// coerce to ux.Described

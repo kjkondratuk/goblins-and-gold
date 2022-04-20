@@ -9,6 +9,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/player"
+	"math"
 )
 
 const (
@@ -89,7 +90,13 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 			}, nil
 		}).Run(ctx, d)
 
-		return result.(interaction.Result), err
+		var val interaction.Result
+		if result == nil {
+			val = interaction.Result{}
+		} else {
+			val = result.(interaction.Result)
+		}
+		return val, err
 	} else {
 		return interaction.Result{
 			Type:    interaction.RT_Failure,
@@ -108,19 +115,32 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 
 	p := ctx.Value(interaction.PlayerDataKey).(player.Player)
 	// Get skill check type: c.Locked.Type
-	//value, _ := p.BaseStats().GetByName(string(c.Locked.Type))
 	// Get the player's modifier for the specified skill
+	value, _ := p.BaseStats().ModifierByName(string(c.Locked.Type))
 	// Roll the check
-	// Add together the player's bonus and the roll
-	// Determine whether the check passed or failed
-	p.Roll("")
+	roll := p.Roll("1d20")
 
-	// Unset locked skill check to unlock the container
-	c.Locked = nil
+	// if the roll total beats the DC, remove the lock
+	if c.Locked.DC == math.MaxUint32 {
+		return interaction.Result{
+			Type:    interaction.RT_Failure,
+			Message: "You struggle with the lock again, but it fails to open",
+		}, nil
+	} else if value+roll > c.Locked.DC {
+		// Unset locked skill check to unlock the container
+		c.Locked = nil
+	} else {
+		// You get one chance, just one.  Good luck!
+		c.Locked.DC = math.MaxUint32
+		return interaction.Result{
+			Type:    interaction.RT_Failure,
+			Message: fmt.Sprintf("You rolled a %d.  Unlock attempt failed.", roll),
+		}, nil
+	}
 
 	return interaction.Result{
 		Type:    interaction.RT_Success,
-		Message: "Conatiner successfully unlocked!\n",
+		Message: fmt.Sprintf("You rolled a %d!  Conatiner successfully unlocked!\n", roll),
 	}, nil
 }
 

@@ -27,7 +27,7 @@ rooms:
       - type: Chest
         interactions: [Open, Loot, Unlock]
         locked:
-          dc: 15
+          dc: 10
           type: Dex
           crit_success:
             description: You deftly pick the lock and reveal the items hidden within.

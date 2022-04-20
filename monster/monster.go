@@ -1,4 +1,4 @@
-package player
+package monster
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type player struct {
+type monster struct {
 	_dice dice.Dice
 	// TODO : this should probably be moved into BaseStats since it's dependent upon class and Con
 	_hp        int
@@ -15,22 +15,22 @@ type player struct {
 	_inventory []item.Item
 }
 
-type PlayerData struct {
+type MonsterData struct {
 	HP        int             `yaml:"hp"`
 	BaseStats stats.BaseStats `yaml:"stats"`
 	Inventory []item.Item     `yaml:"inventory"`
 }
 
-type Player interface {
+type Monster interface {
 	Dmg(hp int) bool
 	Acquire(item ...item.Item)
 	BaseStats() stats.BaseStats
-	PlayerData() PlayerData
+	PlayerData() MonsterData
 	Roll(rollExp string) int
 }
 
-func NewPlayer(pd PlayerData) Player {
-	return &player{
+func NewMonster(pd MonsterData) Monster {
+	return &monster{
 		_dice:      dice.NewDice(time.Now().UnixNano()),
 		_hp:        pd.HP,
 		_baseStats: pd.BaseStats,
@@ -43,7 +43,7 @@ func NewPlayer(pd PlayerData) Player {
 //   - hp - int - the number of hitpoints to remove
 // Returns:
 //   - bool - whether or not the damage could be applied
-func (p *player) Dmg(hp int) bool {
+func (p *monster) Dmg(hp int) bool {
 	if hp > 0 {
 		p._hp -= hp
 		if p._hp < 0 {
@@ -54,21 +54,21 @@ func (p *player) Dmg(hp int) bool {
 	return false
 }
 
-func (p *player) Acquire(item ...item.Item) {
+func (p *monster) Acquire(item ...item.Item) {
 	p._inventory = append(p._inventory, item...)
 }
 
-func (p *player) Roll(rollExp string) int {
+func (p *monster) Roll(rollExp string) int {
 	r, _ := p._dice.Roll(rollExp)
 	return r
 }
 
-func (p *player) BaseStats() stats.BaseStats {
+func (p *monster) BaseStats() stats.BaseStats {
 	return p._baseStats
 }
 
-func (p *player) PlayerData() PlayerData {
-	return PlayerData{
+func (p *monster) PlayerData() MonsterData {
+	return MonsterData{
 		HP:        p._hp,
 		BaseStats: p._baseStats,
 		Inventory: p._inventory,

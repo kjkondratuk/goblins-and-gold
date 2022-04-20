@@ -38,7 +38,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 		start.Increment()
 	}, func() {
 		ps := config.Read[player.PlayerData]("./data/test_player.yaml")
-		p = player.NewPlayerStruct(ps)
+		p = player.NewPlayer(ps)
 		pterm.Success.Println("Player loaded.")
 		start.Increment()
 	})
