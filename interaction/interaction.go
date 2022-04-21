@@ -2,7 +2,7 @@ package interaction
 
 import (
 	"context"
-	"github.com/kjkondratuk/goblins-and-gold/damage"
+	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 )
 
@@ -31,5 +31,5 @@ type Result struct {
 	Type          ResultType
 	Message       string
 	AcquiredItems []item.Item
-	Damage        damage.Damage
+	Damage        attack.Damage
 }

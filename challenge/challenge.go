@@ -1,7 +1,7 @@
 package challenge
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/damage"
+	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 )
 
@@ -50,6 +50,6 @@ type SkillChallenge struct {
 
 type Outcome struct {
 	Items       []item.Item   `yaml:"items"`
-	Damage      damage.Damage `yaml:"damage"`
+	Damage      attack.Damage `yaml:"attack"`
 	Description string        `yaml:"description"`
 }

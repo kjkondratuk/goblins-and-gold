@@ -1,6 +1,7 @@
 package monster
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
@@ -8,11 +9,11 @@ import (
 )
 
 type monster struct {
-	_dice dice.Dice
-	// TODO : this should probably be moved into BaseStats since it's dependent upon class and Con
-	_hp        int
+	_dice      dice.Dice
+	_hp        int // TODO: need to track current and max HP as well as temporary HP
 	_baseStats stats.BaseStats
 	_inventory []item.Item
+	_attacks   []attack.AttackSet
 }
 
 type MonsterData struct {
@@ -38,11 +39,11 @@ func NewMonster(pd MonsterData) Monster {
 	}
 }
 
-// Dmg : applies damage to a PlayerStruct's hitpoints.
+// Dmg : applies attack to a PlayerStruct's hitpoints.
 // Parameters:
 //   - hp - int - the number of hitpoints to remove
 // Returns:
-//   - bool - whether or not the damage could be applied
+//   - bool - whether or not the attack could be applied
 func (p *monster) Dmg(hp int) bool {
 	if hp > 0 {
 		p._hp -= hp

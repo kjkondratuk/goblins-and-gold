@@ -1,4 +1,4 @@
-package damage
+package attack
 
 const (
 	Bludgeoning = "Bludgeoning"

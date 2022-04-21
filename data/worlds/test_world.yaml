@@ -12,6 +12,7 @@ rooms:
     paths:
       - room: starting-room
         description: *empty_archway
+# TODO : add a monster encounter to this room
   treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.
@@ -32,7 +33,7 @@ rooms:
           crit_success:
             description: You deftly pick the lock and reveal the items hidden within.
           success:
-            description: You are able to pick the lock, but damage it beyond repair.
+            description: You are able to pick the lock, but attack it beyond repair.
           fail:
             description: You fail to pick the lock.  The chest remains shut.
           crit_fail:

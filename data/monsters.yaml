@@ -8,3 +8,38 @@ monsters:
       int: 15
       wis: 10
       cha: 16
+    inventory: []
+    attacks:
+      bite: &death-slaad-bite
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 1d8
+            bonus: 5
+            damage_type: Piercing
+      claws: &death-slaad-claws
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 1d10
+            bonus: 5
+            damage_type: Slashing
+          - roll: 2d6
+            damage_type: Necrotic
+      greatsword: &death-slaad-greatsword
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 2d6
+            bonus: 5
+            damage_type: Slashing
+          - roll: 2d6
+            damage_type: Necrotic
+      multiattack:
+        - number: 1
+          attacks:
+            - *death-slaad-bite
+        - number: 2
+          attacks:
+            - *death-slaad-claws
+            - *death-slaad-greatsword
