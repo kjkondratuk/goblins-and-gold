@@ -10,6 +10,5 @@ type Room struct {
 	Description         string                 `yaml:"description"`
 	Paths               []*Path                `yaml:"paths"`
 	Containers          []*container.Container `yaml:"containers"`
-	MandatoryEncounters []encounter.Encounter  `yaml:"mandatory_encounters"`
-	OptionalEncounters  []encounter.Encounter  `yaml:"optional_encounters"`
+	MandatoryEncounters []*encounter.Encounter `yaml:"mandatory_encounters"`
 }

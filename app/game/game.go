@@ -32,7 +32,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 	var w *world.World
 	var p player.Player
 	async.InParallel(func() {
-		wl := config.Read[world.World]("./data/worlds/test_world.yaml")
+		wl := config.Read[world.World]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 		start.Increment()

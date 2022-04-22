@@ -9,6 +9,7 @@ import (
 )
 
 type player struct {
+	// TODO : players should have names too
 	_dice      dice.Dice
 	_hp        int // TODO: need to track current and max HP as well as temporary HP
 	_baseStats stats.BaseStats

@@ -9,6 +9,7 @@ import (
 )
 
 type monster struct {
+	_name      string
 	_dice      dice.Dice
 	_hp        int // TODO: need to track current and max HP as well as temporary HP
 	_baseStats stats.BaseStats
@@ -17,6 +18,7 @@ type monster struct {
 }
 
 type MonsterData struct {
+	Name      string          `yaml:"name"`
 	HP        int             `yaml:"hp"`
 	BaseStats stats.BaseStats `yaml:"stats"`
 	Inventory []item.Item     `yaml:"inventory"`
@@ -32,6 +34,7 @@ type Monster interface {
 
 func NewMonster(pd MonsterData) Monster {
 	return &monster{
+		_name:      pd.Name,
 		_dice:      dice.NewDice(time.Now().UnixNano()),
 		_hp:        pd.HP,
 		_baseStats: pd.BaseStats,
