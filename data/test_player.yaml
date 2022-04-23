@@ -1,3 +1,4 @@
+name: Slay TheMonster
 hp: 12
 stats:
   lvl: 1
@@ -7,3 +8,13 @@ stats:
   int: 8
   cha: 11
   wis: 10
+attacks:
+# TODO : this should probably be derived from unarmed attacks and weapons the player has equipped
+  dagger:
+# TODO : This should probably be derived from the base stats for players
+    bonus: 3
+    range: 5
+    damage:
+      - roll: 1d4
+        bonus: 3
+        damage_type: Piercing

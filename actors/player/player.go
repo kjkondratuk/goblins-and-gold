@@ -6,6 +6,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
+	"github.com/pterm/pterm"
 	"time"
 )
 
@@ -15,14 +16,15 @@ type player struct {
 	_hp        int // TODO: need to track current and max HP as well as temporary HP
 	_baseStats stats.BaseStats
 	_inventory []item.Item
-	_attacks   []attack.AttackSet
+	_attacks   attack.AttackSet
 }
 
 type Definition struct {
-	Name      string          `yaml:"name"`
-	HP        int             `yaml:"hp"`
-	BaseStats stats.BaseStats `yaml:"stats"`
-	Inventory []item.Item     `yaml:"inventory"`
+	Name      string           `yaml:"name"`
+	HP        int              `yaml:"hp"`
+	BaseStats stats.BaseStats  `yaml:"stats"`
+	Inventory []item.Item      `yaml:"inventory"`
+	Attacks   attack.AttackSet `yaml:"attacks""`
 }
 
 type Player interface {
@@ -39,6 +41,18 @@ func NewPlayer(pd Definition) Player {
 		_baseStats: pd.BaseStats,
 		_inventory: pd.Inventory,
 	}
+}
+
+func (p *player) Attack(c actors.Combatant) {
+	pterm.Error.Printfln("Not implemented yet")
+}
+
+func (p *player) Name() string {
+	return p._name
+}
+
+func (p *player) Health() int {
+	return p._hp
 }
 
 // Dmg : applies attack to a PlayerStruct's hitpoints.
