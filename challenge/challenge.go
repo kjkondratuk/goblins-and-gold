@@ -49,7 +49,7 @@ type SkillChallenge struct {
 }
 
 type Outcome struct {
-	Items       []item.Item   `yaml:"items"`
-	Damage      attack.Damage `yaml:"attack"`
-	Description string        `yaml:"description"`
+	Items       []item.Item         `yaml:"items"`
+	Damage      attack.DamageEffect `yaml:"attack"`
+	Description string              `yaml:"description"`
 }

@@ -3,20 +3,18 @@ package attack
 type AttackSet map[string]Attack
 
 type Attack struct {
-	Bonus  int `yaml:"bonus"`
-	Range  int
-	Damage []AttackDamage
+	Bonus  int      `yaml:"bonus"`
+	Range  int      `yaml:"range"`
+	Damage []Damage `yaml:"damage"`
 }
 
-type AttackDamage struct {
-	Roll       string
-	Bonus      int
-	DamageType Type
+type Damage struct {
+	Roll       string `yaml:"roll"`
+	Bonus      int    `yaml:"bonus"`
+	DamageType Type   `yaml:"damage_type"`
 }
-
-type MultiAttackSet []MultiAttack
 
 type MultiAttack struct {
-	Number  int
-	Attacks []Attack
+	Number  int      `yaml:"number"`
+	Attacks []Attack `yaml:"attacks"`
 }

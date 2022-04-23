@@ -1,6 +1,7 @@
 package monster
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/item"
@@ -18,16 +19,15 @@ type monster struct {
 }
 
 type Definition struct {
-	Name      string          `yaml:"name"`
-	HP        int             `yaml:"hp"`
-	BaseStats stats.BaseStats `yaml:"stats"`
-	Inventory []item.Item     `yaml:"inventory"`
+	Name      string           `yaml:"name"`
+	HP        int              `yaml:"hp"`
+	BaseStats stats.BaseStats  `yaml:"stats"`
+	Inventory []item.Item      `yaml:"inventory"`
+	Attacks   attack.AttackSet `yaml:"attacks"`
 }
 
 type Monster interface {
-	Dmg(hp int) bool
-	BaseStats() stats.BaseStats
-	Roll(rollExp string) int
+	actors.Combatant
 	Acquire(item ...item.Item)
 	Definition() Definition
 }

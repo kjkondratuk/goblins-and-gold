@@ -13,7 +13,7 @@ const (
 
 type Type string
 
-type Damage struct {
+type DamageEffect struct {
 	Amount     int  `yaml:"amount"`
 	DamageType Type `yaml:"damage_type"`
 }

@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/item"
@@ -25,11 +26,9 @@ type Definition struct {
 }
 
 type Player interface {
-	Dmg(hp int) bool
+	actors.Combatant
 	Acquire(item ...item.Item)
-	BaseStats() stats.BaseStats
 	Definition() Definition
-	Roll(rollExp string) int
 }
 
 func NewPlayer(pd Definition) Player {

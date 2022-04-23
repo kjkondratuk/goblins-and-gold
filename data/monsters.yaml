@@ -36,11 +36,12 @@ monsters:
             damage_type: Slashing
           - roll: 2d6
             damage_type: Necrotic
-      multiattack:
-        - number: 1
-          attacks:
-            - *death-slaad-bite
-        - number: 2
-          attacks:
-            - *death-slaad-claws
-            - *death-slaad-greatsword
+# TODO : Add ability to add multi-attacks -- probably need a custom parser for this
+#      multiattack:
+#        - number: 1
+#          attacks:
+#            - *death-slaad-bite
+#        - number: 2
+#          attacks:
+#            - *death-slaad-claws
+#            - *death-slaad-greatsword
