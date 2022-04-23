@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/actors/player"
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
@@ -113,7 +113,7 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 		}, nil
 	}
 
-	p := ctx.Value(interaction.PlayerDataKey).(player.Player)
+	p := ctx.Value(interaction.PlayerDataKey).(actors.Player)
 	// Get skill check type: c.Locked.Type
 	// Get the player's modifier for the specified skill
 	value, _ := p.BaseStats().ModifierByName(string(c.Locked.Type))

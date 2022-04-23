@@ -1,14 +1,14 @@
 package state
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/actors/player"
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	interaction2 "github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/world"
 	"github.com/kjkondratuk/goblins-and-gold/world/room"
 )
 
 type State struct {
-	Player   player.Player
+	Player   actors.Player
 	CurrRoom *room.Definition
 	World    *world.Definition
 }

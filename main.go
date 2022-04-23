@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// setup exit listener
-	exit := make(chan os.Signal, 1)
+	exit := make(chan os.Signal)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
 	game.Run(os.Args, exit)

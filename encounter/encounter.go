@@ -3,8 +3,6 @@ package encounter
 import (
 	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/actors/monster"
-	"github.com/kjkondratuk/goblins-and-gold/actors/player"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/pterm/pterm"
 )
@@ -32,29 +30,29 @@ func (ca CombatAction) Describe() string {
 type Type string
 
 type Definition struct {
-	Type        Type                 `yaml:"type"`
-	Description string               `yaml:"description"`
-	Enemies     []monster.Definition `yaml:"enemies"`
+	Type        Type                   `yaml:"type"`
+	Description string                 `yaml:"description"`
+	Enemies     []actors.MonsterParams `yaml:"enemies"`
 }
 
 type encounter struct {
 	_type        Type
 	_description string
-	_enemies     []monster.Monster
+	_enemies     []actors.Monster
 }
 
 type Encounter interface {
-	Run(p player.Player) Outcome
-	Enemies() []monster.Monster
+	Run(p actors.Player) Outcome
+	Enemies() []actors.Monster
 }
 
 type Outcome struct {
 }
 
 func NewEncounter(d Definition) Encounter {
-	monsters := make([]monster.Monster, len(d.Enemies))
+	monsters := make([]actors.Monster, len(d.Enemies))
 	for i, m := range d.Enemies {
-		monsters[i] = monster.NewMonster(m)
+		monsters[i] = actors.NewMonster(m)
 	}
 	return &encounter{
 		_type:        d.Type,
@@ -63,11 +61,11 @@ func NewEncounter(d Definition) Encounter {
 	}
 }
 
-func (e *encounter) Enemies() []monster.Monster {
+func (e *encounter) Enemies() []actors.Monster {
 	return e._enemies
 }
 
-func (e *encounter) Run(p player.Player) Outcome {
+func (e *encounter) Run(p actors.Player) Outcome {
 	pterm.Info.Println(e._description)
 
 	seq := NewCombatSequencer(p, e)
@@ -76,14 +74,14 @@ func (e *encounter) Run(p player.Player) Outcome {
 	for !seq.IsDone() {
 		seq.DoTurn(func(c actors.Combatant) {
 			switch c.(type) {
-			case player.Player:
+			case actors.Player:
 				// take player turn
 				// TODO : figure out how to handle the deeply nested nature of combat--it makes it difficult to check stats and such as combat progresses
 				_, _ = ux.NewSelector("Pass", "How do you respond?", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
 					//_, _ = ux.NewSelector("Back")
 					return nil, nil
 				}).Run(context.Background(), combatActions)
-			case monster.Monster:
+			case actors.Monster:
 				// take monster turn
 				c.Attack(p)
 				//pterm.Success.Printfln("Taking monster turn: %s", c.Name())

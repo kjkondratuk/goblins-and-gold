@@ -2,14 +2,14 @@ package config
 
 import (
 	"github.com/goccy/go-yaml"
-	"github.com/kjkondratuk/goblins-and-gold/actors/player"
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/world"
 	"io/ioutil"
 	"log"
 )
 
 type configDataType interface {
-	world.Definition | player.Definition
+	world.Definition | actors.PlayerParams
 }
 
 func Read[T configDataType](f string, refFiles ...string) T {

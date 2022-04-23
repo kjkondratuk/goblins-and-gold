@@ -4,7 +4,6 @@ import (
 	"container/ring"
 	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/actors/player"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/pterm/pterm"
 	"sort"
@@ -22,7 +21,7 @@ type Sequencer interface {
 	DoTurn(handler Handler)
 }
 
-func NewCombatSequencer(p player.Player, e Encounter) Sequencer {
+func NewCombatSequencer(p actors.Player, e Encounter) Sequencer {
 	// Create a map of combatants with an index representing their combat order
 	dupCounter := 0
 	fighters := make(map[string]actors.Combatant)

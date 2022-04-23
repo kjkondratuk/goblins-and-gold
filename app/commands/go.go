@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/manifoldco/promptui"
+	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 )
 
@@ -25,6 +26,12 @@ func Go(s *state.State) cli.ActionFunc {
 				nr, _ := s.World.Room(s.CurrRoom.Paths[i-1].Room)
 				s.CurrRoom = &nr
 				s.CurrRoom.RunEncounters(s.Player)
+				if s.Player.Unconscious() {
+					_ = pterm.DefaultBigText.WithLetters(
+							pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed))
+						).Render()
+					_ = c.App.Command("quit").Run(c)
+				}
 			}
 		} else {
 			return errors.New("invalid number of arguments")

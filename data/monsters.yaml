@@ -1,6 +1,7 @@
 monsters:
   death-slaad: &death-slaad
     name: Death Slaad
+    ac: 18
     hp: 170
     stats:
       str: 20
