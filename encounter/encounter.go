@@ -77,7 +77,8 @@ func (e *encounter) Run(p player.Player) Outcome {
 		seq.DoTurn(func(c actors.Combatant) {
 			switch c.(type) {
 			case player.Player:
-				// take player turn242Z
+				// take player turn
+				// TODO : figure out how to handle the deeply nested nature of combat--it makes it difficult to check stats and such as combat progresses
 				_, _ = ux.NewSelector("Pass", "How do you respond?", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
 					//_, _ = ux.NewSelector("Back")
 					return nil, nil
