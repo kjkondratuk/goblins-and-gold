@@ -48,6 +48,10 @@ func (s BaseStats) ModifierByName(name string) (int, bool) {
 	return 0, false
 }
 
+func (s BaseStats) DexMod() int {
+	return calcModifier(s.Dex)
+}
+
 func calcModifier(value int) int {
 	v := (value - 10) / 2
 	return v

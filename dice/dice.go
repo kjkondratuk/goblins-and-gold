@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+const (
+	D4   = "1d4"
+	D8   = "1d8"
+	D10  = "1d10"
+	D12  = "1d12"
+	D20  = "1d20"
+	D100 = "1d100"
+)
+
 type dice struct {
 	_seed *rand.Rand
 }

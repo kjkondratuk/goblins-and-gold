@@ -1,20 +1,22 @@
 package world
 
-type World struct {
-	Rooms     map[string]*Room `yaml:"rooms"`
-	StartRoom string           `yaml:"startingRoom"`
+import "github.com/kjkondratuk/goblins-and-gold/world/room"
+
+type Definition struct {
+	Rooms     map[string]*room.Definition `yaml:"rooms"`
+	StartRoom string                      `yaml:"startingRoom"`
 }
 
 // Room : retrieves a room by its key from the rooms present in this world
 // Parameters:
 //   - key - string - the key of the room
 // Return:
-//   - room.Room - the room
+//   - room.Definition - the room
 //   - bool - whether or not the room could be located
-func (w World) Room(key string) (Room, bool) {
+func (w Definition) Room(key string) (room.Definition, bool) {
 	if r, ok := w.Rooms[key]; ok {
 		return *r, true
 	} else {
-		return Room{}, false
+		return room.Definition{}, false
 	}
 }

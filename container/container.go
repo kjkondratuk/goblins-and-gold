@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kjkondratuk/goblins-and-gold/actors/player"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
-	"github.com/kjkondratuk/goblins-and-gold/player"
 	"math"
 )
 

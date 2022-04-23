@@ -1,6 +1,6 @@
-package world
+package path
 
-type Path struct {
+type Definition struct {
 	Room        string `yaml:"room"`
 	Description string `yaml:"description"`
 }

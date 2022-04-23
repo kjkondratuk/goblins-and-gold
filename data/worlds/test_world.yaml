@@ -12,7 +12,11 @@ rooms:
     paths:
       - room: starting-room
         description: *empty_archway
-# TODO : add a monster encounter to this room
+    mandatory_encounters:
+      - type: Combat
+        description: A hulking dark figure rises from the floor ahead of you.  You brace for combat.
+        enemies:
+          - *death-slaad
   treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.

@@ -3,11 +3,11 @@ package game
 import (
 	"github.com/c-bata/go-prompt"
 	"github.com/goccy/go-yaml"
+	"github.com/kjkondratuk/goblins-and-gold/actors/player"
 	"github.com/kjkondratuk/goblins-and-gold/app/async"
 	"github.com/kjkondratuk/goblins-and-gold/app/commands"
 	"github.com/kjkondratuk/goblins-and-gold/app/config"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
-	"github.com/kjkondratuk/goblins-and-gold/player"
 	"github.com/kjkondratuk/goblins-and-gold/world"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
@@ -29,15 +29,15 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	start, _ := pterm.DefaultProgressbar.WithTotal(4).WithTitle("Starting...").Start()
 
-	var w *world.World
+	var w *world.Definition
 	var p player.Player
 	async.InParallel(func() {
-		wl := config.Read[world.World]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
+		wl := config.Read[world.Definition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 		start.Increment()
 	}, func() {
-		ps := config.Read[player.PlayerData]("./data/test_player.yaml")
+		ps := config.Read[player.Definition]("./data/test_player.yaml")
 		p = player.NewPlayer(ps)
 		pterm.Success.Println("Player loaded.")
 		start.Increment()
@@ -108,7 +108,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Print general info about the world.",
 			Description: "Print general info about the world.",
 			Category:    "Debug",
-			Action: func(world *world.World) cli.ActionFunc {
+			Action: func(world *world.Definition) cli.ActionFunc {
 				return func(c *cli.Context) error {
 					ws, _ := yaml.Marshal(world)
 					pterm.Debug.Println(pterm.Green(string(ws)))

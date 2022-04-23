@@ -1,4 +1,4 @@
-package monster
+package player
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/attack"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type monster struct {
+type player struct {
 	_name      string
 	_dice      dice.Dice
 	_hp        int // TODO: need to track current and max HP as well as temporary HP
@@ -17,23 +17,23 @@ type monster struct {
 	_attacks   []attack.AttackSet
 }
 
-type MonsterData struct {
+type Definition struct {
 	Name      string          `yaml:"name"`
 	HP        int             `yaml:"hp"`
 	BaseStats stats.BaseStats `yaml:"stats"`
 	Inventory []item.Item     `yaml:"inventory"`
 }
 
-type Monster interface {
+type Player interface {
 	Dmg(hp int) bool
 	Acquire(item ...item.Item)
 	BaseStats() stats.BaseStats
-	MonsterData() MonsterData
+	Definition() Definition
 	Roll(rollExp string) int
 }
 
-func NewMonster(pd MonsterData) Monster {
-	return &monster{
+func NewPlayer(pd Definition) Player {
+	return &player{
 		_name:      pd.Name,
 		_dice:      dice.NewDice(time.Now().UnixNano()),
 		_hp:        pd.HP,
@@ -47,7 +47,7 @@ func NewMonster(pd MonsterData) Monster {
 //   - hp - int - the number of hitpoints to remove
 // Returns:
 //   - bool - whether or not the attack could be applied
-func (p *monster) Dmg(hp int) bool {
+func (p *player) Dmg(hp int) bool {
 	if hp > 0 {
 		p._hp -= hp
 		if p._hp < 0 {
@@ -58,21 +58,22 @@ func (p *monster) Dmg(hp int) bool {
 	return false
 }
 
-func (p *monster) Acquire(item ...item.Item) {
+func (p *player) Acquire(item ...item.Item) {
 	p._inventory = append(p._inventory, item...)
 }
 
-func (p *monster) Roll(rollExp string) int {
+func (p *player) Roll(rollExp string) int {
 	r, _ := p._dice.Roll(rollExp)
 	return r
 }
 
-func (p *monster) BaseStats() stats.BaseStats {
+func (p *player) BaseStats() stats.BaseStats {
 	return p._baseStats
 }
 
-func (p *monster) MonsterData() MonsterData {
-	return MonsterData{
+func (p *player) Definition() Definition {
+	return Definition{
+		Name:      p._name,
 		HP:        p._hp,
 		BaseStats: p._baseStats,
 		Inventory: p._inventory,

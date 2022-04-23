@@ -24,6 +24,7 @@ func Go(s *state.State) cli.ActionFunc {
 				// Update the current room based on the selection, unless the user cancels navigation
 				nr, _ := s.World.Room(s.CurrRoom.Paths[i-1].Room)
 				s.CurrRoom = &nr
+				s.CurrRoom.RunEncounters(s.Player)
 			}
 		} else {
 			return errors.New("invalid number of arguments")
