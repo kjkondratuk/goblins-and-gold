@@ -28,8 +28,8 @@ func Go(s *state.State) cli.ActionFunc {
 				s.CurrRoom.RunEncounters(s.Player)
 				if s.Player.Unconscious() {
 					_ = pterm.DefaultBigText.WithLetters(
-							pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed))
-						).Render()
+						pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
+					).Render()
 					_ = c.App.Command("quit").Run(c)
 				}
 			}
