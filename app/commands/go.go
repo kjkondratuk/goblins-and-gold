@@ -3,7 +3,7 @@ package commands
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
-	"github.com/manifoldco/promptui"
+	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 )
@@ -11,19 +11,19 @@ import (
 func Go(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		if len(c.Args()) == 0 {
-			var options []string
-			options = append(options, "Stay here")
-			for _, p := range s.CurrRoom.Paths {
-				options = append(options, p.Description)
+			paths := make([]ux.Described, len(s.CurrRoom.Paths))
+			for i, p := range s.CurrRoom.Paths {
+				paths[i] = p
 			}
-			p := promptui.Select{
-				Label: "Go",
-				Items: options,
+
+			idx, _, err := ux.NewSelector("Stay here", "Go").Run(ux.DescribeAll(s.CurrRoom.Paths))
+			if err != nil {
+				return err
 			}
-			i, _, _ := p.Run()
-			if i != 0 {
+
+			if idx != 0 {
 				// Update the current room based on the selection, unless the user cancels navigation
-				nr, _ := s.World.Room(s.CurrRoom.Paths[i-1].Room)
+				nr, _ := s.World.Room(s.CurrRoom.Paths[idx].Room)
 				s.CurrRoom = &nr
 				s.CurrRoom.RunEncounters(s.Player)
 				if s.Player.Unconscious() {

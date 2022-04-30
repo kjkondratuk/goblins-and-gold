@@ -1,6 +1,7 @@
 package ux
 
 import (
+	"fmt"
 	"github.com/manifoldco/promptui"
 )
 
@@ -21,6 +22,18 @@ func NewSelector(c string, l string) Select {
 	return &selector{
 		cancel: c,
 		label:  l,
+	}
+}
+
+func DescribeAll(data []*interface{}) []Described {
+	paths := make([]Described, len(data))
+	for i, p := range data {
+		switch (*p).(type) {
+		case Described:
+			paths[i] = (*p).(Described)
+		default:
+			panic(fmt.Sprintf("not a valid Described: %T", p))
+		}
 	}
 }
 
