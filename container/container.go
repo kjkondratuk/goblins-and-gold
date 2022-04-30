@@ -74,24 +74,31 @@ func (c *Container) open(ctx context.Context) (interaction.Result, error) {
 
 func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 	if c.Locked == nil {
-		d := make([]ux.Described, len(c.Items))
-		for i, x := range c.Items {
-			d[i] = x
-		}
+		if len(c.Items) > 0 {
+			d := make([]ux.Described, len(c.Items))
+			for i, x := range c.Items {
+				d[i] = x
+			}
 
-		resultIdx, _, err := ux.NewSelector("Cancel", "Items").Run(d)
-		if err != nil {
-			return interaction.Result{}, err
-		}
-		// TODO : getting an error here when looting the small chest and then cancelling
-		it := c.Items[resultIdx]
-		c.Items = c.removeItem(resultIdx)
+			resultIdx, _, err := ux.NewSelector("Cancel", "Items").Run(d)
+			if err != nil {
+				return interaction.Result{}, err
+			}
+			// TODO : getting an error here when looting the small chest and then cancelling
+			it := c.Items[resultIdx]
+			c.Items = c.removeItem(resultIdx)
 
-		return interaction.Result{
-			Type:          interaction.RT_Success,
-			Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
-			AcquiredItems: []item.Item{it},
-		}, nil
+			return interaction.Result{
+				Type:          interaction.RT_Success,
+				Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
+				AcquiredItems: []item.Item{it},
+			}, nil
+		} else {
+			return interaction.Result{
+				Type:    interaction.RT_Failure,
+				Message: "No items to loot.  The container is empty.",
+			}, nil
+		}
 	} else {
 		return interaction.Result{
 			Type:    interaction.RT_Failure,

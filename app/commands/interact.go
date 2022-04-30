@@ -40,6 +40,9 @@ func Interact(s *state.State) cli.ActionFunc {
 				dAct[i] = a
 			}
 			_, actStr, err := ux.NewSelector("Cancel", "Actions").Run(dAct)
+			if actStr == "" {
+				return nil
+			}
 
 			a := interaction.Type(actStr)
 

@@ -8,27 +8,23 @@ type Described interface {
 	Describe() string
 }
 
-//type SelectAction func(ctx context.Context, idx int, val string, err error) (interface{}, error)
-
 type selector struct {
 	cancel string
 	label  string
-	//handler SelectAction
 }
 
 type Select interface {
-	Run( /*ctx context.Context, */ items []Described) ( /*interface{}*/ int, string, error)
+	Run(items []Described) (int, string, error)
 }
 
-func NewSelector(c string, l string /*, h SelectAction*/) Select {
+func NewSelector(c string, l string) Select {
 	return &selector{
 		cancel: c,
 		label:  l,
-		//handler: h,
 	}
 }
 
-func (c *selector) Run( /*ctx context.Context, */ items []Described) ( /*interface{}*/ int, string, error) {
+func (c *selector) Run(items []Described) (int, string, error) {
 	var options []string
 	options = append(options, c.cancel)
 	for _, i := range items {
@@ -38,7 +34,7 @@ func (c *selector) Run( /*ctx context.Context, */ items []Described) ( /*interfa
 	i, v, err := p.Run()
 	if i > 0 {
 		// use i-1 because we added a cancel option
-		return /*c.handler(ctx, */ i - 1, v, err /*)*/
+		return i - 1, v, err
 	}
 	return 0, "", nil
 }
