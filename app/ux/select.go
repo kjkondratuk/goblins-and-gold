@@ -1,7 +1,6 @@
 package ux
 
 import (
-	"context"
 	"github.com/manifoldco/promptui"
 )
 
@@ -9,27 +8,27 @@ type Described interface {
 	Describe() string
 }
 
-type SelectAction func(ctx context.Context, idx int, val string, err error) (interface{}, error)
+//type SelectAction func(ctx context.Context, idx int, val string, err error) (interface{}, error)
 
 type selector struct {
-	cancel  string
-	label   string
-	handler SelectAction
+	cancel string
+	label  string
+	//handler SelectAction
 }
 
 type Select interface {
-	Run(ctx context.Context, items []Described) (interface{}, error)
+	Run( /*ctx context.Context, */ items []Described) ( /*interface{}*/ int, string, error)
 }
 
-func NewSelector(c string, l string, h SelectAction) Select {
+func NewSelector(c string, l string /*, h SelectAction*/) Select {
 	return &selector{
-		cancel:  c,
-		label:   l,
-		handler: h,
+		cancel: c,
+		label:  l,
+		//handler: h,
 	}
 }
 
-func (c *selector) Run(ctx context.Context, items []Described) (interface{}, error) {
+func (c *selector) Run( /*ctx context.Context, */ items []Described) ( /*interface{}*/ int, string, error) {
 	var options []string
 	options = append(options, c.cancel)
 	for _, i := range items {
@@ -38,7 +37,8 @@ func (c *selector) Run(ctx context.Context, items []Described) (interface{}, err
 	p := promptui.Select{Label: c.label, Items: options}
 	i, v, err := p.Run()
 	if i > 0 {
-		return c.handler(ctx, i, v, err)
+		// use i-1 because we added a cancel option
+		return /*c.handler(ctx, */ i - 1, v, err /*)*/
 	}
-	return nil, nil
+	return 0, "", nil
 }

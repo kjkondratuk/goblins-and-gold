@@ -1,7 +1,6 @@
 package encounter
 
 import (
-	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/pterm/pterm"
@@ -76,11 +75,7 @@ func (e *encounter) Run(p actors.Player) Outcome {
 			switch c.(type) {
 			case actors.Player:
 				// take player turn
-				// TODO : figure out how to handle the deeply nested nature of combat--it makes it difficult to check stats and such as combat progresses
-				_, _ = ux.NewSelector("Pass", "How do you respond?", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
-					//_, _ = ux.NewSelector("Back")
-					return nil, nil
-				}).Run(context.Background(), combatActions)
+				_, _, _ = ux.NewSelector("Pass", "How do you respond?").Run(combatActions)
 			case actors.Monster:
 				// take monster turn
 				c.Attack(p)

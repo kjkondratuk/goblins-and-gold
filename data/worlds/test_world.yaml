@@ -16,7 +16,8 @@ rooms:
       - type: Combat
         description: A hulking dark figure rises from the floor ahead of you.  You brace for combat.
         enemies:
-          - *death-slaad
+#          - *death-slaad
+          - *goblin
   treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.

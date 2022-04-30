@@ -79,24 +79,19 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 			d[i] = x
 		}
 
-		result, err := ux.NewSelector("Cancel", "Items", func(ctx context.Context, idx int, val string, err error) (interface{}, error) {
-			it := c.Items[idx-1]
-			c.Items = c.removeItem(idx - 1)
-
-			return interaction.Result{
-				Type:          interaction.RT_Success,
-				Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
-				AcquiredItems: []item.Item{it},
-			}, nil
-		}).Run(ctx, d)
-
-		var val interaction.Result
-		if result == nil {
-			val = interaction.Result{}
-		} else {
-			val = result.(interaction.Result)
+		resultIdx, _, err := ux.NewSelector("Cancel", "Items").Run(d)
+		if err != nil {
+			return interaction.Result{}, err
 		}
-		return val, err
+		// TODO : getting an error here when looting the small chest and then cancelling
+		it := c.Items[resultIdx]
+		c.Items = c.removeItem(resultIdx)
+
+		return interaction.Result{
+			Type:          interaction.RT_Success,
+			Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
+			AcquiredItems: []item.Item{it},
+		}, nil
 	} else {
 		return interaction.Result{
 			Type:    interaction.RT_Failure,
@@ -113,6 +108,7 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 		}, nil
 	}
 
+	// TODO : should probably validate the context before we do it.
 	p := ctx.Value(interaction.PlayerDataKey).(actors.Player)
 	// Get skill check type: c.Locked.Type
 	// Get the player's modifier for the specified skill
