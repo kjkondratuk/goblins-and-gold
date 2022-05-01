@@ -33,6 +33,9 @@ func Interact(s *state.State) cli.ActionFunc {
 			if err != nil {
 				return err
 			}
+			if interactIdx < 0 {
+				return nil
+			}
 
 			// Prompt for selection of the action
 			dAct := make([]ux.Described, len(ia[interactIdx].SupportedInteractions))

@@ -24,6 +24,8 @@ func NewSelector(c string, l string) Select {
 	}
 }
 
+// Run : executes the selction prompt.  Returns the index in the original array of the selected item, the value of it,
+// and any applicable errors.  If -1 is returned for the index, the "cancel" option was selected
 func (c *selector) Run(items []Described) (int, string, error) {
 	var options []string
 	options = append(options, c.cancel)
@@ -32,9 +34,6 @@ func (c *selector) Run(items []Described) (int, string, error) {
 	}
 	p := promptui.Select{Label: c.label, Items: options}
 	i, v, err := p.Run()
-	if i > 0 {
-		// use i-1 because we added a cancel option
-		return i - 1, v, err
-	}
-	return 0, "", nil
+	// use i-1 because we added a cancel option
+	return i - 1, v, err
 }
