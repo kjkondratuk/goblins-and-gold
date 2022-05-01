@@ -16,7 +16,7 @@ func Go(s *state.State) cli.ActionFunc {
 				paths[i] = p
 			}
 
-			idx, _, err := ux.NewSelector("Stay here", "Go").Run(ux.DescribeAll(s.CurrRoom.Paths))
+			idx, _, err := ux.NewSelector("Stay here", "Go").Run(paths)
 			if err != nil {
 				return err
 			}
