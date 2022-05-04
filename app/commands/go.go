@@ -8,7 +8,19 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Go(s *state.State) cli.ActionFunc {
+func NewGoCommand(s *state.State) cli.Command {
+	return cli.Command{
+		Name:        "go",
+		Aliases:     []string{"g"},
+		Usage:       "Travel down a path",
+		Description: "Travel down a path",
+		ArgsUsage:   "[location number]",
+		Category:    "Actions",
+		Action:      _go(s),
+	}
+}
+
+func _go(s *state.State) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		if len(c.Args()) == 0 {
 			paths := make([]ux.Described, len(s.CurrRoom.Paths))
@@ -19,6 +31,10 @@ func Go(s *state.State) cli.ActionFunc {
 			idx, _, err := ux.NewSelector("Stay here", "Go").Run(paths)
 			if err != nil {
 				return err
+			}
+			if idx == -1 {
+				pterm.Error.Println("Nowhere to go!")
+				return nil
 			}
 
 			if idx != 0 {
