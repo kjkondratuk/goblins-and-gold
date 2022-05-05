@@ -61,7 +61,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Category:    "Info",
 			Action:      commands.Look(s),
 		},
-		commands.NewGoCommand(s), {
+		commands.NewGoCommand(s).Command(), {
 			Name:        "interact",
 			Aliases:     []string{"i"},
 			Usage:       "Interact with your surroundings",

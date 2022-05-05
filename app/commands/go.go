@@ -8,50 +8,64 @@ import (
 	"github.com/urfave/cli"
 )
 
-func NewGoCommand(s *state.State) cli.Command {
-	return cli.Command{
+type goCommand struct {
+	baseCommand
+}
+
+type GoCommand interface {
+	BaseCommand
+}
+
+func NewGoCommand(s *state.State) GoCommand {
+	return &goCommand{baseCommand: newBaseCommand(s, CommandParams{
 		Name:        "go",
 		Aliases:     []string{"g"},
 		Usage:       "Travel down a path",
 		Description: "Travel down a path",
 		ArgsUsage:   "[location number]",
 		Category:    "Actions",
-		Action:      _go(s),
-	}
+	})}
 }
 
-func _go(s *state.State) cli.ActionFunc {
-	return func(c *cli.Context) error {
-		if len(c.Args()) == 0 {
-			paths := make([]ux.Described, len(s.CurrRoom.Paths))
-			for i, p := range s.CurrRoom.Paths {
-				paths[i] = p
-			}
+func (gc *goCommand) Command() cli.Command {
+	return gc.commandWithAction(gc.Action)
+}
 
-			idx, _, err := ux.NewSelector("Stay here", "Go").Run(paths)
-			if err != nil {
-				return err
-			}
-			if idx == -1 {
-				pterm.Error.Println("Nowhere to go!")
-				return nil
-			}
+func (gc *goCommand) Validate(ctx *cli.Context) error {
+	if len(ctx.Args()) != 0 {
+		return errors.New("invalid number of arguments")
+	}
+	return nil
+}
 
-			if idx != 0 {
-				// Update the current room based on the selection, unless the user cancels navigation
-				nr, _ := s.World.Room(s.CurrRoom.Paths[idx].Room)
-				s.CurrRoom = &nr
-				s.CurrRoom.RunEncounters(s.Player)
-				if s.Player.Unconscious() {
-					_ = pterm.DefaultBigText.WithLetters(
-						pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
-					).Render()
-					_ = c.App.Command("quit").Run(c)
-				}
-			}
-		} else {
-			return errors.New("invalid number of arguments")
-		}
+func (gc *goCommand) Action(ctx *cli.Context) error {
+	err := gc.Validate(ctx)
+	if err != nil {
+		return err
+	}
+	paths := make([]ux.Described, len(gc._state.CurrRoom.Paths))
+	for i, p := range gc._state.CurrRoom.Paths {
+		paths[i] = p
+	}
+
+	idx, _, err := ux.NewSelector("Stay here", "Go").Run(paths)
+	if err != nil {
+		return err
+	}
+	if idx == -1 {
+		pterm.Error.Println("Nowhere to go!")
 		return nil
 	}
+
+	// Update the current room based on the selection, unless the user cancels navigation
+	nr, _ := gc._state.World.Room(gc._state.CurrRoom.Paths[idx].Room)
+	gc._state.CurrRoom = &nr
+	gc._state.CurrRoom.RunEncounters(gc._state.Player)
+	if gc._state.Player.Unconscious() {
+		_ = pterm.DefaultBigText.WithLetters(
+			pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
+		).Render()
+		_ = ctx.App.Command("quit").Run(ctx)
+	}
+	return nil
 }
