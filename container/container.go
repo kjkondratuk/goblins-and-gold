@@ -80,7 +80,7 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 				d[i] = x
 			}
 
-			resultIdx, _, err := ux.NewSelector("Cancel", "Items").Run(d)
+			resultIdx, _, err := ux.New("Cancel", "Items").Run(d)
 			if err != nil {
 				return interaction.Result{}, err
 			}

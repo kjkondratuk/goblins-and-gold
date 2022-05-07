@@ -75,7 +75,7 @@ func (e *encounter) Run(p actors.Player) Outcome {
 			switch c.(type) {
 			case actors.Player:
 				// take player turn
-				_, _, _ = ux.NewSelector("Pass", "How do you respond?").Run(combatActions)
+				_, _, _ = ux.New("Pass", "How do you respond?").Run(combatActions)
 			case actors.Monster:
 				// take monster turn
 				c.Attack(p)

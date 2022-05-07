@@ -48,7 +48,7 @@ func (gc *goCommand) Action(ctx *cli.Context) error {
 		paths[i] = p
 	}
 
-	idx, _, err := ux.NewSelector("Stay here", "Go").Run(paths)
+	idx, _, err := ux.New("Stay here", "Go").Run(paths)
 	if err != nil {
 		return err
 	}

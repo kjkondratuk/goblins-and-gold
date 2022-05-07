@@ -28,7 +28,7 @@ func Interact(s *state.State) cli.ActionFunc {
 			//p := context.WithValue(context.Background(), interaction.PlayerDataKey, s.Player)
 
 			// Prompt for selection of the interactable
-			interactIdx, _, err := ux.NewSelector("None of these", "Interact with").Run(dCon)
+			interactIdx, _, err := ux.New("None of these", "Interact with").Run(dCon)
 			// handle errors with creating the selector for item ia
 			if err != nil {
 				return err
@@ -42,7 +42,7 @@ func Interact(s *state.State) cli.ActionFunc {
 			for i, a := range ia[interactIdx].SupportedInteractions {
 				dAct[i] = a
 			}
-			_, actStr, err := ux.NewSelector("Cancel", "Actions").Run(dAct)
+			_, actStr, err := ux.New("Cancel", "Actions").Run(dAct)
 			if actStr == "" {
 				return nil
 			}
