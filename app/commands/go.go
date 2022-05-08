@@ -43,17 +43,20 @@ func (gc *goCommand) Action(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if len(gc._state.CurrRoom.Paths) <= 0 {
+		pterm.Error.Println("Nowhere to go!")
+		return nil
+	}
 	paths := make([]ux.Described, len(gc._state.CurrRoom.Paths))
 	for i, p := range gc._state.CurrRoom.Paths {
 		paths[i] = p
 	}
 
-	idx, _, err := ux.New("Stay here", "Go").Run(paths)
+	idx, _, err := gc._state.SelectBuilder.Create("Stay here", "Go").Run(paths)
 	if err != nil {
 		return err
 	}
 	if idx == -1 {
-		pterm.Error.Println("Nowhere to go!")
 		return nil
 	}
 

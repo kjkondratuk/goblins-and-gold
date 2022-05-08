@@ -8,6 +8,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/app/commands"
 	"github.com/kjkondratuk/goblins-and-gold/app/config"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/world"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
@@ -45,9 +46,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	sr, _ := w.Room(w.StartRoom)
 	s := &state.State{
-		Player:   p,
-		CurrRoom: &sr,
-		World:    w,
+		Player:        p,
+		CurrRoom:      &sr,
+		World:         w,
+		SelectBuilder: ux.New(),
 	}
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()

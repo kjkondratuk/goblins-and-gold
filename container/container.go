@@ -21,6 +21,10 @@ const (
 	InteractionTypeUnlock = interaction.Type("Unlock")
 )
 
+var (
+	SelectBuilder = ux.New()
+)
+
 type Type string
 
 type Container struct {
@@ -80,7 +84,7 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 				d[i] = x
 			}
 
-			resultIdx, _, err := ux.New("Cancel", "Items").Run(d)
+			resultIdx, _, err := SelectBuilder.Create("Cancel", "Items").Run(d)
 			if err != nil {
 				return interaction.Result{}, err
 			}
