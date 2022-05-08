@@ -25,10 +25,14 @@ type BaseCommand interface {
 	Action(*cli.Context) error
 
 	// Validate : validates the cli.Context prior to processing the command action.
-	Validate(*cli.Context) error
+	Validate(args ArgProvider) error
 
 	// Command : returns the urfave/cli command representation of this command
 	Command() cli.Command
+}
+
+type ArgProvider interface {
+	Args() cli.Args
 }
 
 func newBaseCommand(s *state.State, p CommandParams) baseCommand {

@@ -75,12 +75,28 @@ func TestGoCommand_Action_NoPaths(t *testing.T) {
 
 func TestGoCommand_Action_Navigates(t *testing.T) {
 	cmd := basicCommand
+	selector := selectmock.SelectMock{}
+	selector.On("Create", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+		Return(&selector)
+	selector.On("Run", mock.AnythingOfType("[]ux.Described")).Return(0, "A splintered wooden door.", nil)
+	cmd._state.SelectBuilder = &selector
 	cmd._state.CurrRoom.Paths = []*path.Definition{
 		{"new-room", "A splintered wooden door."},
 	}
-	//ux.Stdin = ioutil.NopCloser(strings.NewReader("go\nj\n"))
 	testContext := cli.NewContext(minimalApp, &flag.FlagSet{}, nil)
 	err := cmd.Action(testContext)
 	assert.NoError(t, err, fmt.Sprintf("Should not error navigating to a new room: %v", err))
 	assert.Equal(t, "new-room", cmd._state.CurrRoom.Name, "Should have navigated to the new room")
+}
+
+func TestGoCommand_Action_ErrorOnValidate(t *testing.T) {
+	cmd := basicCommand
+	selector := selectmock.SelectMock{}
+	selector.On("Create", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+		Return(&selector)
+	selector.On("Run", mock.AnythingOfType("[]ux.Described")).Return(0, "A splintered wooden door.", nil)
+	testContext := cli.NewContext(minimalApp, &flag.FlagSet{}, nil)
+	err := cmd.Action(testContext)
+	assert.NoError(t, err, fmt.Sprintf("Should not error navigating to a new room: %v", err))
+	assert.Equal(t, "starting-room", cmd._state.CurrRoom.Name, "Should not have moved if there is nowhere to go")
 }

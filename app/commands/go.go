@@ -31,8 +31,8 @@ func (gc *goCommand) Command() cli.Command {
 	return gc.commandWithAction(gc.Action)
 }
 
-func (gc *goCommand) Validate(ctx *cli.Context) error {
-	if len(ctx.Args()) != 0 {
+func (gc *goCommand) Validate(args ArgProvider) error {
+	if len(args.Args()) != 0 {
 		return errors.New("invalid number of arguments")
 	}
 	return nil
