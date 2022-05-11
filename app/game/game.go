@@ -5,7 +5,8 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/async"
-	"github.com/kjkondratuk/goblins-and-gold/app/commands"
+	"github.com/kjkondratuk/goblins-and-gold/app/command"
+	"github.com/kjkondratuk/goblins-and-gold/app/command/go"
 	"github.com/kjkondratuk/goblins-and-gold/app/config"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
@@ -61,15 +62,15 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Look at your surroundings",
 			Description: "Look at your surroundings",
 			Category:    "Info",
-			Action:      commands.Look(s),
+			Action:      command.Look(s),
 		},
-		commands.NewGoCommand(s).Command(), {
+		_go.NewGoCommand(s), {
 			Name:        "interact",
 			Aliases:     []string{"i"},
 			Usage:       "Interact with your surroundings",
 			Description: "Interact with your surroundings",
 			Category:    "Actions",
-			Action:      commands.Interact(s),
+			Action:      command.Interact(s),
 		},
 		{
 			Name:        "stats",
@@ -77,7 +78,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Interrogate your player stats",
 			Description: "Interrogate your player stats",
 			Category:    "Info",
-			Action:      commands.Stats(s),
+			Action:      command.Stats(s),
 		},
 		{
 			Name:        "quit",

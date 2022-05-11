@@ -1,4 +1,4 @@
-package commands
+package command
 
 import (
 	"context"
@@ -22,10 +22,6 @@ func Interact(s *state.State) cli.ActionFunc {
 			for i, a := range ia {
 				dCon[i] = a
 			}
-
-			// Pass the available containers on context to the interactionData selector
-			//c := context.WithValue(context.Background(), interaction.InteractionDataKey, s.CurrRoom.Containers)
-			//p := context.WithValue(context.Background(), interaction.PlayerDataKey, s.Player)
 
 			// Prompt for selection of the interactable
 			interactIdx, _, err := s.SelectBuilder.Create("None of these", "Interact with").Run(dCon)

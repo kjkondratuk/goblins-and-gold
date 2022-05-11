@@ -2,6 +2,9 @@
   <configuration default="false" name="Run - goblins-and-gold" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="goblins-and-gold" />
     <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="DEBUG" value="true" />
+    </envs>
     <kind value="PACKAGE" />
     <package value="github.com/kjkondratuk/goblins-and-gold" />
     <directory value="$PROJECT_DIR$" />
