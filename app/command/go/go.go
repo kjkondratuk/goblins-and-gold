@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func NewGoCommand(s *state.State) cli.Command {
+func New(s *state.State) cli.Command {
 	c := command.NewCommand(command.Params{
 		Name:        "go",
 		Aliases:     []string{"g"},
@@ -17,28 +17,27 @@ func NewGoCommand(s *state.State) cli.Command {
 		Description: "Travel down a path",
 		ArgsUsage:   "[location number]",
 		Category:    "Actions",
-	}, s).Build(validate, action)
+	}, s).Build(command.ValidatorHasArgs, action)
 	return c
 }
 
-func validate(args []string) error {
-	if len(args) != 0 {
-		return errors.New("invalid number of arguments")
-	}
-	return nil
-}
-
 func action(ctx command.Context) error {
-	if len(ctx.State().CurrRoom.Paths) <= 0 {
+	st := ctx.State()
+	// TODO : should probably move this to a context validator (separate from argument validator) and return an error
+	if st == nil || st.CurrRoom == nil || st.CurrRoom.Paths == nil {
+		return errors.New("invalid context for go command")
+	}
+	// TODO : add test coverage for this condition
+	if len(st.CurrRoom.Paths) <= 0 {
 		pterm.Error.Println("Nowhere to go!")
 		return nil
 	}
-	paths := make([]ux.Described, len(ctx.State().CurrRoom.Paths))
-	for i, p := range ctx.State().CurrRoom.Paths {
+	paths := make([]ux.Described, len(st.CurrRoom.Paths))
+	for i, p := range st.CurrRoom.Paths {
 		paths[i] = p
 	}
 
-	idx, _, err := ctx.State().SelectBuilder.Create("Stay here", "Go").Run(paths)
+	idx, _, err := st.SelectBuilder.Create("Stay here", "Go").Run(paths)
 	if err != nil {
 		return err
 	}
@@ -47,10 +46,10 @@ func action(ctx command.Context) error {
 	}
 
 	// Update the current room based on the selection, unless the user cancels navigation
-	nr, _ := ctx.State().World.Room(ctx.State().CurrRoom.Paths[idx].Room)
-	ctx.State().CurrRoom = &nr
-	ctx.State().CurrRoom.RunEncounters(ctx.State().Player)
-	if ctx.State().Player.Unconscious() {
+	nr, _ := st.World.Room(st.CurrRoom.Paths[idx].Room)
+	st.CurrRoom = &nr
+	st.CurrRoom.RunEncounters(st.Player)
+	if st.Player.Unconscious() {
 		_ = pterm.DefaultBigText.WithLetters(
 			pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
 		).Render()

@@ -1,8 +1,19 @@
 package command
 
 import (
+	"errors"
+	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/urfave/cli"
+)
+
+var (
+	ValidatorHasArgs = func(args []string) error {
+		if len(args) != 0 {
+			return errors.New("invalid number of arguments")
+		}
+		return nil
+	}
 )
 
 type Validator func(args []string) error
@@ -53,18 +64,24 @@ func NewCommand(c Params, s *state.State) Command {
 }
 
 func (c *command) Build(validator Validator, action Action) cli.Command {
-	c.Action = func(con *cli.Context) error {
-		err := validator(con.Args())
-		if err != nil {
-			return err
+	c.Action = cli.ActionFunc(func(con *cli.Context) error {
+		if validator != nil {
+			err := validator(con.Args())
+			if err != nil {
+				return err
+			}
 		}
-		cx := ctx{con, c.State}
-		err = action(&cx)
-		if err != nil {
-			return err
+		if action != nil {
+			cx := ctx{con, c.State}
+			err := action(&cx)
+			if err != nil {
+				return err
+			}
+		} else {
+			panic(fmt.Sprintf("must specify an action to build command: "))
 		}
 		return nil
-	}
+	})
 	return *c.Command
 }
 

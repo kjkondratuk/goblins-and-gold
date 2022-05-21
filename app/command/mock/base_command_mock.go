@@ -1,4 +1,4 @@
-package command
+package mock
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
@@ -23,5 +23,6 @@ func (c *MockContext) Context() *cli.Context {
 }
 
 func (c *MockContext) RunCommandByName(name string) error {
-	panic("not implemented")
+	args := c.Called(name)
+	return args.Error(0)
 }

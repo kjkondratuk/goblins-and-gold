@@ -5,8 +5,10 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/async"
-	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/go"
+	"github.com/kjkondratuk/goblins-and-gold/app/command/interact"
+	"github.com/kjkondratuk/goblins-and-gold/app/command/look"
+	"github.com/kjkondratuk/goblins-and-gold/app/command/stats"
 	"github.com/kjkondratuk/goblins-and-gold/app/config"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
@@ -56,30 +58,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 	start.Increment()
 
 	cmds := []cli.Command{
-		{
-			Name:        "look",
-			Aliases:     []string{"l"},
-			Usage:       "Look at your surroundings",
-			Description: "Look at your surroundings",
-			Category:    "Info",
-			Action:      command.Look(s),
-		},
-		_go.NewGoCommand(s), {
-			Name:        "interact",
-			Aliases:     []string{"i"},
-			Usage:       "Interact with your surroundings",
-			Description: "Interact with your surroundings",
-			Category:    "Actions",
-			Action:      command.Interact(s),
-		},
-		{
-			Name:        "stats",
-			Aliases:     []string{"s"},
-			Usage:       "Interrogate your player stats",
-			Description: "Interrogate your player stats",
-			Category:    "Info",
-			Action:      command.Stats(s),
-		},
+		look.New(s),
+		_go.New(s),
+		interact.New(s),
+		stats.New(s),
 		{
 			Name:        "quit",
 			Aliases:     []string{"q"},
