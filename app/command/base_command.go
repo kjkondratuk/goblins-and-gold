@@ -16,7 +16,9 @@ var (
 	}
 )
 
-type Validator func(args []string) error
+type ArgValidator func(args []string) error
+
+type ContextValidator func(ctx Context) error
 
 type Action func(ctx Context) error
 
@@ -37,7 +39,7 @@ type command struct {
 }
 
 type Command interface {
-	Build(validator Validator, action Action) cli.Command
+	Build(argValidator ArgValidator, ctxValidator ContextValidator, action Action) cli.Command
 }
 
 type Params struct {
@@ -63,16 +65,23 @@ func NewCommand(c Params, s *state.State) Command {
 	}
 }
 
-func (c *command) Build(validator Validator, action Action) cli.Command {
+func (c *command) Build(argValidator ArgValidator, ctxValidator ContextValidator, action Action) cli.Command {
 	c.Action = cli.ActionFunc(func(con *cli.Context) error {
-		if validator != nil {
-			err := validator(con.Args())
+		if argValidator != nil {
+			err := argValidator(con.Args())
 			if err != nil {
 				return err
 			}
 		}
 		if action != nil {
 			cx := ctx{con, c.State}
+			// TODO : add test coverage for context validator
+			if ctxValidator != nil {
+				err := ctxValidator(&cx)
+				if err != nil {
+					return err
+				}
+			}
 			err := action(&cx)
 			if err != nil {
 				return err

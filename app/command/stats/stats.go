@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"errors"
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
@@ -15,8 +16,15 @@ func New(s *state.State) cli.Command {
 		Usage:       "Interrogate your player stats",
 		Description: "Interrogate your player stats",
 		Category:    "Info",
-	}, s).Build(nil, action)
+	}, s).Build(nil, validateContext, action)
 	return c
+}
+
+func validateContext(ctx command.Context) error {
+	if ctx.State() == nil || ctx.State().Player == nil {
+		return errors.New("invalid context for stats command")
+	}
+	return nil
 }
 
 func action(c command.Context) error {

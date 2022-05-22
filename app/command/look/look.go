@@ -1,6 +1,7 @@
 package look
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
@@ -14,8 +15,15 @@ func New(s *state.State) cli.Command {
 		Usage:       "Look at your surroundings",
 		Description: "Look at your surroundings",
 		Category:    "Info",
-	}, s).Build(nil, action)
+	}, s).Build(nil, validateContext, action)
 	return c
+}
+
+func validateContext(ctx command.Context) error {
+	if ctx.State() == nil || ctx.State().CurrRoom == nil {
+		return errors.New("invalid context for look command")
+	}
+	return nil
 }
 
 func action(c command.Context) error {

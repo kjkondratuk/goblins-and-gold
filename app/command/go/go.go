@@ -17,16 +17,20 @@ func New(s *state.State) cli.Command {
 		Description: "Travel down a path",
 		ArgsUsage:   "[location number]",
 		Category:    "Actions",
-	}, s).Build(command.ValidatorHasArgs, action)
+	}, s).Build(command.ValidatorHasArgs, validateContext, action)
 	return c
+}
+
+func validateContext(ctx command.Context) error {
+	st := ctx.State()
+	if st == nil || st.CurrRoom == nil || st.CurrRoom.Paths == nil {
+		return errors.New("invalid context for go command")
+	}
+	return nil
 }
 
 func action(ctx command.Context) error {
 	st := ctx.State()
-	// TODO : should probably move this to a context validator (separate from argument validator) and return an error
-	if st == nil || st.CurrRoom == nil || st.CurrRoom.Paths == nil {
-		return errors.New("invalid context for go command")
-	}
 	// TODO : add test coverage for this condition
 	if len(st.CurrRoom.Paths) <= 0 {
 		pterm.Error.Println("Nowhere to go!")

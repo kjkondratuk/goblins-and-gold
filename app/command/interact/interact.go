@@ -2,6 +2,7 @@ package interact
 
 import (
 	"context"
+	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
@@ -18,17 +19,22 @@ func New(s *state.State) cli.Command {
 		Usage:       "Interact with your surroundings",
 		Description: "Interact with your surroundings",
 		Category:    "Actions",
-	}, s).Build(command.ValidatorHasArgs, action)
+	}, s).Build(command.ValidatorHasArgs, validateContext, action)
 	return c
 }
 
-func action(c command.Context) error {
-	// TODO : should probably move this to a context validator (separate from argument validator) and return an error
-	if c.State() == nil || c.State().CurrRoom == nil || c.State().CurrRoom.Containers == nil {
-		return nil
+func validateContext(ctx command.Context) error {
+	st := ctx.State()
+	if st == nil || st.CurrRoom == nil || st.CurrRoom.Containers == nil {
+		return errors.New("invalid context for interact command")
 	}
+	return nil
+}
+
+func action(c command.Context) error {
+	st := c.State()
 	// coerce to ux.Described
-	ia := c.State().CurrRoom.Containers
+	ia := st.CurrRoom.Containers
 	if len(ia) <= 0 {
 		return nil
 	}
@@ -38,7 +44,7 @@ func action(c command.Context) error {
 	}
 
 	// Prompt for selection of the interactable
-	interactIdx, _, err := c.State().SelectBuilder.Create("None of these", "Interact with").Run(dCon)
+	interactIdx, _, err := st.SelectBuilder.Create("None of these", "Interact with").Run(dCon)
 	// handle errors with creating the selector for item ia
 	if err != nil {
 		return err
@@ -52,7 +58,7 @@ func action(c command.Context) error {
 	for i, a := range ia[interactIdx].SupportedInteractions {
 		dAct[i] = a
 	}
-	_, actStr, err := c.State().SelectBuilder.Create("Cancel", "Actions").Run(dAct)
+	_, actStr, err := st.SelectBuilder.Create("Cancel", "Actions").Run(dAct)
 	if actStr == "" {
 		return nil
 	}
@@ -60,7 +66,7 @@ func action(c command.Context) error {
 	a := interaction.Type(actStr)
 
 	// get interactions available for this container
-	result, err := ia[interactIdx].Do(context.WithValue(context.Background(), interaction.PlayerDataKey, c.State().Player), a)
+	result, err := ia[interactIdx].Do(context.WithValue(context.Background(), interaction.PlayerDataKey, st.Player), a)
 	if err != nil {
 		return err
 	}
@@ -69,7 +75,7 @@ func action(c command.Context) error {
 	emptyResult := interaction.Result{}
 	if !reflect.DeepEqual(result, emptyResult) {
 		//r := result.(interaction.Result)
-		c.State().Apply(result)
+		st.Apply(result)
 		switch result.Type {
 		case interaction.RT_Success:
 			pterm.Success.Println(result.Message)
