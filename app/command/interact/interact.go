@@ -59,6 +59,9 @@ func action(c command.Context) error {
 		dAct[i] = a
 	}
 	_, actStr, err := st.SelectBuilder.Create("Cancel", "Actions").Run(dAct)
+	if err != nil {
+		return err
+	}
 	if actStr == "" {
 		return nil
 	}
