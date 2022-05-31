@@ -2,6 +2,7 @@ package interact
 
 import (
 	"errors"
+	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
@@ -9,6 +10,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/container"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"github.com/kjkondratuk/goblins-and-gold/world/room"
 	mock3 "github.com/stretchr/testify/mock"
 	"testing"
@@ -30,6 +32,16 @@ func Test_action(t *testing.T) {
 	})
 
 	singleContainerState := state.State{
+		Player: actors.NewPlayer(actors.PlayerParams{
+			CombatantParams: actors.CombatantParams{
+				Name:      "Test Player",
+				AC:        15,
+				HP:        10,
+				BaseStats: stats.BaseStats{},
+				Inventory: []item.Item{},
+				Attacks:   nil,
+			},
+		}),
 		CurrRoom: &room.Definition{
 			Name: "test-room",
 			Containers: []*container.Container{
@@ -60,19 +72,19 @@ func Test_action(t *testing.T) {
 	interactionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "some value", nil)
 
 	// copy state and assign select builder appropriate to a cancelled interactable select
-	sccs := singleContainerState
-	sccs.SelectBuilder = &interactionCancelSelector
-	singleContainerCancelCtx.On("State").Return(&sccs)
+	interactionErrorState := singleContainerState
+	interactionErrorState.SelectBuilder = &interactionCancelSelector
+	singleContainerCancelCtx.On("State").Return(&interactionErrorState)
 
 	interactionErrorSelector := mock2.SelectMock{}
 	interactionErrorSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&interactionErrorSelector)
 	interactionErrorSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", errors.New("there was an error"))
 
 	// copy state and assign select builder appropriate to an errored interactable select
-	sces := singleContainerState
-	sces.SelectBuilder = &interactionErrorSelector
+	actionErrorState := singleContainerState
+	actionErrorState.SelectBuilder = &interactionErrorSelector
 	singleContainerErrorCtx := mock.MockContext{}
-	singleContainerErrorCtx.On("State").Return(&sces)
+	singleContainerErrorCtx.On("State").Return(&actionErrorState)
 
 	actionErrorSelector := mock2.SelectMock{}
 	actionErrorSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&actionErrorSelector).Twice()
@@ -80,21 +92,37 @@ func Test_action(t *testing.T) {
 	actionErrorSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", errors.New("there was an error")).Once()
 
 	// copy state and assign select builder appropriate to an errored action select
-	scesa := singleContainerState
-	scesa.SelectBuilder = &actionErrorSelector
+	errorState := singleContainerState
+	errorState.SelectBuilder = &actionErrorSelector
 	actionErrorCtx := mock.MockContext{}
-	actionErrorCtx.On("State").Return(&scesa)
+	actionErrorCtx.On("State").Return(&errorState)
 
 	actionCancelSelector := mock2.SelectMock{}
-	actionCancelSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&actionCancelSelector).Twice()
-	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).Once()
-	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", nil).Once()
+	actionCancelSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).
+		Return(&actionCancelSelector).Twice()
+	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).
+		Once()
+	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", nil).
+		Once()
 
 	// copy state and assign select builder appropriate to a cancelled action select
-	scesc := singleContainerState
-	scesc.SelectBuilder = &actionCancelSelector
+	cancelState := singleContainerState
+	cancelState.SelectBuilder = &actionCancelSelector
 	actionCancelCtx := mock.MockContext{}
-	actionCancelCtx.On("State").Return(&scesc)
+	actionCancelCtx.On("State").Return(&cancelState)
+
+	actionCompleteSelector := mock2.SelectMock{}
+	actionCompleteSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).
+		Return(&actionCompleteSelector).Twice()
+	actionCompleteSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).
+		Once()
+	actionCompleteSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "Open", nil).
+		Once()
+
+	completeState := singleContainerState
+	completeState.SelectBuilder = &actionCompleteSelector
+	actionCompleteCtx := mock.MockContext{}
+	actionCompleteCtx.On("State").Return(&completeState)
 
 	type args struct {
 		c command.Context
@@ -126,7 +154,7 @@ func Test_action(t *testing.T) {
 			false,
 		}, { // TODO: finish this test
 			"should perform interaction when one is selected",
-			args{},
+			args{&actionCompleteCtx},
 			false,
 		},
 	}
@@ -134,6 +162,62 @@ func Test_action(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := action(tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_validateContext(t *testing.T) {
+	nilStateContext := mock.MockContext{}
+	nilStateContext.On("State").Return(nil)
+
+	nilCurrentRoomCtx := mock.MockContext{}
+	nilCurrentRoomCtx.On("State").Return(&state.State{})
+
+	nilContainerCtx := mock.MockContext{}
+	nilContainerCtx.On("State").Return(&state.State{
+		CurrRoom: &room.Definition{
+			Containers: nil,
+		},
+	})
+
+	validCtx := mock.MockContext{}
+	validCtx.On("State").Return(&state.State{
+		CurrRoom: &room.Definition{
+			Containers: []*container.Container{},
+		},
+	})
+
+	type args struct {
+		ctx command.Context
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"should be invalid when state is nil",
+			args{&nilStateContext},
+			true,
+		}, {
+			"should be invalid when current room is nil",
+			args{&nilCurrentRoomCtx},
+			true,
+		}, {
+			"should be invalid when containers in the current room are nil",
+			args{&nilContainerCtx},
+			true,
+		}, {
+			"should be valid when a state room and containers are non-nil",
+			args{&validCtx},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+				t.Errorf("validateContext() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

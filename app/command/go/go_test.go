@@ -3,6 +3,7 @@ package _go
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
+	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	mock3 "github.com/kjkondratuk/goblins-and-gold/app/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux/mock"
@@ -149,4 +150,65 @@ func Test_action(t *testing.T) {
 		err := action(&ctx)
 		assert.NoError(t, err)
 	})
+}
+
+func Test_validateContext(t *testing.T) {
+	nilStateContext := mock3.MockContext{}
+	nilStateContext.On("State").Return(nil)
+
+	nilCurrentRoomCtx := mock3.MockContext{}
+	nilCurrentRoomCtx.On("State").Return(&state.State{})
+
+	nilPathCtx := mock3.MockContext{}
+	nilPathCtx.On("State").Return(&state.State{
+		CurrRoom: &room.Definition{
+			Paths: nil,
+		},
+	})
+
+	validCtx := mock3.MockContext{}
+	validCtx.On("State").Return(&state.State{
+		CurrRoom: &room.Definition{
+			Paths: []*path.Definition{
+				{
+					"test-room",
+					"plain wooden door",
+				},
+			},
+		},
+	})
+
+	type args struct {
+		ctx command.Context
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"should be invalid when state is nil",
+			args{&nilStateContext},
+			true,
+		}, {
+			"should be invalid when current room is nil",
+			args{&nilCurrentRoomCtx},
+			true,
+		}, {
+			"should be invalid when paths in the current room are nil",
+			args{&nilPathCtx},
+			true,
+		}, {
+			"should be valid when a state room and paths are non-nil",
+			args{&validCtx},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }

@@ -76,7 +76,10 @@ func (e *encounter) Run(p actors.Player) Outcome {
 			switch c.(type) {
 			case actors.Player:
 				// take player turn
-				_, _, _ = SelectBuilder.Create("Pass", "How do you respond?").Run(combatActions)
+				_, action, err := SelectBuilder.Create("Pass", "How do you respond?").Run(combatActions)
+				if err != nil {
+					pterm.Error.Printfln("There was a problem performing action [%s]: %s", action)
+				}
 			case actors.Monster:
 				// take monster turn
 				c.Attack(p)

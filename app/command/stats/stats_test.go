@@ -66,3 +66,51 @@ func Test_action(t *testing.T) {
 		})
 	}
 }
+
+func Test_validateContext(t *testing.T) {
+	nilStateContext := mock.MockContext{}
+	nilStateContext.On("State").Return(nil)
+
+	nilPlayerCtx := mock.MockContext{}
+	nilPlayerCtx.On("State").Return(&state.State{})
+
+	validCtx := mock.MockContext{}
+	validCtx.On("State").Return(&state.State{
+		Player: actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+			Name:      "Test Player",
+			AC:        15,
+			HP:        10,
+			BaseStats: stats.BaseStats{},
+		}}),
+	})
+
+	type args struct {
+		ctx command.Context
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"should be invalid when state is nil",
+			args{&nilStateContext},
+			true,
+		}, {
+			"should be invalid when player is nil",
+			args{&nilPlayerCtx},
+			true,
+		}, {
+			"should be valid when a state and player are non-nil",
+			args{&validCtx},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+				t.Errorf("validateContext() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
