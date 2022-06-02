@@ -22,6 +22,16 @@ type Sequencer interface {
 }
 
 func NewCombatSequencer(p actors.Player, e Encounter) Sequencer {
+	// return
+	if p == nil || e == nil {
+		return &sequencer{
+			_turnOrder: ring.New(0),
+			_player:    nil,
+			_fighters:  nil,
+			_turn:      0,
+		}
+	}
+
 	// Create a map of combatants with an index representing their combat order
 	dupCounter := 0
 	fighters := make(map[string]actors.Combatant)
