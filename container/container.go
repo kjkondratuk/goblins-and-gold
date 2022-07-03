@@ -16,6 +16,7 @@ const (
 	Chest = Type("Chest")
 	Body  = Type("Body")
 
+	InteractionTypeCancel = interaction.Type("Cancel")
 	InteractionTypeOpen   = interaction.Type("Open")
 	InteractionTypeLoot   = interaction.Type("Loot")
 	InteractionTypeUnlock = interaction.Type("Unlock")
@@ -38,6 +39,7 @@ type Container struct {
 // Interactions : returns a map of interaction types to interaction functions that enumerates
 func (c *Container) interactions() map[interaction.Type]interaction.Func {
 	return map[interaction.Type]interaction.Func{
+		InteractionTypeCancel: c.cancel,
 		InteractionTypeOpen:   c.open,
 		InteractionTypeLoot:   c.loot,
 		InteractionTypeUnlock: c.unlock,
@@ -74,6 +76,13 @@ func (c *Container) open(ctx context.Context) (interaction.Result, error) {
 			Message: "This container needs to be unlocked first",
 		}, nil
 	}
+}
+
+func (c *Container) cancel(ctx context.Context) (interaction.Result, error) {
+	return interaction.Result{
+		Type:    interaction.RT_Success,
+		Message: "Cancelled",
+	}, nil
 }
 
 func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
