@@ -1,20 +1,27 @@
 package state
 
 import (
+	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	interaction2 "github.com/kjkondratuk/goblins-and-gold/interaction"
-	"github.com/kjkondratuk/goblins-and-gold/world"
-	"github.com/kjkondratuk/goblins-and-gold/world/room"
+)
+
+const (
+	StateKey = iota
 )
 
 type State struct {
-	Player        actors.Player
-	CurrRoom      *room.Definition
-	World         *world.Definition
-	SelectBuilder ux.SelectBuilder
+	Player    actors.Player
+	CurrRoom  *RoomDefinition
+	World     *WorldDefinition
+	PromptLib ux.PromptLib
 }
 
 func (s *State) Apply(r interaction2.Result) {
 	s.Player.Acquire(r.AcquiredItems...)
+}
+
+func (s *State) AsContext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, StateKey, s)
 }

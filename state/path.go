@@ -1,10 +1,10 @@
-package path
+package state
 
-type Definition struct {
+type PathDefinition struct {
 	Room        string `yaml:"room"`
 	Description string `yaml:"description"`
 }
 
-func (d *Definition) Describe() string {
+func (d *PathDefinition) Describe() string {
 	return d.Description
 }

@@ -2,7 +2,7 @@ package command
 
 import (
 	"errors"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli"
 	"testing"

@@ -3,7 +3,7 @@ package command
 import (
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/urfave/cli"
 )
 

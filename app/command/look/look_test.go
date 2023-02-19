@@ -3,9 +3,7 @@ package look
 import (
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
-	"github.com/kjkondratuk/goblins-and-gold/container"
-	"github.com/kjkondratuk/goblins-and-gold/world/room"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"testing"
 )
 
@@ -13,20 +11,18 @@ func Test_action(t *testing.T) {
 	ctx := mock.MockContext{}
 	ctx.On("State").Return(&state.State{
 		Player: nil,
-		CurrRoom: &room.Definition{
+		CurrRoom: &state.RoomDefinition{
 			Name:        "test-room",
 			Description: "Some room description",
 		},
-		World:         nil,
-		SelectBuilder: nil,
+		World: nil,
 	})
 
 	errorCtx := mock.MockContext{}
 	errorCtx.On("State").Return(&state.State{
-		Player:        nil,
-		CurrRoom:      nil,
-		World:         nil,
-		SelectBuilder: nil,
+		Player:   nil,
+		CurrRoom: nil,
+		World:    nil,
 	})
 	type args struct {
 		c command.Context
@@ -64,8 +60,8 @@ func Test_validateContext(t *testing.T) {
 
 	validCtx := mock.MockContext{}
 	validCtx.On("State").Return(&state.State{
-		CurrRoom: &room.Definition{
-			Containers: []*container.Container{},
+		CurrRoom: &state.RoomDefinition{
+			Containers: []*state.Container{},
 		},
 	})
 

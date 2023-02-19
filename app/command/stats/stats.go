@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 )

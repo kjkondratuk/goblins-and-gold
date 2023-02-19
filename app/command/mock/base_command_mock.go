@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/stretchr/testify/mock"
 	"github.com/urfave/cli"
 )

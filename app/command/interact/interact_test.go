@@ -5,14 +5,13 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
-	mock2 "github.com/kjkondratuk/goblins-and-gold/app/ux/mock"
-	"github.com/kjkondratuk/goblins-and-gold/container"
+	mock3 "github.com/kjkondratuk/goblins-and-gold/app/ux/mock"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/state"
+	state2 "github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
-	"github.com/kjkondratuk/goblins-and-gold/world/room"
-	mock3 "github.com/stretchr/testify/mock"
+	mock2 "github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -20,18 +19,24 @@ func Test_action(t *testing.T) {
 	noContainerCtx := mock.MockContext{}
 	noContainerCtx.On("State").Return(&state.State{
 		Player: nil,
-		CurrRoom: &room.Definition{
+		CurrRoom: &state.RoomDefinition{
 			Name:                "test-room",
 			Description:         "",
 			Paths:               nil,
-			Containers:          []*container.Container{},
+			Containers:          []*state2.Container{},
 			MandatoryEncounters: nil,
 		},
-		World:         nil,
-		SelectBuilder: nil,
+		World: nil,
 	})
 
+	promptMock := &mock3.PromptMock{}
+	promptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(0, "", nil)
+
 	singleContainerState := state.State{
+		PromptLib: promptMock,
 		Player: actors.NewPlayer(actors.PlayerParams{
 			CombatantParams: actors.CombatantParams{
 				Name:      "Test Player",
@@ -42,15 +47,15 @@ func Test_action(t *testing.T) {
 				Attacks:   nil,
 			},
 		}),
-		CurrRoom: &room.Definition{
+		CurrRoom: &state.RoomDefinition{
 			Name: "test-room",
-			Containers: []*container.Container{
+			Containers: []*state2.Container{
 				{
-					Type:        container.Chest,
+					Type:        state2.Chest,
 					Description: "A small wooden crate",
 					SupportedInteractions: []interaction.Type{
-						container.InteractionTypeOpen,
-						container.InteractionTypeUnlock,
+						state2.InteractionTypeOpen,
+						state2.InteractionTypeUnlock,
 					},
 					Items: []item.Item{
 						{
@@ -67,60 +72,40 @@ func Test_action(t *testing.T) {
 
 	singleContainerCancelCtx := mock.MockContext{}
 
-	interactionCancelSelector := mock2.SelectMock{}
-	interactionCancelSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&interactionCancelSelector)
-	interactionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "some value", nil)
-
 	// copy state and assign select builder appropriate to a cancelled interactable select
 	interactionErrorState := singleContainerState
-	interactionErrorState.SelectBuilder = &interactionCancelSelector
 	singleContainerCancelCtx.On("State").Return(&interactionErrorState)
-
-	interactionErrorSelector := mock2.SelectMock{}
-	interactionErrorSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&interactionErrorSelector)
-	interactionErrorSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", errors.New("there was an error"))
 
 	// copy state and assign select builder appropriate to an errored interactable select
 	actionErrorState := singleContainerState
-	actionErrorState.SelectBuilder = &interactionErrorSelector
+	errorInteractPromptMock := &mock3.PromptMock{}
+	errorInteractPromptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(0, "", errors.New("something bad happened"))
+	actionErrorState.PromptLib = errorInteractPromptMock
+
 	singleContainerErrorCtx := mock.MockContext{}
 	singleContainerErrorCtx.On("State").Return(&actionErrorState)
 
-	actionErrorSelector := mock2.SelectMock{}
-	actionErrorSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).Return(&actionErrorSelector).Twice()
-	actionErrorSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).Once()
-	actionErrorSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", errors.New("there was an error")).Once()
-
 	// copy state and assign select builder appropriate to an errored action select
 	errorState := singleContainerState
-	errorState.SelectBuilder = &actionErrorSelector
+	errorActionPromptMock := &mock3.PromptMock{}
+	errorActionPromptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(0, "", nil).
+		Return(0, "", errors.New("something bad happened"))
+	errorState.PromptLib = errorActionPromptMock
 	actionErrorCtx := mock.MockContext{}
 	actionErrorCtx.On("State").Return(&errorState)
 
-	actionCancelSelector := mock2.SelectMock{}
-	actionCancelSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).
-		Return(&actionCancelSelector).Twice()
-	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).
-		Once()
-	actionCancelSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(-1, "", nil).
-		Once()
-
 	// copy state and assign select builder appropriate to a cancelled action select
 	cancelState := singleContainerState
-	cancelState.SelectBuilder = &actionCancelSelector
 	actionCancelCtx := mock.MockContext{}
 	actionCancelCtx.On("State").Return(&cancelState)
 
-	actionCompleteSelector := mock2.SelectMock{}
-	actionCompleteSelector.On("Create", mock3.AnythingOfType("string"), mock3.AnythingOfType("string")).
-		Return(&actionCompleteSelector).Twice()
-	actionCompleteSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "", nil).
-		Once()
-	actionCompleteSelector.On("Run", mock3.AnythingOfType("[]ux.Described")).Return(0, "Open", nil).
-		Once()
-
 	completeState := singleContainerState
-	completeState.SelectBuilder = &actionCompleteSelector
 	actionCompleteCtx := mock.MockContext{}
 	actionCompleteCtx.On("State").Return(&completeState)
 
@@ -160,7 +145,7 @@ func Test_action(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := action(tt.args.c); (err != nil) != tt.wantErr {
+			if err := action(tt.args.c.State())(tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -176,15 +161,15 @@ func Test_validateContext(t *testing.T) {
 
 	nilContainerCtx := mock.MockContext{}
 	nilContainerCtx.On("State").Return(&state.State{
-		CurrRoom: &room.Definition{
+		CurrRoom: &state.RoomDefinition{
 			Containers: nil,
 		},
 	})
 
 	validCtx := mock.MockContext{}
 	validCtx.On("State").Return(&state.State{
-		CurrRoom: &room.Definition{
-			Containers: []*container.Container{},
+		CurrRoom: &state.RoomDefinition{
+			Containers: []*state2.Container{},
 		},
 	})
 

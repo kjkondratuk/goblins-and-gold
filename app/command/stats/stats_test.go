@@ -4,7 +4,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/command"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"testing"
 )
@@ -15,10 +15,9 @@ func Test_action(t *testing.T) {
 
 	nilPlayer := mock.MockContext{}
 	nilPlayer.On("State").Return(&state.State{
-		Player:        nil,
-		CurrRoom:      nil,
-		World:         nil,
-		SelectBuilder: nil,
+		Player:   nil,
+		CurrRoom: nil,
+		World:    nil,
 	})
 
 	nnPlayer := mock.MockContext{}
@@ -31,9 +30,8 @@ func Test_action(t *testing.T) {
 			Inventory: nil,
 			Attacks:   nil,
 		}}),
-		CurrRoom:      nil,
-		World:         nil,
-		SelectBuilder: nil,
+		CurrRoom: nil,
+		World:    nil,
 	})
 
 	type args struct {

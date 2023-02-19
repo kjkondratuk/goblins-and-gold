@@ -9,7 +9,6 @@ import (
 const (
 	InteractionDataKey = iota
 	ContainerDataKey
-	PlayerDataKey
 )
 
 type Type string

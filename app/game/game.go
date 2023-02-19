@@ -10,9 +10,8 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/app/command/look"
 	"github.com/kjkondratuk/goblins-and-gold/app/command/stats"
 	"github.com/kjkondratuk/goblins-and-gold/app/config"
-	"github.com/kjkondratuk/goblins-and-gold/app/state"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
-	"github.com/kjkondratuk/goblins-and-gold/world"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 	"os"
@@ -33,10 +32,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	start, _ := pterm.DefaultProgressbar.WithTotal(4).WithTitle("Starting...").Start()
 
-	var w *world.Definition
+	var w *state.WorldDefinition
 	var p actors.Player
 	async.InParallel(func() {
-		wl := config.Read[world.Definition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
+		wl := config.Read[state.WorldDefinition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 		start.Increment()
@@ -49,10 +48,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	sr, _ := w.Room(w.StartRoom)
 	s := &state.State{
-		Player:        p,
-		CurrRoom:      &sr,
-		World:         w,
-		SelectBuilder: ux.New(),
+		Player:    p,
+		CurrRoom:  &sr,
+		World:     w,
+		PromptLib: ux.NewPromptUiLib(),
 	}
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()
@@ -85,7 +84,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 			Usage:       "Print general info about the world.",
 			Description: "Print general info about the world.",
 			Category:    "Debug",
-			Action: func(world *world.Definition) cli.ActionFunc {
+			Action: func(world *state.WorldDefinition) cli.ActionFunc {
 				return func(c *cli.Context) error {
 					ws, _ := yaml.Marshal(world)
 					pterm.Debug.Println(pterm.Green(string(ws)))

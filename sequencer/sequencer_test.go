@@ -1,8 +1,8 @@
-package encounter
+package sequencer
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/encounter/hasher"
+	"github.com/kjkondratuk/goblins-and-gold/state/hasher"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"github.com/stretchr/testify/assert"
 	"testing"

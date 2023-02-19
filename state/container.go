@@ -1,10 +1,9 @@
-package container
+package state
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
@@ -21,12 +20,6 @@ const (
 	InteractionTypeLoot   = interaction.Type("Loot")
 	InteractionTypeUnlock = interaction.Type("Unlock")
 )
-
-var (
-	SelectBuilder = ux.New()
-)
-
-type Type string
 
 type Container struct {
 	Type                  Type                      `yaml:"type"`
@@ -86,6 +79,7 @@ func (c *Container) cancel(ctx context.Context) (interaction.Result, error) {
 }
 
 func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
+	st := ctx.Value(StateKey).(*State)
 	if c.Locked == nil {
 		if len(c.Items) > 0 {
 			d := make([]ux.Described, len(c.Items))
@@ -93,7 +87,7 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 				d[i] = x
 			}
 
-			resultIdx, _, err := SelectBuilder.Create("Cancel", "Items").Run(d)
+			resultIdx, _, err := st.PromptLib.Select("Items", append(ux.DescribeToList(d), "Cancel"))
 			if err != nil {
 				return interaction.Result{}, err
 			}
@@ -129,7 +123,8 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 	}
 
 	// TODO : should probably validate the context before we do it.
-	p := ctx.Value(interaction.PlayerDataKey).(actors.Player)
+	s := ctx.Value(StateKey).(*State)
+	p := s.Player
 	// Get skill check type: c.Locked.Type
 	// Get the player's modifier for the specified skill
 	value, _ := p.BaseStats().ModifierByName(string(c.Locked.Type))

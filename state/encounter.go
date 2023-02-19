@@ -1,8 +1,9 @@
-package encounter
+package state
 
 import (
+	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/app/ux"
+	"github.com/kjkondratuk/goblins-and-gold/sequencer"
 	"github.com/pterm/pterm"
 )
 
@@ -13,14 +14,6 @@ const (
 	ActionRun    = CombatAction("Run")
 )
 
-var (
-	combatActions = []ux.Described{
-		ActionAttack,
-		ActionRun,
-	}
-	SelectBuilder = ux.New()
-)
-
 type CombatAction string
 
 func (ca CombatAction) Describe() string {
@@ -29,7 +22,7 @@ func (ca CombatAction) Describe() string {
 
 type Type string
 
-type Definition struct {
+type EncounterDefinition struct {
 	Type        Type                   `yaml:"type"`
 	Description string                 `yaml:"description"`
 	Enemies     []actors.MonsterParams `yaml:"enemies"`
@@ -42,14 +35,14 @@ type encounter struct {
 }
 
 type Encounter interface {
-	Run(p actors.Player) Outcome
+	Run(c context.Context) Outcome
 	Enemies() []actors.Monster
 }
 
 type Outcome struct {
 }
 
-func NewEncounter(d Definition) Encounter {
+func NewEncounter(d EncounterDefinition) Encounter {
 	monsters := make([]actors.Monster, len(d.Enemies))
 	for i, m := range d.Enemies {
 		monsters[i] = actors.NewMonster(m)
@@ -65,7 +58,9 @@ func (e *encounter) Enemies() []actors.Monster {
 	return e._enemies
 }
 
-func (e *encounter) Run(p actors.Player) Outcome {
+func (e *encounter) Run(c context.Context) Outcome {
+	s := c.Value(StateKey).(*State)
+	p := s.Player
 	pterm.Info.Println(e._description)
 
 	m := make([]actors.Monster, len(e.Enemies())+1)
@@ -74,7 +69,7 @@ func (e *encounter) Run(p actors.Player) Outcome {
 	}
 	m[len(m)-1] = p
 
-	seq := NewCombatSequencer(p, m)
+	seq := sequencer.NewCombatSequencer(p, m)
 
 	// loop over list, taking a combat for each combatant, until done
 	for !seq.IsDone() {
@@ -82,10 +77,15 @@ func (e *encounter) Run(p actors.Player) Outcome {
 			switch c.(type) {
 			case actors.Player:
 				// take player turn
-				_, action, err := SelectBuilder.Create("Pass", "How do you respond?").Run(combatActions)
+				_, action, err := s.PromptLib.Select("How do you respond?", []string{
+					"Pass",
+					"Attack",
+					"Run",
+				})
 				if err != nil {
 					pterm.Error.Printfln("There was a problem performing action [%s]: %s", action, err)
 				}
+				pterm.Error.Printfln("Player action: %s", action)
 			case actors.Monster:
 				// take monster turn
 				c.Attack(p)
