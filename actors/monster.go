@@ -19,8 +19,16 @@ type Monster interface {
 	Combatant
 }
 
-func NewMonster(pd MonsterParams) Monster {
-	return &monster{
+type MonsterOption func(c *monster)
+
+func WithMonsterDice(d dice.Dice) MonsterOption {
+	return func(m *monster) {
+		m._dice = d
+	}
+}
+
+func NewMonster(pd MonsterParams, opts ...MonsterOption) Monster {
+	m := &monster{
 		combatant{
 			_name:      pd.Name,
 			_dice:      dice.NewDice(time.Now().UnixNano()),
@@ -31,6 +39,12 @@ func NewMonster(pd MonsterParams) Monster {
 			_attacks:   pd.Attacks,
 		},
 	}
+
+	for _, o := range opts {
+		o(m)
+	}
+
+	return m
 }
 
 func (m *monster) Attack(c Combatant) {

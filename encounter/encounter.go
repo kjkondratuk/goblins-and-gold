@@ -68,7 +68,13 @@ func (e *encounter) Enemies() []actors.Monster {
 func (e *encounter) Run(p actors.Player) Outcome {
 	pterm.Info.Println(e._description)
 
-	seq := NewCombatSequencer(p, e)
+	m := make([]actors.Monster, len(e.Enemies())+1)
+	for i, en := range e.Enemies() {
+		m[i] = en
+	}
+	m[len(m)-1] = p
+
+	seq := NewCombatSequencer(p, m)
 
 	// loop over list, taking a combat for each combatant, until done
 	for !seq.IsDone() {

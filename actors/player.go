@@ -21,8 +21,16 @@ type Player interface {
 	Summary() PlayerParams
 }
 
-func NewPlayer(pd PlayerParams) Player {
-	return &player{
+type PlayerOption func(c *player)
+
+func WithPlayerDice(d dice.Dice) PlayerOption {
+	return func(m *player) {
+		m._dice = d
+	}
+}
+
+func NewPlayer(pd PlayerParams, opts ...PlayerOption) Player {
+	p := &player{
 		combatant{
 			_name:      pd.Name,
 			_dice:      dice.NewDice(time.Now().UnixNano()),
@@ -33,6 +41,12 @@ func NewPlayer(pd PlayerParams) Player {
 			_attacks:   pd.Attacks,
 		},
 	}
+
+	for _, o := range opts {
+		o(p)
+	}
+
+	return p
 }
 
 func (p *player) Attack(c Combatant) {
