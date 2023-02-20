@@ -1,9 +1,5 @@
 package state
 
-import (
-	"context"
-)
-
 type RoomDefinition struct {
 	Name                string                 `yaml:"name"`
 	Description         string                 `yaml:"description"`
@@ -12,11 +8,11 @@ type RoomDefinition struct {
 	MandatoryEncounters []*EncounterDefinition `yaml:"mandatory_encounters"`
 }
 
-func (r *RoomDefinition) RunEncounters(ctx context.Context) {
+func (r *RoomDefinition) RunEncounters(s State) {
 	for _, e := range r.MandatoryEncounters {
 		// TODO : returns an outcome.  do we need it?
-		NewEncounter(*e).Run(ctx)
-		p := ctx.Value(StateKey).(*State).Player
+		NewEncounter(*e).Run(s)
+		p := s.Player()
 		if p.Unconscious() {
 			break
 		}

@@ -18,23 +18,23 @@ var (
 
 type ArgValidator func(args []string) error
 
-type ContextValidator func(ctx Context) error
+type ContextValidator func(s state.State) error
 
-type Action func(ctx Context) error
+type Action func(s state.State) error
 
-type ctx struct {
-	_c *cli.Context
-	_s *state.State
-}
+//type ctx struct {
+//	_c *cli.Context
+//	_s state.State
+//}
 
-type Context interface {
-	State() *state.State
-	Context() *cli.Context
-	RunCommandByName(name string) error
-}
+//type Context interface {
+//	State() state.State
+//	Context() *cli.Context
+//	RunCommandByName(name string) error
+//}
 
 type command struct {
-	*state.State
+	state.State
 	*cli.Command
 }
 
@@ -51,7 +51,7 @@ type Params struct {
 	Category    string
 }
 
-func NewCommand(c Params, s *state.State) Command {
+func NewCommand(c Params, s state.State) Command {
 	return &command{
 		State: s,
 		Command: &cli.Command{
@@ -74,15 +74,16 @@ func (c *command) Build(argValidator ArgValidator, ctxValidator ContextValidator
 			}
 		}
 		if action != nil {
-			cx := ctx{con, c.State}
+			//cx := ctx{con, c.State}
+			c.State.SetCliContext(con)
 			// TODO : add test coverage for context validator
 			if ctxValidator != nil {
-				err := ctxValidator(&cx)
+				err := ctxValidator(c.State)
 				if err != nil {
 					return err
 				}
 			}
-			err := action(&cx)
+			err := action(c.State)
 			if err != nil {
 				return err
 			}
@@ -94,14 +95,14 @@ func (c *command) Build(argValidator ArgValidator, ctxValidator ContextValidator
 	return *c.Command
 }
 
-func (c *ctx) State() *state.State {
-	return c._s
-}
-
-func (c *ctx) Context() *cli.Context {
-	return c._c
-}
-
-func (c *ctx) RunCommandByName(name string) error {
-	return c._c.App.Command(name).Run(c._c)
-}
+//func (c *ctx) State() state.State {
+//	return c._s
+//}
+//
+//func (c *ctx) Context() *cli.Context {
+//	return c._c
+//}
+//
+//func (c *ctx) RunCommandByName(name string) error {
+//	return c._c.App.Command(name).Run(c._c)
+//}

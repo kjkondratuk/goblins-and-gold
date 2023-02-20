@@ -3,13 +3,13 @@ package stats
 import (
 	"errors"
 	"github.com/goccy/go-yaml"
-	"github.com/kjkondratuk/goblins-and-gold/app/command"
+	"github.com/kjkondratuk/goblins-and-gold/command"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 )
 
-func New(s *state.State) cli.Command {
+func New(s state.State) cli.Command {
 	c := command.NewCommand(command.Params{
 		Name:        "stats",
 		Aliases:     []string{"s"},
@@ -20,16 +20,16 @@ func New(s *state.State) cli.Command {
 	return c
 }
 
-func validateContext(ctx command.Context) error {
-	if ctx.State() == nil || ctx.State().Player == nil {
+func validateContext(s state.State) error {
+	if s == nil || s.Player() == nil {
 		return errors.New("invalid context for stats command")
 	}
 	return nil
 }
 
-func action(c command.Context) error {
-	if c.State() != nil && c.State().Player != nil {
-		ps, _ := yaml.Marshal(c.State().Player.Summary())
+func action(s state.State) error {
+	if s != nil && s.Player() != nil {
+		ps, _ := yaml.Marshal(s.Player().Summary())
 		pterm.Success.Println(string(ps))
 	}
 	return nil

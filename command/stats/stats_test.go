@@ -2,8 +2,8 @@ package stats
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/app/command"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
+	"github.com/kjkondratuk/goblins-and-gold/command"
+	"github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"testing"

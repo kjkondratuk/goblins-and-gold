@@ -1,7 +1,6 @@
 package state
 
 import (
-	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/sequencer"
 	"github.com/pterm/pterm"
@@ -35,7 +34,7 @@ type encounter struct {
 }
 
 type Encounter interface {
-	Run(c context.Context) Outcome
+	Run(s State) Outcome
 	Enemies() []actors.Monster
 }
 
@@ -58,9 +57,8 @@ func (e *encounter) Enemies() []actors.Monster {
 	return e._enemies
 }
 
-func (e *encounter) Run(c context.Context) Outcome {
-	s := c.Value(StateKey).(*State)
-	p := s.Player
+func (e *encounter) Run(s State) Outcome {
+	p := s.Player()
 	pterm.Info.Println(e._description)
 
 	m := make([]actors.Monster, len(e.Enemies())+1)
@@ -77,7 +75,7 @@ func (e *encounter) Run(c context.Context) Outcome {
 			switch c.(type) {
 			case actors.Player:
 				// take player turn
-				_, action, err := s.PromptLib.Select("How do you respond?", []string{
+				_, action, err := s.Prompter().Select("How do you respond?", []string{
 					"Pass",
 					"Attack",
 					"Run",

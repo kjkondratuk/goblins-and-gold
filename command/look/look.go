@@ -3,12 +3,12 @@ package look
 import (
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/app/command"
+	"github.com/kjkondratuk/goblins-and-gold/command"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/urfave/cli"
 )
 
-func New(s *state.State) cli.Command {
+func New(s state.State) cli.Command {
 	c := command.NewCommand(command.Params{
 		Name:        "look",
 		Aliases:     []string{"l"},
@@ -19,16 +19,16 @@ func New(s *state.State) cli.Command {
 	return c
 }
 
-func validateContext(ctx command.Context) error {
-	if ctx.State() == nil || ctx.State().CurrRoom == nil {
+func validateContext(s state.State) error {
+	if s == nil || s.CurrentRoom() == nil {
 		return errors.New("invalid context for look command")
 	}
 	return nil
 }
 
-func action(c command.Context) error {
-	if c.State() != nil && c.State().CurrRoom != nil {
-		fmt.Println(c.State().CurrRoom.Description)
+func action(s state.State) error {
+	if s != nil && s.CurrentRoom() != nil {
+		fmt.Println(s.CurrentRoom().Description)
 	}
 	return nil
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/app/game"
+	"github.com/kjkondratuk/goblins-and-gold/game"
 	"github.com/pterm/pterm"
 	"os"
 	"os/signal"

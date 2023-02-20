@@ -4,14 +4,14 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/goccy/go-yaml"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/app/async"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/go"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/interact"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/look"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/stats"
-	"github.com/kjkondratuk/goblins-and-gold/app/config"
-	"github.com/kjkondratuk/goblins-and-gold/app/ux"
+	"github.com/kjkondratuk/goblins-and-gold/async"
+	"github.com/kjkondratuk/goblins-and-gold/command/go"
+	"github.com/kjkondratuk/goblins-and-gold/command/interact"
+	"github.com/kjkondratuk/goblins-and-gold/command/look"
+	"github.com/kjkondratuk/goblins-and-gold/command/stats"
+	"github.com/kjkondratuk/goblins-and-gold/config"
 	"github.com/kjkondratuk/goblins-and-gold/state"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 	"os"
@@ -47,12 +47,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 	})
 
 	sr, _ := w.Room(w.StartRoom)
-	s := &state.State{
-		Player:    p,
-		CurrRoom:  &sr,
-		World:     w,
-		PromptLib: ux.NewPromptUiLib(),
-	}
+	s := state.New(ux.NewPromptUiLib(), p, &sr, w)
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()
 

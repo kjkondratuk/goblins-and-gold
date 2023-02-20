@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/stretchr/testify/assert"
@@ -21,11 +22,13 @@ func Test_validate(t *testing.T) {
 }
 
 func Test_command_Build_and_Exec(t *testing.T) {
+	s := state.New(nil, nil, nil, nil)
+	s.SetContext(context.Background())
 	t.Run("should error when an action fails", func(t *testing.T) {
 		e := errors.New("there was an error")
 		c := NewCommand(Params{
 			Name: "command",
-		}, &state.State{}).Build(nil, nil, func(ctx Context) error {
+		}, s).Build(nil, nil, func(s state.State) error {
 			return e
 		})
 
@@ -45,9 +48,9 @@ func Test_command_Build_and_Exec(t *testing.T) {
 		e := errors.New("there was an error")
 		c := NewCommand(Params{
 			Name: "command",
-		}, &state.State{}).Build(func(args []string) error {
+		}, state.New(nil, nil, nil, nil)).Build(func(args []string) error {
 			return e
-		}, nil, func(ctx Context) error {
+		}, nil, func(s state.State) error {
 			t.Logf("executing action handler")
 			return nil
 		})
@@ -67,7 +70,7 @@ func Test_command_Build_and_Exec(t *testing.T) {
 	t.Run("should panic if an action is not specified", func(t *testing.T) {
 		c := NewCommand(Params{
 			Name: "command",
-		}, &state.State{}).Build(nil, nil, nil)
+		}, state.New(nil, nil, nil, nil)).Build(nil, nil, nil)
 
 		app := cli.App{
 			Commands: []cli.Command{
@@ -86,9 +89,9 @@ func Test_command_Build_and_Exec(t *testing.T) {
 	t.Run("should complete successfully if validation and command action pass", func(t *testing.T) {
 		c := NewCommand(Params{
 			Name: "command",
-		}, &state.State{}).Build(func(args []string) error {
+		}, state.New(nil, nil, nil, nil)).Build(func(args []string) error {
 			return nil
-		}, nil, func(ctx Context) error {
+		}, nil, func(s state.State) error {
 			t.Logf("executing action handler")
 			return nil
 		})

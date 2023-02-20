@@ -1,14 +1,8 @@
 package interaction
 
 import (
-	"context"
 	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/item"
-)
-
-const (
-	InteractionDataKey = iota
-	ContainerDataKey
 )
 
 type Type string
@@ -16,8 +10,6 @@ type Type string
 func (t Type) Describe() string {
 	return string(t)
 }
-
-type Func func(c context.Context) (Result, error)
 
 type ResultType string
 

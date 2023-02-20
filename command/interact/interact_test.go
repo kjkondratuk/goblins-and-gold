@@ -3,31 +3,27 @@ package interact
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/app/command"
-	"github.com/kjkondratuk/goblins-and-gold/app/command/mock"
-	mock3 "github.com/kjkondratuk/goblins-and-gold/app/ux/mock"
+	"github.com/kjkondratuk/goblins-and-gold/command"
+	"github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	state2 "github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
+	mock3 "github.com/kjkondratuk/goblins-and-gold/ux/mock"
 	mock2 "github.com/stretchr/testify/mock"
 	"testing"
 )
 
 func Test_action(t *testing.T) {
 	noContainerCtx := mock.MockContext{}
-	noContainerCtx.On("State").Return(&state.State{
-		Player: nil,
-		CurrRoom: &state.RoomDefinition{
-			Name:                "test-room",
-			Description:         "",
-			Paths:               nil,
-			Containers:          []*state2.Container{},
-			MandatoryEncounters: nil,
-		},
-		World: nil,
-	})
+	noContainerCtx.On("State").Return(state.New(nil, nil, &state.RoomDefinition{
+		Name:                "test-room",
+		Description:         "",
+		Paths:               nil,
+		Containers:          []*state2.Container{},
+		MandatoryEncounters: nil,
+	}, nil))
 
 	promptMock := &mock3.PromptMock{}
 	promptMock.On("Select",
@@ -35,40 +31,36 @@ func Test_action(t *testing.T) {
 		mock2.AnythingOfType("[]string")).
 		Return(0, "", nil)
 
-	singleContainerState := state.State{
-		PromptLib: promptMock,
-		Player: actors.NewPlayer(actors.PlayerParams{
-			CombatantParams: actors.CombatantParams{
-				Name:      "Test Player",
-				AC:        15,
-				HP:        10,
-				BaseStats: stats.BaseStats{},
-				Inventory: []item.Item{},
-				Attacks:   nil,
-			},
-		}),
-		CurrRoom: &state.RoomDefinition{
-			Name: "test-room",
-			Containers: []*state2.Container{
-				{
-					Type:        state2.Chest,
-					Description: "A small wooden crate",
-					SupportedInteractions: []interaction.Type{
-						state2.InteractionTypeOpen,
-						state2.InteractionTypeUnlock,
-					},
-					Items: []item.Item{
-						{
-							Type:        "Gold",
-							Description: "A single gold coin",
-							Quantity:    1,
-							Unit:        "coins",
-						},
+	singleContainerState := state.New(promptMock, actors.NewPlayer(actors.PlayerParams{
+		CombatantParams: actors.CombatantParams{
+			Name:      "Test Player",
+			AC:        15,
+			HP:        10,
+			BaseStats: stats.BaseStats{},
+			Inventory: []item.Item{},
+			Attacks:   nil,
+		},
+	}), &state.RoomDefinition{
+		Name: "test-room",
+		Containers: []*state2.Container{
+			{
+				Type:        state2.Chest,
+				Description: "A small wooden crate",
+				SupportedInteractions: []interaction.Type{
+					state2.InteractionTypeOpen,
+					state2.InteractionTypeUnlock,
+				},
+				Items: []item.Item{
+					{
+						Type:        "Gold",
+						Description: "A single gold coin",
+						Quantity:    1,
+						Unit:        "coins",
 					},
 				},
 			},
 		},
-	}
+	}, nil)
 
 	singleContainerCancelCtx := mock.MockContext{}
 
@@ -83,7 +75,7 @@ func Test_action(t *testing.T) {
 		mock2.AnythingOfType("string"),
 		mock2.AnythingOfType("[]string")).
 		Return(0, "", errors.New("something bad happened"))
-	actionErrorState.PromptLib = errorInteractPromptMock
+	actionErrorState.Prompter() = errorInteractPromptMock
 
 	singleContainerErrorCtx := mock.MockContext{}
 	singleContainerErrorCtx.On("State").Return(&actionErrorState)
@@ -96,7 +88,7 @@ func Test_action(t *testing.T) {
 		mock2.AnythingOfType("[]string")).
 		Return(0, "", nil).
 		Return(0, "", errors.New("something bad happened"))
-	errorState.PromptLib = errorActionPromptMock
+	errorState.Prompter() = errorActionPromptMock
 	actionErrorCtx := mock.MockContext{}
 	actionErrorCtx.On("State").Return(&errorState)
 
@@ -110,7 +102,7 @@ func Test_action(t *testing.T) {
 	actionCompleteCtx.On("State").Return(&completeState)
 
 	type args struct {
-		c command.Context
+		s state.State
 	}
 	tests := []struct {
 		name    string

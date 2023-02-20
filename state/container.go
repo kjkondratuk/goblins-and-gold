@@ -1,13 +1,12 @@
 package state
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/app/ux"
 	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"math"
 )
 
@@ -30,8 +29,8 @@ type Container struct {
 }
 
 // Interactions : returns a map of interaction types to interaction functions that enumerates
-func (c *Container) interactions() map[interaction.Type]interaction.Func {
-	return map[interaction.Type]interaction.Func{
+func (c *Container) interactions() map[interaction.Type]InteractionFunc {
+	return map[interaction.Type]InteractionFunc{
 		InteractionTypeCancel: c.cancel,
 		InteractionTypeOpen:   c.open,
 		InteractionTypeLoot:   c.loot,
@@ -39,9 +38,9 @@ func (c *Container) interactions() map[interaction.Type]interaction.Func {
 	}
 }
 
-func (c *Container) Do(ctx context.Context, t interaction.Type) (interaction.Result, error) {
+func (c *Container) Do(s State, t interaction.Type) (interaction.Result, error) {
 	if action, ok := c.interactions()[t]; ok {
-		return action(ctx)
+		return action(s)
 	}
 	return interaction.Result{}, errors.New(fmt.Sprintf("%s is not a valid action type for a container", t))
 }
@@ -50,7 +49,7 @@ func (c *Container) removeItem(i int) []item.Item {
 	return append(c.Items[:i], c.Items[i+1:]...)
 }
 
-func (c *Container) open(ctx context.Context) (interaction.Result, error) {
+func (c *Container) open(s State) (interaction.Result, error) {
 	if c.Locked == nil {
 		s := fmt.Sprintf("%s: %s!\n", InteractionTypeOpen+"ed", c.Description)
 
@@ -71,15 +70,14 @@ func (c *Container) open(ctx context.Context) (interaction.Result, error) {
 	}
 }
 
-func (c *Container) cancel(ctx context.Context) (interaction.Result, error) {
+func (c *Container) cancel(s State) (interaction.Result, error) {
 	return interaction.Result{
 		Type:    interaction.RT_Success,
 		Message: "Cancelled",
 	}, nil
 }
 
-func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
-	st := ctx.Value(StateKey).(*State)
+func (c *Container) loot(s State) (interaction.Result, error) {
 	if c.Locked == nil {
 		if len(c.Items) > 0 {
 			d := make([]ux.Described, len(c.Items))
@@ -87,7 +85,7 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 				d[i] = x
 			}
 
-			resultIdx, _, err := st.PromptLib.Select("Items", append(ux.DescribeToList(d), "Cancel"))
+			resultIdx, _, err := s.Prompter().Select("Items", append(ux.DescribeToList(d), "Cancel"))
 			if err != nil {
 				return interaction.Result{}, err
 			}
@@ -114,7 +112,7 @@ func (c *Container) loot(ctx context.Context) (interaction.Result, error) {
 	}
 }
 
-func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
+func (c *Container) unlock(s State) (interaction.Result, error) {
 	if c.Locked == nil {
 		return interaction.Result{
 			Type:    interaction.RT_Failure,
@@ -123,8 +121,7 @@ func (c *Container) unlock(ctx context.Context) (interaction.Result, error) {
 	}
 
 	// TODO : should probably validate the context before we do it.
-	s := ctx.Value(StateKey).(*State)
-	p := s.Player
+	p := s.Player()
 	// Get skill check type: c.Locked.Type
 	// Get the player's modifier for the specified skill
 	value, _ := p.BaseStats().ModifierByName(string(c.Locked.Type))
