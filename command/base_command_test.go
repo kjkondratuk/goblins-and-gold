@@ -1,7 +1,6 @@
 package command
 
 import (
-	"context"
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/stretchr/testify/assert"
@@ -22,9 +21,8 @@ func Test_validate(t *testing.T) {
 }
 
 func Test_command_Build_and_Exec(t *testing.T) {
-	s := state.New(nil, nil, nil, nil)
-	s.SetContext(context.Background())
 	t.Run("should error when an action fails", func(t *testing.T) {
+		s := state.New(nil, nil, nil, nil)
 		e := errors.New("there was an error")
 		c := NewCommand(Params{
 			Name: "command",

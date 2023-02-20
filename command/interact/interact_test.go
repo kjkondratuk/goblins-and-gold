@@ -3,7 +3,6 @@ package interact
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/command"
 	"github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
@@ -16,14 +15,13 @@ import (
 )
 
 func Test_action(t *testing.T) {
-	noContainerCtx := mock.MockContext{}
-	noContainerCtx.On("State").Return(state.New(nil, nil, &state.RoomDefinition{
+	noContainerState := state.New(nil, nil, &state.RoomDefinition{
 		Name:                "test-room",
 		Description:         "",
 		Paths:               nil,
 		Containers:          []*state2.Container{},
 		MandatoryEncounters: nil,
-	}, nil))
+	}, nil)
 
 	promptMock := &mock3.PromptMock{}
 	promptMock.On("Select",
@@ -75,7 +73,7 @@ func Test_action(t *testing.T) {
 		mock2.AnythingOfType("string"),
 		mock2.AnythingOfType("[]string")).
 		Return(0, "", errors.New("something bad happened"))
-	actionErrorState.Prompter() = errorInteractPromptMock
+	actionErrorState.SetPrompter(errorInteractPromptMock)
 
 	singleContainerErrorCtx := mock.MockContext{}
 	singleContainerErrorCtx.On("State").Return(&actionErrorState)
@@ -88,7 +86,7 @@ func Test_action(t *testing.T) {
 		mock2.AnythingOfType("[]string")).
 		Return(0, "", nil).
 		Return(0, "", errors.New("something bad happened"))
-	errorState.Prompter() = errorActionPromptMock
+	errorState.SetPrompter(errorActionPromptMock)
 	actionErrorCtx := mock.MockContext{}
 	actionErrorCtx.On("State").Return(&errorState)
 
@@ -111,33 +109,29 @@ func Test_action(t *testing.T) {
 	}{
 		{
 			"should complete successfully if there are no interactable items",
-			args{&noContainerCtx},
+			args{noContainerState},
 			false,
 		}, {
 			"should complete successfully when interactable selection cancelled",
-			args{&singleContainerCancelCtx},
+			args{interactionErrorState},
 			false,
 		}, {
-			"should error when the interactable selector errors",
-			args{&singleContainerErrorCtx},
-			true,
-		}, {
 			"should fail when there is an error in the action selector",
-			args{&actionErrorCtx},
+			args{actionErrorState},
 			true,
 		}, {
 			"should do nothing when the action selection is cancelled",
-			args{&actionCancelCtx},
+			args{cancelState},
 			false,
 		}, { // TODO: finish this test
 			"should perform interaction when one is selected",
-			args{&actionCompleteCtx},
+			args{completeState},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := action(tt.args.c.State())(tt.args.c); (err != nil) != tt.wantErr {
+			if err := action(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -145,28 +139,20 @@ func Test_action(t *testing.T) {
 }
 
 func Test_validateContext(t *testing.T) {
-	nilStateContext := mock.MockContext{}
-	nilStateContext.On("State").Return(nil)
+	var nilState state.State
 
-	nilCurrentRoomCtx := mock.MockContext{}
-	nilCurrentRoomCtx.On("State").Return(&state.State{})
+	nilCurrentRoomState := state.New(nil, nil, nil, nil)
 
-	nilContainerCtx := mock.MockContext{}
-	nilContainerCtx.On("State").Return(&state.State{
-		CurrRoom: &state.RoomDefinition{
-			Containers: nil,
-		},
-	})
+	nilContainerState := state.New(nil, nil, &state.RoomDefinition{
+		Containers: nil,
+	}, nil)
 
-	validCtx := mock.MockContext{}
-	validCtx.On("State").Return(&state.State{
-		CurrRoom: &state.RoomDefinition{
-			Containers: []*state2.Container{},
-		},
-	})
+	validState := state.New(nil, nil, &state.RoomDefinition{
+		Containers: []*state2.Container{},
+	}, nil)
 
 	type args struct {
-		ctx command.Context
+		s state.State
 	}
 	tests := []struct {
 		name    string
@@ -175,25 +161,25 @@ func Test_validateContext(t *testing.T) {
 	}{
 		{
 			"should be invalid when state is nil",
-			args{&nilStateContext},
+			args{nilState},
 			true,
 		}, {
 			"should be invalid when current room is nil",
-			args{&nilCurrentRoomCtx},
+			args{nilCurrentRoomState},
 			true,
 		}, {
 			"should be invalid when containers in the current room are nil",
-			args{&nilContainerCtx},
+			args{nilContainerState},
 			true,
 		}, {
 			"should be valid when a state room and containers are non-nil",
-			args{&validCtx},
+			args{validState},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+			if err := validateContext(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("validateContext() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

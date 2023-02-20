@@ -25,9 +25,9 @@ type State interface {
 	CliContext() *cli.Context
 	Apply(r interaction2.Result)
 	Context() context.Context
-	SetContext(c context.Context)
 	Player() actors.Player
 	Prompter() ux.PromptLib
+	SetPrompter(p ux.PromptLib)
 	CurrentRoom() *RoomDefinition
 	UpdateCurrentRoom(r *RoomDefinition)
 	World() *WorldDefinition
@@ -37,6 +37,10 @@ type InteractionFunc func(c State) (interaction2.Result, error)
 
 func New(pr ux.PromptLib, p actors.Player, r *RoomDefinition, w *WorldDefinition) State {
 	s := &state{}
+	// TODO : not sure if this is the best move, but it stops errors in unit tests
+	if s._c == nil {
+		s._c = context.Background()
+	}
 	s._c = context.WithValue(s._c, PromptLibKey, pr)
 	s._c = context.WithValue(s._c, PlayerKey, p)
 	s._c = context.WithValue(s._c, RoomKey, r)
@@ -52,16 +56,16 @@ func (s *state) Context() context.Context {
 	return s._c
 }
 
-func (s *state) SetContext(c context.Context) {
-	s._c = c
-}
-
 func (s *state) Player() actors.Player {
 	return s._c.Value(PlayerKey).(actors.Player)
 }
 
 func (s *state) Prompter() ux.PromptLib {
 	return s._c.Value(PromptLibKey).(ux.PromptLib)
+}
+
+func (s *state) SetPrompter(p ux.PromptLib) {
+	s._c = context.WithValue(s._c, PromptLibKey, p)
 }
 
 func (s *state) CurrentRoom() *RoomDefinition {
