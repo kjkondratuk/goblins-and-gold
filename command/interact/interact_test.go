@@ -3,7 +3,6 @@ package interact
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/item"
 	"github.com/kjkondratuk/goblins-and-gold/state"
@@ -23,13 +22,7 @@ func Test_action(t *testing.T) {
 		MandatoryEncounters: nil,
 	}, nil)
 
-	promptMock := &mock3.PromptMock{}
-	promptMock.On("Select",
-		mock2.AnythingOfType("string"),
-		mock2.AnythingOfType("[]string")).
-		Return(0, "", nil)
-
-	singleContainerState := state.New(promptMock, actors.NewPlayer(actors.PlayerParams{
+	singleContainerState := state.New(nil, actors.NewPlayer(actors.PlayerParams{
 		CombatantParams: actors.CombatantParams{
 			Name:      "Test Player",
 			AC:        15,
@@ -60,44 +53,52 @@ func Test_action(t *testing.T) {
 		},
 	}, nil)
 
-	singleContainerCancelCtx := mock.MockContext{}
-
 	// copy state and assign select builder appropriate to a cancelled interactable select
-	interactionErrorState := singleContainerState
-	singleContainerCancelCtx.On("State").Return(&interactionErrorState)
+	interactionCancelState := singleContainerState
+	cancelInteractPromptMock := &mock3.PromptMock{}
+	cancelInteractPromptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(-1, "", nil).Times(1)
+	interactionCancelState.SetPrompter(cancelInteractPromptMock)
 
 	// copy state and assign select builder appropriate to an errored interactable select
-	actionErrorState := singleContainerState
+	interactErrorState := singleContainerState
 	errorInteractPromptMock := &mock3.PromptMock{}
 	errorInteractPromptMock.On("Select",
 		mock2.AnythingOfType("string"),
 		mock2.AnythingOfType("[]string")).
-		Return(0, "", errors.New("something bad happened"))
-	actionErrorState.SetPrompter(errorInteractPromptMock)
-
-	singleContainerErrorCtx := mock.MockContext{}
-	singleContainerErrorCtx.On("State").Return(&actionErrorState)
+		Return(0, "", errors.New("something bad happened")).Times(1)
+	interactErrorState.SetPrompter(errorInteractPromptMock)
 
 	// copy state and assign select builder appropriate to an errored action select
-	errorState := singleContainerState
+	errorActionState := singleContainerState
 	errorActionPromptMock := &mock3.PromptMock{}
 	errorActionPromptMock.On("Select",
 		mock2.AnythingOfType("string"),
 		mock2.AnythingOfType("[]string")).
-		Return(0, "", nil).
-		Return(0, "", errors.New("something bad happened"))
-	errorState.SetPrompter(errorActionPromptMock)
-	actionErrorCtx := mock.MockContext{}
-	actionErrorCtx.On("State").Return(&errorState)
+		Return(0, "", nil).Times(1).
+		Return(0, "", errors.New("something bad happened")).Times(1)
+	errorActionState.SetPrompter(errorActionPromptMock)
 
 	// copy state and assign select builder appropriate to a cancelled action select
-	cancelState := singleContainerState
-	actionCancelCtx := mock.MockContext{}
-	actionCancelCtx.On("State").Return(&cancelState)
+	cancelActionState := singleContainerState
+	cancelActionPromptMock := &mock3.PromptMock{}
+	cancelActionPromptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(0, "", nil).Times(1).
+		Return(-1, "", nil).Times(1)
+	cancelActionState.SetPrompter(cancelActionPromptMock)
 
 	completeState := singleContainerState
-	actionCompleteCtx := mock.MockContext{}
-	actionCompleteCtx.On("State").Return(&completeState)
+	completeActionPromptMock := &mock3.PromptMock{}
+	completeActionPromptMock.On("Select",
+		mock2.AnythingOfType("string"),
+		mock2.AnythingOfType("[]string")).
+		Return(0, "", nil).Times(1).
+		Return(0, "", nil).Times(1)
+	completeState.SetPrompter(completeActionPromptMock)
 
 	type args struct {
 		s state.State
@@ -113,15 +114,15 @@ func Test_action(t *testing.T) {
 			false,
 		}, {
 			"should complete successfully when interactable selection cancelled",
-			args{interactionErrorState},
+			args{interactionCancelState},
 			false,
 		}, {
 			"should fail when there is an error in the action selector",
-			args{actionErrorState},
+			args{errorActionState},
 			true,
 		}, {
 			"should do nothing when the action selection is cancelled",
-			args{cancelState},
+			args{cancelActionState},
 			false,
 		}, { // TODO: finish this test
 			"should perform interaction when one is selected",
