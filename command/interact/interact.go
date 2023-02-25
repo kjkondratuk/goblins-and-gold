@@ -18,11 +18,11 @@ func New(s state.State) cli.Command {
 		Usage:       "Interact with your surroundings",
 		Description: "Interact with your surroundings",
 		Category:    "Actions",
-	}, s).Build(command.ValidatorHasArgs, validateContext, action)
+	}, s).Build(command.ValidatorHasArgs, validateState, action)
 	return c
 }
 
-func validateContext(s state.State) error {
+func validateState(s state.State) error {
 	if s == nil || s.CurrentRoom() == nil || s.CurrentRoom().Containers == nil {
 		return errors.New("invalid context for interact command")
 	}
@@ -41,7 +41,7 @@ func action(s state.State) error {
 	}
 
 	// Prompt for selection of the interactable
-	interactIdx, _, err := s.Prompter().Select("Interact with", append(ux.DescribeToList(dCon), "None of these"))
+	interactIdx, _, err := s.Prompter().Select("Interact with", append([]string{"None of these"}, ux.DescribeToList(dCon)...))
 	// handle errors with creating the selector for item ia
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func action(s state.State) error {
 		dAct[i] = a
 	}
 
-	_, actStr, err := s.Prompter().Select("Actions", append(ux.DescribeToList(dAct), "Cancel"))
+	_, actStr, err := s.Prompter().Select("Actions", append([]string{"Cancel"}, ux.DescribeToList(dAct)...))
 	if err != nil {
 		return err
 	}

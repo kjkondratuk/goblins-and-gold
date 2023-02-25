@@ -2,27 +2,19 @@ package stats
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/command"
-	"github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"testing"
 )
 
 func Test_action(t *testing.T) {
-	nilCtx := mock.MockContext{}
-	nilCtx.On("State").Return(nil)
+	var nilState state.State
 
-	nilPlayer := mock.MockContext{}
-	nilPlayer.On("State").Return(&state.State{
-		Player:   nil,
-		CurrRoom: nil,
-		World:    nil,
-	})
+	nilPlayer := state.New(nil, nil, &state.RoomDefinition{}, &state.WorldDefinition{})
 
-	nnPlayer := mock.MockContext{}
-	nnPlayer.On("State").Return(&state.State{
-		Player: actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+	nnPlayer := state.New(
+		nil,
+		actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
 			Name:      "test combatant",
 			AC:        0,
 			HP:        0,
@@ -30,12 +22,12 @@ func Test_action(t *testing.T) {
 			Inventory: nil,
 			Attacks:   nil,
 		}}),
-		CurrRoom: nil,
-		World:    nil,
-	})
+		nil,
+		nil,
+	)
 
 	type args struct {
-		c command.Context
+		s state.State
 	}
 	tests := []struct {
 		name    string
@@ -44,21 +36,21 @@ func Test_action(t *testing.T) {
 	}{
 		{
 			"should not error if state is nil",
-			args{&nilCtx},
+			args{nilState},
 			false,
 		}, {
 			"should not error when player is nil",
-			args{&nilPlayer},
+			args{nilPlayer},
 			false,
 		}, {
 			"should not error when player is non-nil",
-			args{&nnPlayer},
+			args{nnPlayer},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := action(tt.args.c); (err != nil) != tt.wantErr {
+			if err := action(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -66,24 +58,15 @@ func Test_action(t *testing.T) {
 }
 
 func Test_validateContext(t *testing.T) {
-	nilStateContext := mock.MockContext{}
-	nilStateContext.On("State").Return(nil)
+	var nilState state.State
 
-	nilPlayerCtx := mock.MockContext{}
-	nilPlayerCtx.On("State").Return(&state.State{})
+	nilPlayerState := state.New(nil, nil, &state.RoomDefinition{}, &state.WorldDefinition{})
 
-	validCtx := mock.MockContext{}
-	validCtx.On("State").Return(&state.State{
-		Player: actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
-			Name:      "Test Player",
-			AC:        15,
-			HP:        10,
-			BaseStats: stats.BaseStats{},
-		}}),
-	})
+	validState := state.New(nil, actors.NewPlayer(actors.PlayerParams{}),
+		&state.RoomDefinition{}, &state.WorldDefinition{})
 
 	type args struct {
-		ctx command.Context
+		s state.State
 	}
 	tests := []struct {
 		name    string
@@ -92,21 +75,21 @@ func Test_validateContext(t *testing.T) {
 	}{
 		{
 			"should be invalid when state is nil",
-			args{&nilStateContext},
+			args{nilState},
 			true,
 		}, {
 			"should be invalid when player is nil",
-			args{&nilPlayerCtx},
+			args{nilPlayerState},
 			true,
 		}, {
 			"should be valid when a state and player are non-nil",
-			args{&validCtx},
+			args{validState},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+			if err := validateState(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("validateContext() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

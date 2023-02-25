@@ -180,7 +180,7 @@ func Test_validateContext(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateContext(tt.args.s); (err != nil) != tt.wantErr {
+			if err := validateState(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("validateContext() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

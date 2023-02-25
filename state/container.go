@@ -85,7 +85,7 @@ func (c *Container) loot(s State) (interaction.Result, error) {
 				d[i] = x
 			}
 
-			resultIdx, _, err := s.Prompter().Select("Items", append(ux.DescribeToList(d), "Cancel"))
+			resultIdx, _, err := s.Prompter().Select("Items", append([]string{"Cancel"}, ux.DescribeToList(d)...))
 			if err != nil {
 				return interaction.Result{}, err
 			}

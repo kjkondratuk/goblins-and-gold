@@ -17,11 +17,11 @@ func New(s state.State) cli.Command {
 		Description: "Travel down a path",
 		ArgsUsage:   "[location number]",
 		Category:    "Actions",
-	}, s).Build(command.ValidatorHasArgs, validateContext, action)
+	}, s).Build(command.ValidatorHasArgs, validateState, action)
 	return c
 }
 
-func validateContext(s state.State) error {
+func validateState(s state.State) error {
 	if s == nil || s.CurrentRoom() == nil || s.CurrentRoom().Paths == nil {
 		return errors.New("invalid context for go command")
 	}
@@ -39,7 +39,7 @@ func action(s state.State) error {
 		paths[i] = p
 	}
 
-	idx, _, err := s.Prompter().Select("Go", append(ux.DescribeToList(paths), "Stay Here"))
+	idx, _, err := s.Prompter().Select("Go", append([]string{"Stay Here"}, ux.DescribeToList(paths)...))
 	if err != nil {
 		return err
 	}

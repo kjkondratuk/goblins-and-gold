@@ -16,11 +16,11 @@ func New(s state.State) cli.Command {
 		Usage:       "Interrogate your player stats",
 		Description: "Interrogate your player stats",
 		Category:    "Info",
-	}, s).Build(nil, validateContext, action)
+	}, s).Build(nil, validateState, action)
 	return c
 }
 
-func validateContext(s state.State) error {
+func validateState(s state.State) error {
 	if s == nil || s.Player() == nil {
 		return errors.New("invalid context for stats command")
 	}

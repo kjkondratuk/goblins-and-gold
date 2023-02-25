@@ -3,8 +3,6 @@ package _go
 import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/command"
-	mock3 "github.com/kjkondratuk/goblins-and-gold/command/mock"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/stats"
 	"github.com/kjkondratuk/goblins-and-gold/ux/mock"
@@ -18,14 +16,16 @@ type mockPromptLib struct {
 
 func Test_action(t *testing.T) {
 	t.Run("should not fail when there is nowhere to go", func(t *testing.T) {
-		ctx := mock3.MockContext{}
-		s := &state.State{
-			CurrRoom: &state.RoomDefinition{
+		s := state.New(
+			nil,
+			nil,
+			&state.RoomDefinition{
 				Paths: []*state.PathDefinition{},
 			},
-		}
-		ctx.On("State").Return(s)
-		err := action(s)(&ctx)
+			nil,
+		)
+
+		err := action(s)
 		assert.NoError(t, err)
 	})
 
@@ -35,22 +35,20 @@ func Test_action(t *testing.T) {
 			mock2.AnythingOfType("string"),
 			mock2.AnythingOfType("[]string")).
 			Return(0, "", errors.New("something went wrong"))
-		ctx := mock3.MockContext{}
-		s := &state.State{
-			Player: nil,
-			CurrRoom: &state.RoomDefinition{
+		s := state.New(
+			promptMock,
+			nil,
+			&state.RoomDefinition{
 				Paths: []*state.PathDefinition{
 					{
 						"another-room", "a creaky wooden door",
 					},
 				},
 			},
-			World:     nil,
-			PromptLib: promptMock,
-		}
-		ctx.On("State").Return(s)
+			nil,
+		)
 
-		err := action(s)(&ctx)
+		err := action(s)
 		assert.Error(t, err)
 	})
 
@@ -60,22 +58,20 @@ func Test_action(t *testing.T) {
 			mock2.AnythingOfType("string"),
 			mock2.AnythingOfType("[]string")).
 			Return(-1, "", nil)
-		ctx := mock3.MockContext{}
-		s := &state.State{
-			Player: nil,
-			CurrRoom: &state.RoomDefinition{
+		s := state.New(
+			promptMock,
+			nil,
+			&state.RoomDefinition{
 				Paths: []*state.PathDefinition{
 					{
 						"another-room", "a creaky wooden door",
 					},
 				},
 			},
-			World:     nil,
-			PromptLib: promptMock,
-		}
-		ctx.On("State").Return(s)
+			nil,
+		)
 
-		err := action(s)(&ctx)
+		err := action(s)
 		assert.NoError(t, err)
 	})
 
@@ -85,9 +81,9 @@ func Test_action(t *testing.T) {
 			mock2.AnythingOfType("string"),
 			mock2.AnythingOfType("[]string")).
 			Return(0, "", nil)
-		ctx := mock3.MockContext{}
-		s := &state.State{
-			Player: actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+		s := state.New(
+			promptMock,
+			actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
 				Name:      "",
 				AC:        0,
 				HP:        0,
@@ -95,26 +91,23 @@ func Test_action(t *testing.T) {
 				Inventory: nil,
 				Attacks:   nil,
 			}}),
-			CurrRoom: &state.RoomDefinition{
+			&state.RoomDefinition{
 				Paths: []*state.PathDefinition{
 					{
 						"another-room", "a creaky wooden door",
 					},
 				},
 			},
-			World: &state.WorldDefinition{
+			&state.WorldDefinition{
 				Rooms: map[string]*state.RoomDefinition{
 					"another-room": {
 						Name: "another-room",
 					},
 				},
 			},
-			PromptLib: promptMock,
-		}
-		ctx.On("RunCommandByName", mock2.AnythingOfType("string")).Return(nil).Once()
-		ctx.On("State").Return(s).Once()
+		)
 
-		err := action(s)(&ctx)
+		err := action(s)
 		assert.NoError(t, err)
 	})
 
@@ -124,9 +117,9 @@ func Test_action(t *testing.T) {
 			mock2.AnythingOfType("string"),
 			mock2.AnythingOfType("[]string")).
 			Return(0, "", nil)
-		ctx := mock3.MockContext{}
-		s := &state.State{
-			Player: actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+		s := state.New(
+			promptMock,
+			actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
 				Name:      "",
 				AC:        0,
 				HP:        10,
@@ -134,57 +127,43 @@ func Test_action(t *testing.T) {
 				Inventory: nil,
 				Attacks:   nil,
 			}}),
-			CurrRoom: &state.RoomDefinition{
+			&state.RoomDefinition{
 				Paths: []*state.PathDefinition{
 					{
 						"another-room", "a creaky wooden door",
 					},
 				},
 			},
-			World: &state.WorldDefinition{
+			&state.WorldDefinition{
 				Rooms: map[string]*state.RoomDefinition{
 					"another-room": {
 						Name: "another-room",
 					},
 				},
 			},
-			PromptLib: promptMock,
-		}
-		ctx.On("State").Return().Times(10)
+		)
 
-		err := action(s)(&ctx)
+		err := action(s)
 		assert.NoError(t, err)
 	})
 }
 
-func Test_validateContext(t *testing.T) {
-	nilStateContext := mock3.MockContext{}
-	nilStateContext.On("State").Return(nil)
+func Test_validateState(t *testing.T) {
+	var nilState state.State
 
-	nilCurrentRoomCtx := mock3.MockContext{}
-	nilCurrentRoomCtx.On("State").Return(&state.State{})
+	emptyState := state.New(nil, nil, nil, nil)
 
-	nilPathCtx := mock3.MockContext{}
-	nilPathCtx.On("State").Return(&state.State{
-		CurrRoom: &state.RoomDefinition{
-			Paths: nil,
-		},
-	})
+	nilRoomState := state.New(nil, actors.NewPlayer(actors.PlayerParams{}),
+		&state.RoomDefinition{Paths: []*state.PathDefinition{}}, &state.WorldDefinition{})
 
-	validCtx := mock3.MockContext{}
-	validCtx.On("State").Return(&state.State{
-		CurrRoom: &state.RoomDefinition{
-			Paths: []*state.PathDefinition{
-				{
-					"test-room",
-					"plain wooden door",
-				},
-			},
-		},
-	})
+	nilPathState := state.New(nil, actors.NewPlayer(actors.PlayerParams{}),
+		&state.RoomDefinition{Paths: nil}, &state.WorldDefinition{})
+
+	validState := state.New(nil, actors.NewPlayer(actors.PlayerParams{}),
+		&state.RoomDefinition{Paths: []*state.PathDefinition{}}, &state.WorldDefinition{})
 
 	type args struct {
-		ctx command.Context
+		s state.State
 	}
 	tests := []struct {
 		name    string
@@ -193,25 +172,29 @@ func Test_validateContext(t *testing.T) {
 	}{
 		{
 			"should be invalid when state is nil",
-			args{&nilStateContext},
+			args{nilState},
 			true,
 		}, {
 			"should be invalid when current room is nil",
-			args{&nilCurrentRoomCtx},
+			args{nilRoomState},
 			true,
 		}, {
 			"should be invalid when paths in the current room are nil",
-			args{&nilPathCtx},
+			args{nilPathState},
 			true,
 		}, {
 			"should be valid when a state room and paths are non-nil",
-			args{&validCtx},
+			args{validState},
 			false,
+		}, {
+			"should be invalid when state is empty",
+			args{emptyState},
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateContext(tt.args.ctx); (err != nil) != tt.wantErr {
+			if err := validateState(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("action() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
