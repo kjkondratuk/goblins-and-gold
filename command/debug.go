@@ -9,12 +9,17 @@ type debugCommand struct {
 }
 
 func NewDebugCommand(subcommands ...Command) Command {
-	return &debugCommand{baseCommand{
+	c := &debugCommand{baseCommand{
 		name:        "debug",
 		description: "Debug commands",
 		aliases:     []string{"d", "de"},
 		subcommands: subcommands,
+		usage:       `debug [help|world]`,
 	}}
+
+	c.subcommands = append(c.subcommands, NewHelpCommand(c))
+
+	return c
 }
 
 func (q *debugCommand) Run(s state.State, args ...string) error {

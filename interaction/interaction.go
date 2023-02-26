@@ -1,8 +1,8 @@
 package interaction
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/attack"
-	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/attack"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 )
 
 type Type string
@@ -14,8 +14,8 @@ func (t Type) Describe() string {
 type ResultType string
 
 const (
-	RT_Success = ResultType("Success")
-	RT_Failure = ResultType("Failure")
+	RtSuccess = ResultType("Success")
+	RtFailure = ResultType("Failure")
 )
 
 type Result struct {

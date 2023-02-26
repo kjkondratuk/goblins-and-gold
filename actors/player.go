@@ -2,7 +2,7 @@ package actors
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
-	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/pterm/pterm"
 	"time"
 )

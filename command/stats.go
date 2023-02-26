@@ -11,15 +11,26 @@ type statsCommand struct {
 }
 
 func NewStatsCommand() Command {
-	return &statsCommand{baseCommand{
+	c := &statsCommand{baseCommand{
 		name:        "stats",
 		description: "Display player stats",
 		aliases:     []string{"s", "st"},
-		subcommands: nil,
+		usage:       `stats [help]`,
 	}}
+
+	c.subcommands = append(c.subcommands, NewHelpCommand(c))
+
+	return c
 }
 
 func (sc *statsCommand) Run(s state.State, args ...string) error {
+	if len(args) > 0 {
+		err := sc.execSubcommand(s, args...)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 	if s != nil && s.Player() != nil {
 		ps, _ := yaml.Marshal(s.Player().Summary())
 		pterm.Success.Println(string(ps))

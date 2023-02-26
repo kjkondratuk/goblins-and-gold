@@ -13,14 +13,26 @@ type quitCommand struct {
 }
 
 func NewQuitCommand(exit chan os.Signal) Command {
-	return &quitCommand{baseCommand{
+	c := &quitCommand{baseCommand{
 		name:        "quit",
 		description: "Travel between rooms",
 		aliases:     []string{"q"},
+		usage:       `quit [help]`,
 	}, exit}
+
+	c.subcommands = append(c.subcommands, NewHelpCommand(c))
+
+	return c
 }
 
 func (q *quitCommand) Run(s state.State, args ...string) error {
+	if len(args) > 0 {
+		err := q.execSubcommand(s, args...)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 	pterm.Info.Println("Quitting...")
 	q.exit <- syscall.SIGTERM
 	return nil

@@ -50,6 +50,7 @@ monsters:
     name: Goblin
     ac: 15
     hp: 7
+    description: A short humanoid, in rags, wielding a scimitar
     stats:
       str: 8
       dex: 14

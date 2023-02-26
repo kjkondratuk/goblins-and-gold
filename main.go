@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/game"
-	"github.com/pterm/pterm"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,5 +15,4 @@ func main() {
 	game.Run(os.Args, exit)
 
 	<-exit
-	pterm.Info.Printf("Exiting...\n")
 }

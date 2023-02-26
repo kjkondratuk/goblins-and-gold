@@ -3,20 +3,24 @@ package actors
 import (
 	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
 	"time"
 )
 
 type monster struct {
 	combatant
+	_desc string
 }
 
 type MonsterParams struct {
 	CombatantParams `yaml:",inline"`
+	Description     string `yaml:"description"`
 }
 
 type Monster interface {
 	Combatant
+	ux.Described
 }
 
 type MonsterOption func(c *monster)
@@ -38,6 +42,7 @@ func NewMonster(pd MonsterParams, opts ...MonsterOption) Monster {
 			_inventory: pd.Inventory,
 			_attacks:   pd.Attacks,
 		},
+		pd.Description,
 	}
 
 	for _, o := range opts {
@@ -80,4 +85,8 @@ func (m *monster) Attack(c Combatant) {
 	} else {
 		pterm.Info.Printfln("The %s strikes at you and misses. (%d)", m.Name(), dr)
 	}
+}
+
+func (m *monster) Describe() string {
+	return m._desc
 }

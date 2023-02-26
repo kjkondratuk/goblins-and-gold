@@ -2,7 +2,7 @@ package state
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/stats"
+	"github.com/kjkondratuk/goblins-and-gold/model/stats"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

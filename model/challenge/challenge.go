@@ -1,8 +1,8 @@
 package challenge
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/attack"
-	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/attack"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 )
 
 const (

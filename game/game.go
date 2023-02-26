@@ -45,56 +45,11 @@ func Run(appArgs []string, exit chan os.Signal) {
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()
 
-	//cmds := []cli.Command{
-	//	look.New(s),
-	//	_go.New(s),
-	//	interact.New(s),
-	//	stats.New(s),
-	//	{
-	//		Name:        "quit",
-	//		Aliases:     []string{"q"},
-	//		Usage:       "Quit the game",
-	//		Description: "Quit the game",
-	//		Action: func(c *cli.Context) error {
-	//			// TODO : should probably write game state here before exiting so we can resume if we want
-	//			pterm.Info.Println("Quitting...")
-	//			exit <- syscall.SIGTERM
-	//			return nil
-	//		},
-	//	},
-	//}
-
-	// if we're debugging add some additional debug cmds that spoil the magic
-	//if isDebug {
-	//	pterm.EnableDebugMessages()
-	//	cmds = append(cmds, cli.Command{
-	//		Name:        "world",
-	//		Aliases:     []string{"w"},
-	//		Usage:       "Print general info about the world.",
-	//		Description: "Print general info about the world.",
-	//		Category:    "Debug",
-	//		Action: func(world *state.WorldDefinition) cli.ActionFunc {
-	//			return func(c *cli.Context) error {
-	//				ws, _ := yaml.Marshal(world)
-	//				pterm.Debug.Println(pterm.Green(string(ws)))
-	//				return nil
-	//			}
-	//		}(w),
-	//	})
-	//}
-
-	//app := &cli.App{
-	//	Name: defaultApp,
-	//	Action: func(c *cli.Context) error {
-	//		return cli.ShowAppHelp(c)
-	//	},
-	//	Commands: cmds,
-	//}
-
 	qc := command.NewQuitCommand(exit)
 
 	cmds := []command.Command{
 		command.NewGoCommand(qc),
+		command.NewInteractCommand(),
 		command.NewStatsCommand(),
 		command.NewLookCommand(),
 		qc,
@@ -121,6 +76,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 		// TODO : do we need to recover here?
 
 		for {
+			// TODO : figure out how to implement this completer
 			// prompt the user and read the input
 			line := prompt.Input(" >> ", func(document prompt.Document) []prompt.Suggest {
 				return []prompt.Suggest{}
@@ -136,14 +92,3 @@ func Run(appArgs []string, exit chan os.Signal) {
 		}
 	}()
 }
-
-//func completer(cList []command.Command) prompt.Completer {
-//	return func(d prompt.Document) []prompt.Suggest {
-//		var s []prompt.Suggest
-//		for _, c := range cList {
-//			s = append(s, prompt.Suggest{Text: c.Name(), Description: c.Description()})
-//		}
-//
-//		return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
-//	}
-//}

@@ -12,15 +12,27 @@ type goCommand struct {
 }
 
 func NewGoCommand(quit Command) Command {
-	return &goCommand{baseCommand{
+	c := &goCommand{baseCommand{
 		name:        "go",
 		description: "Travel between rooms",
 		aliases:     []string{"g"},
+		usage:       `go [help]`,
 	}, quit}
+
+	c.subcommands = append(c.subcommands, NewHelpCommand(c))
+
+	return c
 }
 
 func (g *goCommand) Run(s state.State, args ...string) error {
-	// TODO : add test coverage for this condition
+	// TODO : need to refactor this so it isn't in every command
+	if len(args) > 0 {
+		err := g.execSubcommand(s, args...)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 	if len(s.CurrentRoom().Paths) <= 0 {
 		pterm.Error.Println("Nowhere to go!")
 		return nil

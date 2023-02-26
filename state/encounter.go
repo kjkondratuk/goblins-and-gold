@@ -3,6 +3,7 @@ package state
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/sequencer"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
 )
 
@@ -61,11 +62,13 @@ func (e *encounter) Run(s State) Outcome {
 	p := s.Player()
 	pterm.Info.Println(e._description)
 
-	m := make([]actors.Monster, len(e.Enemies())+1)
+	m := make([]actors.Monster, len(e.Enemies()))
+	md := make([]ux.Described, len(e.Enemies()))
 	for i, en := range e.Enemies() {
 		m[i] = en
+		md[i] = en
 	}
-	m[len(m)-1] = p
+	//m[len(m)-1] = p
 
 	seq := sequencer.NewCombatSequencer(p, m)
 
@@ -83,7 +86,16 @@ func (e *encounter) Run(s State) Outcome {
 				if err != nil {
 					pterm.Error.Printfln("There was a problem performing action [%s]: %s", action, err)
 				}
-				pterm.Error.Printfln("Player action: %s", action)
+				switch action {
+				case "Attack":
+					// TODO : finish implementing assailant choice
+					atkIdx, _, err := s.Prompter().Select("Who do you attack?", append([]string{}, ux.DescribeToList(md)...))
+					if err != nil {
+						return
+					}
+				case "Run":
+					// TODO : implement dex contest to escape
+				}
 			case actors.Monster:
 				// take monster turn
 				c.Attack(p)

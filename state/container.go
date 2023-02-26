@@ -3,9 +3,9 @@ package state
 import (
 	"errors"
 	"fmt"
-	"github.com/kjkondratuk/goblins-and-gold/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
-	"github.com/kjkondratuk/goblins-and-gold/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/challenge"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"math"
 )
@@ -51,20 +51,20 @@ func (c *Container) removeItem(i int) []item.Item {
 
 func (c *Container) open(s State) (interaction.Result, error) {
 	if c.Locked == nil {
-		s := fmt.Sprintf("%s: %s!\n", InteractionTypeOpen+"ed", c.Description)
+		msg := fmt.Sprintf("%s: %s!\n", InteractionTypeOpen+"ed", c.Description)
 
-		s = s + fmt.Sprint("Contents:\n")
+		msg = msg + fmt.Sprint("Contents:\n")
 		for _, a := range c.Items {
-			s = s + fmt.Sprintf(" - %s\n", a.Describe())
+			msg = msg + fmt.Sprintf(" - %s\n", a.Describe())
 		}
 
 		return interaction.Result{
-			Type:    interaction.RT_Success,
-			Message: s,
+			Type:    interaction.RtSuccess,
+			Message: msg,
 		}, nil
 	} else {
 		return interaction.Result{
-			Type:    interaction.RT_Failure,
+			Type:    interaction.RtFailure,
 			Message: "This container needs to be unlocked first",
 		}, nil
 	}
@@ -72,7 +72,7 @@ func (c *Container) open(s State) (interaction.Result, error) {
 
 func (c *Container) cancel(s State) (interaction.Result, error) {
 	return interaction.Result{
-		Type:    interaction.RT_Success,
+		Type:    interaction.RtSuccess,
 		Message: "Cancelled",
 	}, nil
 }
@@ -89,24 +89,27 @@ func (c *Container) loot(s State) (interaction.Result, error) {
 			if err != nil {
 				return interaction.Result{}, err
 			}
+			if resultIdx <= 0 {
+				return interaction.Result{}, nil
+			}
 			// TODO : getting an error here when looting the small chest and then cancelling
-			it := c.Items[resultIdx]
-			c.Items = c.removeItem(resultIdx)
+			it := c.Items[resultIdx-1]
+			c.Items = c.removeItem(resultIdx - 1)
 
 			return interaction.Result{
-				Type:          interaction.RT_Success,
+				Type:          interaction.RtSuccess,
 				Message:       fmt.Sprintf("You successfully looted: %s\n", it.Description),
 				AcquiredItems: []item.Item{it},
 			}, nil
 		} else {
 			return interaction.Result{
-				Type:    interaction.RT_Failure,
+				Type:    interaction.RtFailure,
 				Message: "No items to loot.  The container is empty.",
 			}, nil
 		}
 	} else {
 		return interaction.Result{
-			Type:    interaction.RT_Failure,
+			Type:    interaction.RtFailure,
 			Message: "This container needs to be opened first",
 		}, nil
 	}
@@ -115,7 +118,7 @@ func (c *Container) loot(s State) (interaction.Result, error) {
 func (c *Container) unlock(s State) (interaction.Result, error) {
 	if c.Locked == nil {
 		return interaction.Result{
-			Type:    interaction.RT_Failure,
+			Type:    interaction.RtFailure,
 			Message: "The container is already unlocked\n",
 		}, nil
 	}
@@ -131,7 +134,7 @@ func (c *Container) unlock(s State) (interaction.Result, error) {
 	// if the roll total beats the DC, remove the lock
 	if c.Locked.DC == math.MaxUint32 {
 		return interaction.Result{
-			Type:    interaction.RT_Failure,
+			Type:    interaction.RtFailure,
 			Message: "You struggle with the lock again, but it fails to open",
 		}, nil
 	} else if value+roll > c.Locked.DC {
@@ -141,13 +144,13 @@ func (c *Container) unlock(s State) (interaction.Result, error) {
 		// You get one chance, just one.  Good luck!
 		c.Locked.DC = math.MaxUint32
 		return interaction.Result{
-			Type:    interaction.RT_Failure,
+			Type:    interaction.RtFailure,
 			Message: fmt.Sprintf("You rolled a %d.  Unlock attempt failed.", roll),
 		}, nil
 	}
 
 	return interaction.Result{
-		Type:    interaction.RT_Success,
+		Type:    interaction.RtSuccess,
 		Message: fmt.Sprintf("You rolled a %d!  Conatiner successfully unlocked!\n", roll),
 	}, nil
 }

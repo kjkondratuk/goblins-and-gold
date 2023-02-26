@@ -18,7 +18,18 @@ func NewApp(n string, d string, c ...Command) App {
 		name:        n,
 		description: d,
 		subcommands: c,
+		usage: `<command> <subcommand1> <subcommand2>
+- commands:
+    - go
+    - look
+    - interact
+    - stats
+    - debug
+    - help
+    - quit`,
 	}}
+
+	a.subcommands = append(a.subcommands, NewHelpCommand(a))
 
 	return a
 }
