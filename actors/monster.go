@@ -62,7 +62,7 @@ func (m *monster) Attack(c Combatant) {
 	}
 
 	// select randomly rolled attack and tabulate damage
-	ak := keys[r]
+	ak := keys[r-1]
 	atk := m._attacks[ak]
 
 	// Figure out if the attack hits or not

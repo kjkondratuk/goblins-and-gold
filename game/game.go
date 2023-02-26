@@ -57,7 +57,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	if isDebug {
 		pterm.EnableDebugMessages()
-		cmds = append(cmds, command.NewDebugCommand(command.NewWorldCommand()))
+		cmds = append(cmds, command.NewDebugCommand())
 	}
 
 	app := command.NewApp(

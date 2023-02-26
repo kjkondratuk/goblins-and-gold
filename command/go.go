@@ -1,6 +1,8 @@
 package command
 
 import (
+	"errors"
+	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -51,7 +53,11 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 	}
 
 	// Update the current room based on the selection, unless the user cancels navigation
-	nr, _ := s.World().Room(s.CurrentRoom().Paths[idx-1].Room)
+	rm := s.CurrentRoom().Paths[idx-1].Room
+	nr, ok := s.World().Room(rm)
+	if !ok {
+		return errors.New(fmt.Sprintf("could not locate room [%s]", rm))
+	}
 	s.UpdateCurrentRoom(&nr)
 	s.CurrentRoom().RunEncounters(s)
 	if s.Player().Unconscious() {

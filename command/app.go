@@ -8,12 +8,7 @@ type app struct {
 	baseCommand
 }
 
-type App interface {
-	Commands() []Command
-	Run(s state.State, args ...string) error
-}
-
-func NewApp(n string, d string, c ...Command) App {
+func NewApp(n string, d string, c ...Command) Command {
 	a := &app{baseCommand{
 		name:        n,
 		description: d,
@@ -32,10 +27,6 @@ func NewApp(n string, d string, c ...Command) App {
 	a.subcommands = append(a.subcommands, NewHelpCommand(a))
 
 	return a
-}
-
-func (a *app) Commands() []Command {
-	return a.subcommands
 }
 
 func (a *app) Run(s state.State, args ...string) error {

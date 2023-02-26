@@ -8,13 +8,15 @@ type debugCommand struct {
 	baseCommand
 }
 
-func NewDebugCommand(subcommands ...Command) Command {
+func NewDebugCommand() Command {
 	c := &debugCommand{baseCommand{
 		name:        "debug",
 		description: "Debug commands",
 		aliases:     []string{"d", "de"},
-		subcommands: subcommands,
-		usage:       `debug [help|world]`,
+		subcommands: []Command{
+			NewWorldCommand(),
+		},
+		usage: `debug [help|world]`,
 	}}
 
 	c.subcommands = append(c.subcommands, NewHelpCommand(c))

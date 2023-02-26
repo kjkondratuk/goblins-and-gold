@@ -89,10 +89,10 @@ func (e *encounter) Run(s State) Outcome {
 				switch action {
 				case "Attack":
 					// TODO : finish implementing assailant choice
-					atkIdx, _, err := s.Prompter().Select("Who do you attack?", append([]string{}, ux.DescribeToList(md)...))
-					if err != nil {
-						return
-					}
+					//atkIdx, _, err := s.Prompter().Select("Who do you attack?", append([]string{}, ux.DescribeToList(md)...))
+					//if err != nil {
+					//	return
+					//}
 				case "Run":
 					// TODO : implement dex contest to escape
 				}
