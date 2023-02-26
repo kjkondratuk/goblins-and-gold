@@ -5,7 +5,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	interaction2 "github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
-	"github.com/urfave/cli"
+	"time"
 )
 
 const (
@@ -21,8 +21,6 @@ type state struct {
 }
 
 type State interface {
-	SetCliContext(c *cli.Context)
-	CliContext() *cli.Context
 	Apply(r interaction2.Result)
 	Context() context.Context
 	Player() actors.Player
@@ -80,10 +78,18 @@ func (s *state) World() *WorldDefinition {
 	return s._c.Value(WorldKey).(*WorldDefinition)
 }
 
-func (s *state) SetCliContext(c *cli.Context) {
-	s._c = context.WithValue(s._c, CliContextKey, c)
+func (s *state) Deadline() (deadline time.Time, ok bool) {
+	return s._c.Deadline()
 }
 
-func (s *state) CliContext() *cli.Context {
-	return s._c.Value(CliContextKey).(*cli.Context)
+func (s *state) Done() <-chan struct{} {
+	return s._c.Done()
+}
+
+func (s *state) Err() error {
+	return s._c.Err()
+}
+
+func (s *state) Value(key any) any {
+	return s._c.Value(key)
 }
