@@ -3,6 +3,8 @@ package command
 import (
 	"errors"
 	"fmt"
+	"github.com/kjkondratuk/goblins-and-gold/actors"
+	"github.com/kjkondratuk/goblins-and-gold/model/stats"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux/mock"
 	"github.com/stretchr/testify/assert"
@@ -122,11 +124,108 @@ func Test_GoCommand_Run(t *testing.T) {
 							"a dark hallway",
 						},
 					},
-				}, nil),
+				}, &state.WorldDefinition{
+					Rooms: map[string]*state.RoomDefinition{
+						"start-room": {
+							"start-room",
+							"some description",
+							[]*state.PathDefinition{},
+							[]*state.Container{},
+							[]*state.EncounterDefinition{},
+						},
+					},
+					StartRoom: "start-room",
+				}),
 				args: nil,
 			},
 			func(t assert.TestingT, err error, i ...interface{}) bool {
 				return assert.Error(t, err)
+			},
+		}, {
+			name:   "should exit successfully when the new room exists",
+			fields: fields{qc: nil},
+			args: args{
+				s: state.New(nextRoomReturningSelectPrompt,
+					actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+						"player",
+						10,
+						10,
+						stats.BaseStats{},
+						nil,
+						nil,
+					}}),
+					&state.RoomDefinition{
+						Paths: []*state.PathDefinition{
+							{
+								"next-room",
+								"a dark hallway",
+							},
+						},
+					}, &state.WorldDefinition{
+						Rooms: map[string]*state.RoomDefinition{
+							"start-room": {
+								"start-room",
+								"some description",
+								[]*state.PathDefinition{},
+								[]*state.Container{},
+								[]*state.EncounterDefinition{},
+							}, "next-room": {
+								"next-room",
+								"some other description",
+								[]*state.PathDefinition{},
+								[]*state.Container{},
+								[]*state.EncounterDefinition{},
+							},
+						},
+						StartRoom: "start-room",
+					}),
+				args: nil,
+			},
+			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
+				return assert.NoError(t, err)
+			},
+		}, {
+			name:   "should exit successfully when player is unconscious",
+			fields: fields{qc: &baseCommand{}},
+			args: args{
+				s: state.New(nextRoomReturningSelectPrompt,
+					actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
+						"player",
+						10,
+						0,
+						stats.BaseStats{},
+						nil,
+						nil,
+					}}),
+					&state.RoomDefinition{
+						Paths: []*state.PathDefinition{
+							{
+								"next-room",
+								"a dark hallway",
+							},
+						},
+					}, &state.WorldDefinition{
+						Rooms: map[string]*state.RoomDefinition{
+							"start-room": {
+								"start-room",
+								"some description",
+								[]*state.PathDefinition{},
+								[]*state.Container{},
+								[]*state.EncounterDefinition{},
+							}, "next-room": {
+								"next-room",
+								"some other description",
+								[]*state.PathDefinition{},
+								[]*state.Container{},
+								[]*state.EncounterDefinition{},
+							},
+						},
+						StartRoom: "start-room",
+					}),
+				args: nil,
+			},
+			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
+				return assert.NoError(t, err)
 			},
 		},
 	}
