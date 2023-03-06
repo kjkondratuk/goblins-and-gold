@@ -2,6 +2,7 @@ package command
 
 import (
 	"errors"
+	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux/mock"
 	"github.com/stretchr/testify/assert"
@@ -76,5 +77,80 @@ func TestInteractCommand_Run(t *testing.T) {
 			},
 		}, nil))
 		assert.NoError(t, err)
+	})
+
+	t.Run("should error on action select failure", func(t *testing.T) {
+		pm := &mock.PromptMock{}
+
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(1, "some container", nil).Times(1)
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(-1, "", errors.New("something went wrong")).Times(1)
+
+		c := NewInteractCommand()
+		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+			Name: "some-room",
+			Containers: []*state.Container{
+				{
+					Type:        "Chest",
+					Description: "some container",
+					SupportedInteractions: []interaction.Type{
+						"Open",
+						"Loot",
+					},
+				},
+			},
+		}, nil))
+		assert.Error(t, err)
+	})
+
+	t.Run("should succeed on action select cancel", func(t *testing.T) {
+		pm := &mock.PromptMock{}
+
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(1, "some container", nil).Times(1)
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(0, "", nil).Times(1)
+
+		c := NewInteractCommand()
+		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+			Name: "some-room",
+			Containers: []*state.Container{
+				{
+					Type:        "Chest",
+					Description: "some container",
+					SupportedInteractions: []interaction.Type{
+						"Open",
+						"Loot",
+					},
+				},
+			},
+		}, nil))
+		assert.NoError(t, err)
+	})
+
+	t.Run("should error on failed interact action", func(t *testing.T) {
+		pm := &mock.PromptMock{}
+
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(1, "some container", nil).Times(1)
+		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+			Return(1, "Open", nil).Times(1)
+
+		c := NewInteractCommand()
+		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+			Name: "some-room",
+			Containers: []*state.Container{
+				{
+					Type:        "Chest",
+					Description: "some container",
+					SupportedInteractions: []interaction.Type{
+						"Open",
+						"Loot",
+					},
+				},
+			},
+		}, nil))
+		assert.Error(t, err)
 	})
 }

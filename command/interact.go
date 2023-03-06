@@ -57,8 +57,8 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 	}
 	actIdx, actStr, err := s.Prompter().Select("Actions", append([]string{"Cancel"},
 		ux.DescribeToList(dAct)...))
-	if actStr == "" {
-		return nil
+	if err != nil {
+		return err
 	}
 	if actIdx <= 0 {
 		return nil
@@ -66,8 +66,9 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 
 	a := interaction.Type(actStr)
 
+	// TODO : should probably inject this so I can mock the result
 	// get interactions available for this container
-	result, err := ia[interactIdx-1].Do(s, a)
+	result, err := ia[interactIdx-1].Do(s, ia[interactIdx-1], a)
 	if err != nil {
 		return err
 	}

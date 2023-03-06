@@ -31,8 +31,6 @@ type State interface {
 	World() *WorldDefinition
 }
 
-type InteractionFunc func(c State) (interaction2.Result, error)
-
 func New(pr ux.PromptLib, p actors.Player, r *RoomDefinition, w *WorldDefinition) State {
 	s := &state{}
 	// TODO : not sure if this is the best move, but it stops errors in unit tests
