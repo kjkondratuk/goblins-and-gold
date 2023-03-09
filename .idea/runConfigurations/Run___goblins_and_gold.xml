@@ -2,6 +2,14 @@
   <configuration default="false" name="Run - goblins-and-gold" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="goblins-and-gold" />
     <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="DEBUG" value="true" />
+    </envs>
+    <EXTENSION ID="software.aws.toolkits.jetbrains.core.execution.GoAwsConnectionRunConfigurationExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </EXTENSION>
     <kind value="PACKAGE" />
     <package value="github.com/kjkondratuk/goblins-and-gold" />
     <directory value="$PROJECT_DIR$" />

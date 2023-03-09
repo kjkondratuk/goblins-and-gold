@@ -1,10 +1,10 @@
 package actors
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/attack"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
-	"github.com/kjkondratuk/goblins-and-gold/item"
-	"github.com/kjkondratuk/goblins-and-gold/stats"
+	"github.com/kjkondratuk/goblins-and-gold/model/attack"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/stats"
 )
 
 type CombatantParams struct {
@@ -40,6 +40,7 @@ type Combatant interface {
 // Dmg : applies attack to a PlayerStruct's hitpoints.
 // Parameters:
 //   - hp - int - the number of hitpoints to remove
+//
 // Returns:
 //   - bool - whether or not the attack could be applied
 func (c *combatant) Dmg(hp int) bool {

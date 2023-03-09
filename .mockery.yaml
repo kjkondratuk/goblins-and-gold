@@ -1,0 +1,4 @@
+inpackage: true
+testonly: False
+with-expecter: True
+keeptree: False

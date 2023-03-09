@@ -3,24 +3,36 @@ package actors
 import (
 	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/dice"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
 	"time"
 )
 
 type monster struct {
 	combatant
+	_desc string
 }
 
 type MonsterParams struct {
 	CombatantParams `yaml:",inline"`
+	Description     string `yaml:"description"`
 }
 
 type Monster interface {
 	Combatant
+	ux.Described
 }
 
-func NewMonster(pd MonsterParams) Monster {
-	return &monster{
+type MonsterOption func(c *monster)
+
+func WithMonsterDice(d dice.Dice) MonsterOption {
+	return func(m *monster) {
+		m._dice = d
+	}
+}
+
+func NewMonster(pd MonsterParams, opts ...MonsterOption) Monster {
+	m := &monster{
 		combatant{
 			_name:      pd.Name,
 			_dice:      dice.NewDice(time.Now().UnixNano()),
@@ -30,7 +42,14 @@ func NewMonster(pd MonsterParams) Monster {
 			_inventory: pd.Inventory,
 			_attacks:   pd.Attacks,
 		},
+		pd.Description,
 	}
+
+	for _, o := range opts {
+		o(m)
+	}
+
+	return m
 }
 
 func (m *monster) Attack(c Combatant) {
@@ -43,7 +62,7 @@ func (m *monster) Attack(c Combatant) {
 	}
 
 	// select randomly rolled attack and tabulate damage
-	ak := keys[r]
+	ak := keys[r-1]
 	atk := m._attacks[ak]
 
 	// Figure out if the attack hits or not
@@ -66,4 +85,8 @@ func (m *monster) Attack(c Combatant) {
 	} else {
 		pterm.Info.Printfln("The %s strikes at you and misses. (%d)", m.Name(), dr)
 	}
+}
+
+func (m *monster) Describe() string {
+	return m._desc
 }
