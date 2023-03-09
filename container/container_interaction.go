@@ -143,6 +143,6 @@ func (cc *containerController) unlock(s state.State, c state.Container) (interac
 
 	return interaction.Result{
 		Type:    interaction.RtSuccess,
-		Message: fmt.Sprintf("You rolled a %d!  Conatiner successfully unlocked!\n", roll),
+		Message: fmt.Sprintf("You rolled a %d!  Container successfully unlocked!\n", roll),
 	}, nil
 }
