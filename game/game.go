@@ -7,6 +7,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/command"
 	"github.com/kjkondratuk/goblins-and-gold/config"
 	"github.com/kjkondratuk/goblins-and-gold/container"
+	"github.com/kjkondratuk/goblins-and-gold/interaction/applier"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -50,7 +51,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	cmds := []command.Command{
 		command.NewGoCommand(qc),
-		command.NewInteractCommand(container.NewContainerController()),
+		command.NewInteractCommand(
+			container.NewContainerController(),
+			applier.InteractionApplier{},
+		),
 		command.NewStatsCommand(),
 		command.NewLookCommand(),
 		qc,

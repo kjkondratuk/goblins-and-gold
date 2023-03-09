@@ -24,14 +24,16 @@ func TestNewGoCommand(t *testing.T) {
 }
 
 func Test_GoCommand_Run(t *testing.T) {
-	sameRoomReturningSelectPrompt := &ux.PromptMock{}
-	sameRoomReturningSelectPrompt.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+	sameRoomReturningSelectPrompt := &ux.MockPromptLib{}
+	sameRoomReturningSelectPrompt.EXPECT().Select(mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
 		Return(0, "", nil)
-	errorReturningSelectPrompt := &mock.PromptMock{}
-	errorReturningSelectPrompt.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+
+	errorReturningSelectPrompt := &ux.MockPromptLib{}
+	errorReturningSelectPrompt.EXPECT().Select(mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
 		Return(0, "", errors.New("something bad happened"))
-	nextRoomReturningSelectPrompt := &mock.PromptMock{}
-	nextRoomReturningSelectPrompt.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
+
+	nextRoomReturningSelectPrompt := &ux.MockPromptLib{}
+	nextRoomReturningSelectPrompt.EXPECT().Select(mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
 		Return(1, "another-room", nil)
 
 	type fields struct {

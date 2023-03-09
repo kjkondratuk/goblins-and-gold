@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	interaction2 "github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"time"
 )
@@ -21,7 +20,7 @@ type state struct {
 }
 
 type State interface {
-	Apply(r interaction2.Result)
+	//Apply(r interaction2.Result)
 	Context() context.Context
 	Player() actors.Player
 	Prompter() ux.PromptLib
@@ -44,9 +43,9 @@ func New(pr ux.PromptLib, p actors.Player, r *RoomDefinition, w *WorldDefinition
 	return s
 }
 
-func (s *state) Apply(r interaction2.Result) {
-	s.Player().Acquire(r.AcquiredItems...)
-}
+//func (s *state) Apply(r interaction2.Result) {
+//	s.Player().Acquire(r.AcquiredItems...)
+//}
 
 func (s *state) Context() context.Context {
 	return s._c

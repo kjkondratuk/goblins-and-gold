@@ -12,15 +12,16 @@ import (
 type interactCommand struct {
 	baseCommand
 	cc container.ContainerController
+	sa state.Applier[interaction.Result]
 }
 
-func NewInteractCommand(cc container.ContainerController) Command {
+func NewInteractCommand(cc container.ContainerController, sa state.Applier[interaction.Result]) Command {
 	c := &interactCommand{baseCommand{
 		name:        "interact",
 		description: "Travel between rooms",
 		aliases:     []string{"i", "in"},
 		usage:       `interact [help]`,
-	}, cc}
+	}, cc, sa}
 
 	c.subcommands = append(c.subcommands, NewHelpCommand(c))
 
@@ -77,8 +78,8 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 	// Apply to game state, if there was an applicable result
 	emptyResult := interaction.Result{}
 	if !reflect.DeepEqual(result, emptyResult) {
-		//r := result.(interaction.Result)
-		s.Apply(result)
+		// TODO : should probably refactor this to an interaction result state applicator
+		ic.sa.Apply(s, result)
 		switch result.Type {
 		case interaction.RtSuccess:
 			pterm.Success.Println(result.Message)

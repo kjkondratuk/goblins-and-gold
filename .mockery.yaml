@@ -1,4 +1,4 @@
-inpackage-suffix: True
-testonly: True
+inpackage: true
+testonly: False
 with-expecter: True
-keeptree: True
+keeptree: False
