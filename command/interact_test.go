@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/state"
-	"github.com/kjkondratuk/goblins-and-gold/ux/mock"
 	"github.com/stretchr/testify/assert"
 	mock2 "github.com/stretchr/testify/mock"
 	"testing"
@@ -136,6 +135,8 @@ func TestInteractCommand_Run(t *testing.T) {
 			Return(1, "some container", nil).Times(1)
 		pm.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
 			Return(1, "Open", nil).Times(1)
+
+		cm := &mock.
 
 		c := NewInteractCommand()
 		err := c.Run(state.New(pm, nil, &state.RoomDefinition{

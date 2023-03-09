@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/kjkondratuk/goblins-and-gold/container"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
@@ -10,15 +11,16 @@ import (
 
 type interactCommand struct {
 	baseCommand
+	cc container.ContainerController
 }
 
-func NewInteractCommand() Command {
+func NewInteractCommand(cc container.ContainerController) Command {
 	c := &interactCommand{baseCommand{
 		name:        "interact",
 		description: "Travel between rooms",
 		aliases:     []string{"i", "in"},
 		usage:       `interact [help]`,
-	}}
+	}, cc}
 
 	c.subcommands = append(c.subcommands, NewHelpCommand(c))
 
@@ -46,7 +48,7 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 	if err != nil {
 		return err
 	}
-	if interactIdx <= 0 {
+	if interactIdx <= 0 || ia[interactIdx-1] == nil {
 		return nil
 	}
 
@@ -66,9 +68,8 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 
 	a := interaction.Type(actStr)
 
-	// TODO : should probably inject this so I can mock the result
 	// get interactions available for this container
-	result, err := ia[interactIdx-1].Do(s, ia[interactIdx-1], a)
+	result, err := ic.cc.Do(s, *ia[interactIdx-1], a)
 	if err != nil {
 		return err
 	}

@@ -14,6 +14,7 @@ type containerController struct {
 	interactionMap map[interaction.Type]InteractionFunc
 }
 
+//go:generate mockery --name ContainerController
 type ContainerController interface {
 	Do(s state.State, c state.Container, t interaction.Type) (interaction.Result, error)
 }

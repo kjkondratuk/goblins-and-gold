@@ -6,7 +6,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/model/stats"
 	"github.com/kjkondratuk/goblins-and-gold/state"
-	"github.com/kjkondratuk/goblins-and-gold/ux/mock"
+	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/stretchr/testify/assert"
 	mock2 "github.com/stretchr/testify/mock"
 	"os"
@@ -24,7 +24,7 @@ func TestNewGoCommand(t *testing.T) {
 }
 
 func Test_GoCommand_Run(t *testing.T) {
-	sameRoomReturningSelectPrompt := &mock.PromptMock{}
+	sameRoomReturningSelectPrompt := &ux.PromptMock{}
 	sameRoomReturningSelectPrompt.On("Select", mock2.AnythingOfType("string"), mock2.AnythingOfType("[]string")).
 		Return(0, "", nil)
 	errorReturningSelectPrompt := &mock.PromptMock{}
