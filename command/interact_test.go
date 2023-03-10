@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/kjkondratuk/goblins-and-gold/container"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
+	container2 "github.com/kjkondratuk/goblins-and-gold/model/container"
+	"github.com/kjkondratuk/goblins-and-gold/model/room"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/stretchr/testify/assert"
@@ -54,7 +56,7 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(nil, nil, &state.RoomDefinition{
+		err := c.Run(state.New(nil, nil, &room.RoomDefinition{
 			Name: "some-room",
 		}, nil))
 		assert.NoError(t, err)
@@ -71,9 +73,9 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(nil, nil, &state.RoomDefinition{
+		err := c.Run(state.New(nil, nil, &room.RoomDefinition{
 			Name:       "some-room",
-			Containers: []*state.Container{},
+			Containers: []*container2.Container{},
 		}, nil))
 		assert.NoError(t, err)
 	})
@@ -93,9 +95,9 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
@@ -120,9 +122,9 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
@@ -151,13 +153,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -184,13 +186,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -209,9 +211,9 @@ func TestInteractCommand_Run(t *testing.T) {
 
 		mc := &container.MockContainerController{}
 		mc.EXPECT().Do(
-			mock2.AnythingOfType("*state.state"),
-			mock2.AnythingOfType("state.Container"),
-			mock2.AnythingOfType("interaction.Type")).
+			mock2.Anything,
+			mock2.Anything,
+			mock2.Anything).
 			Return(interaction.Result{}, errors.New("something bad happened")).
 			Times(1)
 
@@ -219,13 +221,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -244,9 +246,9 @@ func TestInteractCommand_Run(t *testing.T) {
 
 		mc := &container.MockContainerController{}
 		mc.EXPECT().Do(
-			mock2.AnythingOfType("*state.state"),
-			mock2.AnythingOfType("state.Container"),
-			mock2.AnythingOfType("interaction.Type")).
+			mock2.Anything,
+			mock2.Anything,
+			mock2.Anything).
 			Return(interaction.Result{}, nil).
 			Times(1)
 
@@ -254,13 +256,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -279,9 +281,9 @@ func TestInteractCommand_Run(t *testing.T) {
 
 		mc := &container.MockContainerController{}
 		mc.EXPECT().Do(
-			mock2.AnythingOfType("*state.state"),
-			mock2.AnythingOfType("state.Container"),
-			mock2.AnythingOfType("interaction.Type")).
+			mock2.Anything,
+			mock2.Anything,
+			mock2.Anything).
 			Return(interaction.Result{Type: interaction.RtSuccess}, nil).
 			Times(1)
 
@@ -289,13 +291,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -314,9 +316,9 @@ func TestInteractCommand_Run(t *testing.T) {
 
 		mc := &container.MockContainerController{}
 		mc.EXPECT().Do(
-			mock2.AnythingOfType("*state.state"),
-			mock2.AnythingOfType("state.Container"),
-			mock2.AnythingOfType("interaction.Type")).
+			mock2.Anything,
+			mock2.Anything,
+			mock2.Anything).
 			Return(interaction.Result{Type: interaction.RtFailure}, nil).
 			Times(1)
 
@@ -324,13 +326,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},
@@ -349,9 +351,9 @@ func TestInteractCommand_Run(t *testing.T) {
 
 		mc := &container.MockContainerController{}
 		mc.EXPECT().Do(
-			mock2.AnythingOfType("*state.state"),
-			mock2.AnythingOfType("state.Container"),
-			mock2.AnythingOfType("interaction.Type")).
+			mock2.Anything,
+			mock2.Anything,
+			mock2.Anything).
 			Return(interaction.Result{Type: "other", Message: "some message"}, nil).
 			Times(1)
 
@@ -359,13 +361,13 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &state.RoomDefinition{
+		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
 			Name: "some-room",
-			Containers: []*state.Container{
+			Containers: []*container2.Container{
 				{
 					Type:        "Chest",
 					Description: "some container",
-					SupportedInteractions: []interaction.Type{
+					SupportedInteractions: []container2.Type{
 						"Open",
 						"Loot",
 					},

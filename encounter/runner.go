@@ -1,66 +1,29 @@
-package state
+package encounter
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
+	"github.com/kjkondratuk/goblins-and-gold/model/encounter"
 	"github.com/kjkondratuk/goblins-and-gold/sequencer"
+	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
 )
 
-const (
-	TypeCombat = Type("Combat")
+type Outcome struct{}
 
-	ActionAttack = CombatAction("Attack")
-	ActionRun    = CombatAction("Run")
-)
+type encounterRunner struct{}
 
-type CombatAction string
-
-func (ca CombatAction) Describe() string {
-	return string(ca)
+type EncounterRunner interface {
+	Run(s state.State, e encounter.Encounter) Outcome
 }
 
-type Type string
-
-type EncounterDefinition struct {
-	Type        Type                   `yaml:"type"`
-	Description string                 `yaml:"description"`
-	Enemies     []actors.MonsterParams `yaml:"enemies"`
+func NewRunner() EncounterRunner {
+	return &encounterRunner{}
 }
 
-type encounter struct {
-	_type        Type
-	_description string
-	_enemies     []actors.Monster
-}
-
-type Encounter interface {
-	Run(s State) Outcome
-	Enemies() []actors.Monster
-}
-
-type Outcome struct {
-}
-
-func NewEncounter(d EncounterDefinition) Encounter {
-	monsters := make([]actors.Monster, len(d.Enemies))
-	for i, m := range d.Enemies {
-		monsters[i] = actors.NewMonster(m)
-	}
-	return &encounter{
-		_type:        d.Type,
-		_description: d.Description,
-		_enemies:     monsters,
-	}
-}
-
-func (e *encounter) Enemies() []actors.Monster {
-	return e._enemies
-}
-
-func (e *encounter) Run(s State) Outcome {
+func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 	p := s.Player()
-	pterm.Info.Println(e._description)
+	pterm.Info.Println(e.Describe())
 
 	m := make([]actors.Monster, len(e.Enemies()))
 	md := make([]ux.Described, len(e.Enemies()))
@@ -112,8 +75,4 @@ func (e *encounter) Run(s State) Outcome {
 	// if the player hasn't been defeated and there are still monsters loop again
 
 	return Outcome{}
-}
-
-func (e *encounter) Describe() string {
-	return e._description
 }

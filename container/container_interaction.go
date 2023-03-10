@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
+	"github.com/kjkondratuk/goblins-and-gold/model/container"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
@@ -16,34 +17,34 @@ type containerController struct {
 
 //go:generate mockery --name ContainerController
 type ContainerController interface {
-	Do(s state.State, c state.Container, t interaction.Type) (interaction.Result, error)
+	Do(s state.State, c container.Container, t interaction.Type) (interaction.Result, error)
 }
 
-type InteractionFunc func(s state.State, c state.Container) (interaction.Result, error)
+type InteractionFunc func(s state.State, c container.Container) (interaction.Result, error)
 
 func NewContainerController() ContainerController {
 	c := &containerController{}
 
 	c.interactionMap = map[interaction.Type]InteractionFunc{
-		state.InteractionTypeCancel: c.cancel,
-		state.InteractionTypeOpen:   c.open,
-		state.InteractionTypeLoot:   c.loot,
-		state.InteractionTypeUnlock: c.unlock,
+		interaction.InteractionTypeCancel: c.cancel,
+		interaction.InteractionTypeOpen:   c.open,
+		interaction.InteractionTypeLoot:   c.loot,
+		interaction.InteractionTypeUnlock: c.unlock,
 	}
 
 	return c
 }
 
-func (cc *containerController) Do(s state.State, c state.Container, t interaction.Type) (interaction.Result, error) {
+func (cc *containerController) Do(s state.State, c container.Container, t interaction.Type) (interaction.Result, error) {
 	if action, ok := cc.interactionMap[t]; ok {
 		return action(s, c)
 	}
 	return interaction.Result{}, errors.New(fmt.Sprintf("%s is not a valid action type for a container", t))
 }
 
-func (cc *containerController) open(s state.State, c state.Container) (interaction.Result, error) {
+func (cc *containerController) open(s state.State, c container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
-		msg := fmt.Sprintf("%s: %s!\n", state.InteractionTypeOpen+"ed", c.Description)
+		msg := fmt.Sprintf("%s: %s!\n", interaction.InteractionTypeOpen+"ed", c.Description)
 
 		msg = msg + fmt.Sprint("Contents:\n")
 		for _, a := range c.Items {
@@ -62,14 +63,14 @@ func (cc *containerController) open(s state.State, c state.Container) (interacti
 	}
 }
 
-func (cc *containerController) cancel(s state.State, c state.Container) (interaction.Result, error) {
+func (cc *containerController) cancel(s state.State, c container.Container) (interaction.Result, error) {
 	return interaction.Result{
 		Type:    interaction.RtSuccess,
 		Message: "Cancelled",
 	}, nil
 }
 
-func (cc *containerController) loot(s state.State, c state.Container) (interaction.Result, error) {
+func (cc *containerController) loot(s state.State, c container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
 		if len(c.Items) > 0 {
 			d := make([]ux.Described, len(c.Items))
@@ -107,7 +108,7 @@ func (cc *containerController) loot(s state.State, c state.Container) (interacti
 	}
 }
 
-func (cc *containerController) unlock(s state.State, c state.Container) (interaction.Result, error) {
+func (cc *containerController) unlock(s state.State, c container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
 		return interaction.Result{
 			Type:    interaction.RtFailure,

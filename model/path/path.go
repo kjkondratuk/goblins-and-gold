@@ -1,4 +1,4 @@
-package state
+package path
 
 type PathDefinition struct {
 	Room        string `yaml:"room"`

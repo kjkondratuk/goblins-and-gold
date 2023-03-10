@@ -8,6 +8,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/config"
 	"github.com/kjkondratuk/goblins-and-gold/container"
 	"github.com/kjkondratuk/goblins-and-gold/interaction/applier"
+	"github.com/kjkondratuk/goblins-and-gold/model/world"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -28,10 +29,10 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	start, _ := pterm.DefaultProgressbar.WithTotal(4).WithTitle("Starting...").Start()
 
-	var w *state.WorldDefinition
+	var w *world.WorldDefinition
 	var p actors.Player
 	async.InParallel(func() {
-		wl := config.Read[state.WorldDefinition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
+		wl := config.Read[world.WorldDefinition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 		start.Increment()

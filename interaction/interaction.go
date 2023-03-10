@@ -16,6 +16,11 @@ type ResultType string
 const (
 	RtSuccess = ResultType("Success")
 	RtFailure = ResultType("Failure")
+
+	InteractionTypeCancel = Type("Cancel")
+	InteractionTypeOpen   = Type("Open")
+	InteractionTypeLoot   = Type("Loot")
+	InteractionTypeUnlock = Type("Unlock")
 )
 
 type Result struct {

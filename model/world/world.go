@@ -1,8 +1,10 @@
-package state
+package world
+
+import "github.com/kjkondratuk/goblins-and-gold/model/room"
 
 type WorldDefinition struct {
-	Rooms     map[string]*RoomDefinition `yaml:"rooms"`
-	StartRoom string                     `yaml:"startingRoom"`
+	Rooms     map[string]*room.RoomDefinition `yaml:"rooms"`
+	StartRoom string                          `yaml:"startingRoom"`
 }
 
 // Room : retrieves a room by its key from the rooms present in this world
@@ -12,10 +14,10 @@ type WorldDefinition struct {
 // Return:
 //   - room.PathDefinition - the room
 //   - bool - whether or not the room could be located
-func (w WorldDefinition) Room(key string) (RoomDefinition, bool) {
+func (w WorldDefinition) Room(key string) (room.RoomDefinition, bool) {
 	if r, ok := w.Rooms[key]; ok {
 		return *r, true
 	} else {
-		return RoomDefinition{}, false
+		return room.RoomDefinition{}, false
 	}
 }

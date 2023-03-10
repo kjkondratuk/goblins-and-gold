@@ -1,7 +1,6 @@
-package state
+package container
 
 import (
-	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	"github.com/kjkondratuk/goblins-and-gold/model/challenge"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
 )
@@ -9,18 +8,19 @@ import (
 const (
 	Chest = Type("Chest")
 	Body  = Type("Body")
-
-	InteractionTypeCancel = interaction.Type("Cancel")
-	InteractionTypeOpen   = interaction.Type("Open")
-	InteractionTypeLoot   = interaction.Type("Loot")
-	InteractionTypeUnlock = interaction.Type("Unlock")
 )
+
+type Type string
+
+func (t Type) Describe() string {
+	return string(t)
+}
 
 type Container struct {
 	Type                  Type                      `yaml:"type"`
 	Locked                *challenge.SkillChallenge `yaml:"locked"`
 	Description           string                    `yaml:"description"`
-	SupportedInteractions []interaction.Type        `yaml:"interactions"`
+	SupportedInteractions []Type                    `yaml:"interactions"`
 	Items                 []item.Item               `yaml:"items"`
 }
 

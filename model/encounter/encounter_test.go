@@ -1,4 +1,4 @@
-package state
+package encounter
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"

@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
+	"github.com/kjkondratuk/goblins-and-gold/model/room"
+	"github.com/kjkondratuk/goblins-and-gold/model/world"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"time"
 )
@@ -25,12 +27,12 @@ type State interface {
 	Player() actors.Player
 	Prompter() ux.PromptLib
 	SetPrompter(p ux.PromptLib)
-	CurrentRoom() *RoomDefinition
-	UpdateCurrentRoom(r *RoomDefinition)
-	World() *WorldDefinition
+	CurrentRoom() *room.RoomDefinition
+	UpdateCurrentRoom(r *room.RoomDefinition)
+	World() *world.WorldDefinition
 }
 
-func New(pr ux.PromptLib, p actors.Player, r *RoomDefinition, w *WorldDefinition) State {
+func New(pr ux.PromptLib, p actors.Player, r *room.RoomDefinition, w *world.WorldDefinition) State {
 	s := &state{}
 	// TODO : not sure if this is the best move, but it stops errors in unit tests
 	if s._c == nil {
@@ -63,16 +65,16 @@ func (s *state) SetPrompter(p ux.PromptLib) {
 	s._c = context.WithValue(s._c, PromptLibKey, p)
 }
 
-func (s *state) CurrentRoom() *RoomDefinition {
-	return s._c.Value(RoomKey).(*RoomDefinition)
+func (s *state) CurrentRoom() *room.RoomDefinition {
+	return s._c.Value(RoomKey).(*room.RoomDefinition)
 }
 
-func (s *state) UpdateCurrentRoom(r *RoomDefinition) {
+func (s *state) UpdateCurrentRoom(r *room.RoomDefinition) {
 	s._c = context.WithValue(s._c, RoomKey, r)
 }
 
-func (s *state) World() *WorldDefinition {
-	return s._c.Value(WorldKey).(*WorldDefinition)
+func (s *state) World() *world.WorldDefinition {
+	return s._c.Value(WorldKey).(*world.WorldDefinition)
 }
 
 func (s *state) Deadline() (deadline time.Time, ok bool) {
