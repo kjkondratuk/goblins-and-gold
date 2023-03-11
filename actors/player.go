@@ -3,7 +3,6 @@ package actors
 import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
-	"github.com/pterm/pterm"
 	"time"
 )
 
@@ -47,10 +46,6 @@ func NewPlayer(pd PlayerParams, opts ...PlayerOption) Player {
 	}
 
 	return p
-}
-
-func (p *player) Attack(c Combatant) {
-	pterm.Error.Printfln("Not implemented yet")
 }
 
 func (c *combatant) Acquire(item ...item.Item) {

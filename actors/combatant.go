@@ -5,6 +5,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/model/attack"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/model/stats"
+	"github.com/pterm/pterm"
 )
 
 type CombatantParams struct {
@@ -33,7 +34,8 @@ type Combatant interface {
 	Dmg(hp int) bool
 	BaseStats() stats.BaseStats
 	Roll(rollExp string) int
-	Attack(c Combatant)
+	Attacks() attack.AttackSet
+	Attack(c Combatant, s AttackSelector) bool
 	Unconscious() bool
 }
 
@@ -50,6 +52,39 @@ func (c *combatant) Dmg(hp int) bool {
 			c._hp = 0
 		}
 		return true
+	}
+	return false
+}
+
+func (c *combatant) Attacks() attack.AttackSet {
+	return c._attacks
+}
+
+func (c *combatant) Attack(t Combatant, s AttackSelector) bool {
+	ak, atk := s.Select(c)
+
+	// Figure out if the attack hits or not
+	dr, _ := c._dice.Roll(dice.D20)
+	dr += atk.Bonus
+
+	if dr >= t.AC() {
+		// Calculate total damage for the strike
+		totalDamage := 0
+		for _, v := range atk.Damage {
+			dr, ok := c._dice.Roll(v.Roll)
+			if !ok {
+				pterm.Error.Printfln("%s has invalid damage roll specifier: %s", c.Name(), v.Roll)
+			}
+			totalDamage += dr + v.Bonus
+		}
+
+		t.Dmg(totalDamage)
+		pterm.Info.Printfln("%s dealt %d damage with a %s attack.  %s has %d HP remaining.", c.Name(), totalDamage, ak, t.Name(), t.Health())
+		if t.Health() <= 0 {
+			return true
+		}
+	} else {
+		pterm.Info.Printfln("%s strikes at %s with a %s attack and misses. (%d)", c.Name(), t.Name(), ak, dr)
 	}
 	return false
 }

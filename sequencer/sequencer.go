@@ -17,6 +17,7 @@ type sequencer struct {
 
 type Sequencer interface {
 	IsDone() bool
+	Terminate(c actors.Combatant)
 	DoTurn(handler Handler)
 }
 
@@ -64,6 +65,17 @@ func (s *sequencer) DoTurn(handler Handler) {
 	handler(fighter)
 	s._turn++
 	s._turnOrder = s._turnOrder.Move(1)
+}
+
+func (s *sequencer) Terminate(c actors.Combatant) {
+	// TODO : finish this logic
+	//s.
+	pterm.Debug.Printfln("Attempting to remove %s from the turn order", c.Name())
+	pterm.Debug.Printfln("%+v", s._turnOrder)
+	//for _, f := range s._fighters {
+	pterm.Debug.Printfln("%+v", s._fighters)
+	//s._turnOrder.Unlink()
+	//}
 }
 
 func (s *sequencer) IsDone() bool {

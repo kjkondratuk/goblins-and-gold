@@ -100,6 +100,7 @@ func Test_player_Attack(t *testing.T) {
 	}
 	type args struct {
 		c Combatant
+		s AttackSelector
 	}
 	tests := []struct {
 		name   string
@@ -113,7 +114,7 @@ func Test_player_Attack(t *testing.T) {
 			p := &player{
 				combatant: tt.fields.combatant,
 			}
-			p.Attack(tt.args.c)
+			p.Attack(tt.args.c, tt.args.s)
 		})
 	}
 }

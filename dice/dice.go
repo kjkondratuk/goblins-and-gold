@@ -37,7 +37,8 @@ func (d *dice) Roll(rollExp string) (int, bool) {
 		s, _ := strconv.Atoi(parts[1])
 		total := 0
 		for i := 0; i < n; i++ {
-			total += d._seed.Intn(s)
+			v := d._seed.Intn(s)
+			total += v
 		}
 
 		return total, true

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	encounter2 "github.com/kjkondratuk/goblins-and-gold/encounter"
 	"github.com/kjkondratuk/goblins-and-gold/model/encounter"
-	"github.com/kjkondratuk/goblins-and-gold/model/room"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -62,7 +61,7 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 		return errors.New(fmt.Sprintf("could not locate room [%s]", rm))
 	}
 	s.UpdateCurrentRoom(&nr)
-	RunEncounters(s, s.CurrentRoom())
+	RunEncounters(s)
 	if s.Player().Unconscious() {
 		_ = pterm.DefaultBigText.WithLetters(
 			pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
@@ -72,8 +71,8 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 	return nil
 }
 
-func RunEncounters(s state.State, r *room.RoomDefinition) {
-	for _, e := range r.MandatoryEncounters {
+func RunEncounters(s state.State) {
+	for _, e := range s.CurrentRoom().MandatoryEncounters {
 		// TODO : returns an outcome.  do we need it?
 		encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
 		p := s.Player()

@@ -52,16 +52,25 @@ func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 				switch action {
 				case "Attack":
 					// TODO : finish implementing assailant choice
-					//atkIdx, _, err := s.Prompter().Select("Who do you attack?", append([]string{}, ux.DescribeToList(md)...))
-					//if err != nil {
-					//	return
-					//}
+					targetIdx, _, _ := s.Prompter().Select("Who do you attack?", append([]string{}, ux.DescribeToList(md)...))
+					ad := make([]string, len(p.Attacks()))
+					i := 0
+					for k, _ := range p.Attacks() {
+						ad[i] = k
+						i++
+					}
+					_, atkLabel, _ := s.Prompter().Select("How do you attack?", append([]string{}, ad...))
+
+					killed := p.Attack(m[targetIdx], actors.ElectiveAttackSelector{Attack: atkLabel})
+					if killed {
+						seq.Terminate(m[targetIdx])
+					}
 				case "Run":
 					// TODO : implement dex contest to escape
 				}
 			case actors.Monster:
 				// take monster turn
-				c.Attack(p)
+				_ = c.Attack(p, actors.RandomAttackSelector{})
 				//pterm.Success.Printfln("Taking monster turn: %s", c.Name())
 			default:
 				pterm.Error.Printfln("Invalid combatant type: %T", c)

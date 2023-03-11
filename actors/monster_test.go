@@ -62,7 +62,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 			Description: "",
 		}, WithMonsterDice(dice.NewStaticDice().AddRolls(
-			dice.StaticRoll{R: 1, B: true},
+			dice.StaticRoll{R: 0, B: true},
 			dice.StaticRoll{R: 11, B: true},
 			dice.StaticRoll{R: 5, B: true},
 		)))
@@ -76,7 +76,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 		})
 
-		m.Attack(p)
+		m.Attack(p, RandomAttackSelector{})
 		assert.Equal(t, 5, p.Health())
 	})
 
@@ -99,7 +99,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 			Description: "",
 		}, WithMonsterDice(dice.NewStaticDice().AddRolls(
-			dice.StaticRoll{R: 1, B: true},
+			dice.StaticRoll{R: 0, B: true},
 			dice.StaticRoll{R: 7, B: true},
 		)))
 
@@ -112,7 +112,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 		})
 
-		m.Attack(p)
+		m.Attack(p, RandomAttackSelector{})
 		assert.Equal(t, 10, p.Health())
 	})
 
@@ -135,7 +135,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 			Description: "",
 		}, WithMonsterDice(dice.NewStaticDice().AddRolls(
-			dice.StaticRoll{R: 1, B: true},
+			dice.StaticRoll{R: 0, B: true},
 			dice.StaticRoll{R: 11, B: true},
 			dice.StaticRoll{R: 0, B: false}),
 		))
@@ -149,7 +149,7 @@ func Test_monster_Attack(t *testing.T) {
 			},
 		})
 
-		m.Attack(p)
+		m.Attack(p, RandomAttackSelector{})
 		assert.Equal(t, 10, p.Health())
 	})
 }
