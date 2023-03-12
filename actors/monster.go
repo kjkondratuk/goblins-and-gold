@@ -33,6 +33,7 @@ func NewMonster(pd MonsterParams, opts ...MonsterOption) Monster {
 	m := &monster{
 		combatant{
 			_name:      pd.Name,
+			_type:      MonsterType,
 			_dice:      dice.NewDice(time.Now().UnixNano()),
 			_hp:        pd.HP,
 			_ac:        pd.AC,

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	encounter2 "github.com/kjkondratuk/goblins-and-gold/encounter"
 	"github.com/kjkondratuk/goblins-and-gold/model/encounter"
-	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -14,15 +13,16 @@ import (
 type goCommand struct {
 	baseCommand
 	qc Command
+	lc Command
 }
 
-func NewGoCommand(quit Command) Command {
+func NewGoCommand(quit Command, look Command) Command {
 	c := &goCommand{baseCommand{
 		name:        "go",
 		description: "Travel between rooms",
 		aliases:     []string{"g"},
 		usage:       `go [help]`,
-	}, quit}
+	}, quit, look}
 
 	c.subcommands = append(c.subcommands, NewHelpCommand(c))
 
@@ -69,27 +69,13 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 		).Render()
 		_ = g.qc.Run(s)
 	}
-	return nil
+	return g.lc.Run(s)
 }
 
 func (g *goCommand) runEncounters(s state.State) {
 	for _, e := range s.CurrentRoom().MandatoryEncounters {
 		// TODO : returns an outcome.  do we need it?
-		result := encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
-
-		if result.Won {
-			var lootableInventory []item.Item
-			var itemDesc []ux.Described
-			for _, m := range result.Slain {
-				for _, i := range m.Inventory() {
-					lootableInventory = append(lootableInventory, i)
-					itemDesc = append(itemDesc, i)
-				}
-			}
-			pterm.Debug.Printfln("You won.  Lootable inventory is: %+v", lootableInventory)
-			i, _, _ := s.Prompter().Select("Which items do you want to loot?", ux.DescribeToList(itemDesc))
-
-		}
+		_ = encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
 
 		p := s.Player()
 		if p.Unconscious() {

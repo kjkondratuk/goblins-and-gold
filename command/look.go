@@ -1,8 +1,8 @@
 package command
 
 import (
-	"fmt"
 	"github.com/kjkondratuk/goblins-and-gold/state"
+	"github.com/pterm/pterm"
 )
 
 type lookCommand struct {
@@ -31,7 +31,7 @@ func (lc *lookCommand) Run(s state.State, args ...string) error {
 		return nil
 	}
 	if s != nil && s.CurrentRoom() != nil {
-		fmt.Println(s.CurrentRoom().Description)
+		pterm.Info.Println(s.CurrentRoom().Description)
 	}
 	return nil
 }

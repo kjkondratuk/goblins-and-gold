@@ -49,15 +49,16 @@ func Run(appArgs []string, exit chan os.Signal) {
 	start.Increment()
 
 	qc := command.NewQuitCommand(exit)
+	lc := command.NewLookCommand()
 
 	cmds := []command.Command{
-		command.NewGoCommand(qc),
+		command.NewGoCommand(qc, lc),
 		command.NewInteractCommand(
 			container.NewContainerController(),
 			applier.InteractionApplier{},
 		),
 		command.NewStatsCommand(),
-		command.NewLookCommand(),
+		lc,
 		qc,
 	}
 

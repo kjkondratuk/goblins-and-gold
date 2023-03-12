@@ -32,6 +32,7 @@ func NewPlayer(pd PlayerParams, opts ...PlayerOption) Player {
 	p := &player{
 		combatant{
 			_name:      pd.Name,
+			_type:      PlayerType,
 			_dice:      dice.NewDice(time.Now().UnixNano()),
 			_hp:        pd.HP,
 			_ac:        pd.AC,

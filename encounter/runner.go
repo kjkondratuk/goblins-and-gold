@@ -3,6 +3,7 @@ package encounter
 import (
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/model/encounter"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/sequencer"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
@@ -26,7 +27,7 @@ func NewRunner() EncounterRunner {
 
 func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 	p := s.Player()
-	pterm.Info.Println(e.Describe())
+	pterm.Warning.Println(e.Describe())
 
 	m := make([]actors.Monster, len(e.Enemies()))
 	md := make([]ux.Described, len(e.Enemies()))
@@ -71,6 +72,31 @@ func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 						seq.Terminate(m[targetIdx])
 						outcome.Slain = append(outcome.Slain, m[targetIdx])
 						outcome.Won = true
+
+						pterm.Success.Printfln("%s vanquished the %s", s.Player().Name(), m[targetIdx].Name())
+
+						var lootableInventory []item.Item
+						var itemDesc []ux.Described
+						for _, m := range outcome.Slain {
+							for _, i := range m.Inventory() {
+								lootableInventory = append(lootableInventory, i)
+								itemDesc = append(itemDesc, i)
+							}
+						}
+
+						// handle distribution of loot resulting from encounter
+						var done bool
+						for !done {
+							i, _, _ := s.Prompter().Select("Which items do you want to loot?",
+								append([]string{"Done"}, ux.DescribeToList(itemDesc)...))
+							if i <= 0 {
+								done = true
+							} else {
+								s.Player().Acquire(lootableInventory[i-1])
+								lootableInventory = append(lootableInventory[:i-1], lootableInventory[i:]...)
+								itemDesc = append(itemDesc[:i-1], itemDesc[i:]...)
+							}
+						}
 					}
 				case "Run":
 					// TODO : implement dex contest to escape

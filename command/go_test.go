@@ -21,7 +21,8 @@ import (
 func TestNewGoCommand(t *testing.T) {
 	exit := make(chan os.Signal)
 	qc := NewQuitCommand(exit)
-	c := NewGoCommand(qc)
+	lc := NewLookCommand()
+	c := NewGoCommand(qc, lc)
 	assert.NotNil(t, c)
 	assert.Equal(t, "go", c.Name())
 	assert.Len(t, c.Subcommands(), 1)
@@ -43,6 +44,7 @@ func Test_GoCommand_Run(t *testing.T) {
 
 	type fields struct {
 		qc Command
+		lc Command
 	}
 	type args struct {
 		s    state.State
@@ -150,7 +152,7 @@ func Test_GoCommand_Run(t *testing.T) {
 			},
 		}, {
 			name:   "should exit successfully when the new room exists",
-			fields: fields{qc: nil},
+			fields: fields{qc: nil, lc: NewLookCommand()},
 			args: args{
 				s: state.New(nextRoomReturningSelectPrompt,
 					actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
@@ -193,7 +195,7 @@ func Test_GoCommand_Run(t *testing.T) {
 			},
 		}, {
 			name:   "should exit successfully when player is unconscious",
-			fields: fields{qc: &baseCommand{}},
+			fields: fields{qc: &baseCommand{}, lc: NewLookCommand()},
 			args: args{
 				s: state.New(nextRoomReturningSelectPrompt,
 					actors.NewPlayer(actors.PlayerParams{CombatantParams: actors.CombatantParams{
@@ -238,7 +240,7 @@ func Test_GoCommand_Run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := NewGoCommand(tt.fields.qc)
+			g := NewGoCommand(tt.fields.qc, tt.fields.lc)
 			tt.wantErr(t, g.Run(tt.args.s, tt.args.args...), fmt.Sprintf("Run(%v, %v)", tt.args.s, tt.args.args))
 		})
 	}

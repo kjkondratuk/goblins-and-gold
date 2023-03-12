@@ -17,10 +17,10 @@ type containerController struct {
 
 //go:generate mockery --name ContainerController
 type ContainerController interface {
-	Do(s state.State, c container.Container, t interaction.Type) (interaction.Result, error)
+	Do(s state.State, c *container.Container, t interaction.Type) (interaction.Result, error)
 }
 
-type InteractionFunc func(s state.State, c container.Container) (interaction.Result, error)
+type InteractionFunc func(s state.State, c *container.Container) (interaction.Result, error)
 
 func NewContainerController() ContainerController {
 	c := &containerController{}
@@ -35,14 +35,14 @@ func NewContainerController() ContainerController {
 	return c
 }
 
-func (cc *containerController) Do(s state.State, c container.Container, t interaction.Type) (interaction.Result, error) {
+func (cc *containerController) Do(s state.State, c *container.Container, t interaction.Type) (interaction.Result, error) {
 	if action, ok := cc.interactionMap[t]; ok {
 		return action(s, c)
 	}
 	return interaction.Result{}, errors.New(fmt.Sprintf("%s is not a valid action type for a container", t))
 }
 
-func (cc *containerController) open(s state.State, c container.Container) (interaction.Result, error) {
+func (cc *containerController) open(s state.State, c *container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
 		msg := fmt.Sprintf("%s: %s!\n", interaction.InteractionTypeOpen+"ed", c.Description)
 
@@ -63,14 +63,14 @@ func (cc *containerController) open(s state.State, c container.Container) (inter
 	}
 }
 
-func (cc *containerController) cancel(s state.State, c container.Container) (interaction.Result, error) {
+func (cc *containerController) cancel(s state.State, c *container.Container) (interaction.Result, error) {
 	return interaction.Result{
 		Type:    interaction.RtSuccess,
 		Message: "Cancelled",
 	}, nil
 }
 
-func (cc *containerController) loot(s state.State, c container.Container) (interaction.Result, error) {
+func (cc *containerController) loot(s state.State, c *container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
 		if len(c.Items) > 0 {
 			d := make([]ux.Described, len(c.Items))
@@ -108,7 +108,7 @@ func (cc *containerController) loot(s state.State, c container.Container) (inter
 	}
 }
 
-func (cc *containerController) unlock(s state.State, c container.Container) (interaction.Result, error) {
+func (cc *containerController) unlock(s state.State, c *container.Container) (interaction.Result, error) {
 	if c.Locked == nil {
 		return interaction.Result{
 			Type:    interaction.RtFailure,
@@ -116,7 +116,6 @@ func (cc *containerController) unlock(s state.State, c container.Container) (int
 		}, nil
 	}
 
-	// TODO : should probably validate the context before we do it.
 	p := s.Player()
 	// Get skill check type: c.Locked.Type
 	// Get the player's modifier for the specified skill

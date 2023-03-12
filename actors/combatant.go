@@ -8,6 +8,13 @@ import (
 	"github.com/pterm/pterm"
 )
 
+const (
+	MonsterType = "monster"
+	PlayerType  = "player"
+)
+
+type Type string
+
 type CombatantParams struct {
 	Name      string           `yaml:"name"`
 	AC        int              `yaml:"ac"`
@@ -19,6 +26,7 @@ type CombatantParams struct {
 
 type combatant struct {
 	_name      string
+	_type      Type
 	_dice      dice.Dice
 	_ac        int
 	_hp        int // TODO: need to track current and max HP as well as temporary HP
@@ -84,12 +92,24 @@ func (c *combatant) Attack(t Combatant, s AttackSelector) bool {
 		}
 
 		t.Dmg(totalDamage)
-		pterm.Info.Printfln("%s dealt %d damage with a %s attack.  %s has %d HP remaining.", c.Name(), totalDamage, ak, t.Name(), t.Health())
+		var pr pterm.PrefixPrinter
+		if c._type == MonsterType {
+			pr = pterm.Warning
+		} else {
+			pr = pterm.Success
+		}
+		pr.Printfln("%s dealt %d damage with a %s attack.  %s has %d HP remaining.", c.Name(), totalDamage, ak, t.Name(), t.Health())
 		if t.Health() <= 0 {
 			return true
 		}
 	} else {
-		pterm.Info.Printfln("%s strikes at %s with a %s attack and misses. (%d)", c.Name(), t.Name(), ak, dr)
+		var pr pterm.PrefixPrinter
+		if c._type == PlayerType {
+			pr = pterm.Warning
+		} else {
+			pr = pterm.Info
+		}
+		pr.Printfln("%s strikes at %s with a %s attack and misses. (%d)", c.Name(), t.Name(), ak, dr)
 	}
 	return false
 }

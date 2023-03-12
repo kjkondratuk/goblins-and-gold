@@ -70,7 +70,7 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 	a := interaction.Type(actStr)
 
 	// get interactions available for this container
-	result, err := ic.cc.Do(s, *ia[interactIdx-1], a)
+	result, err := ic.cc.Do(s, ia[interactIdx-1], a)
 	if err != nil {
 		return err
 	}
