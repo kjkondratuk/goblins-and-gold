@@ -35,6 +35,7 @@ type Combatant interface {
 	BaseStats() stats.BaseStats
 	Roll(rollExp string) int
 	Attacks() attack.AttackSet
+	Inventory() []item.Item
 	Attack(c Combatant, s AttackSelector) bool
 	Unconscious() bool
 }
@@ -58,6 +59,10 @@ func (c *combatant) Dmg(hp int) bool {
 
 func (c *combatant) Attacks() attack.AttackSet {
 	return c._attacks
+}
+
+func (c *combatant) Inventory() []item.Item {
+	return c._inventory
 }
 
 func (c *combatant) Attack(t Combatant, s AttackSelector) bool {

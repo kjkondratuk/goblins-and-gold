@@ -9,7 +9,10 @@ import (
 	"github.com/pterm/pterm"
 )
 
-type Outcome struct{}
+type Outcome struct {
+	Won   bool
+	Slain []actors.Monster
+}
 
 type encounterRunner struct{}
 
@@ -34,6 +37,8 @@ func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 	//m[len(m)-1] = p
 
 	seq := sequencer.NewCombatSequencer(p, m)
+
+	outcome := Outcome{}
 
 	// loop over list, taking a combat for each combatant, until done
 	for !seq.IsDone() {
@@ -64,6 +69,8 @@ func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 					killed := p.Attack(m[targetIdx], actors.ElectiveAttackSelector{Attack: atkLabel})
 					if killed {
 						seq.Terminate(m[targetIdx])
+						outcome.Slain = append(outcome.Slain, m[targetIdx])
+						outcome.Won = true
 					}
 				case "Run":
 					// TODO : implement dex contest to escape
@@ -83,5 +90,5 @@ func (er *encounterRunner) Run(s state.State, e encounter.Encounter) Outcome {
 	// Apply damage to the target(s)
 	// if the player hasn't been defeated and there are still monsters loop again
 
-	return Outcome{}
+	return outcome
 }

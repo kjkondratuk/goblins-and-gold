@@ -14,7 +14,7 @@ rooms:
         description: *empty_archway
     mandatory_encounters:
       - type: Combat
-        description: A hulking dark figure rises from the floor ahead of you.  You brace for combat.
+        description: A small humanoid figure rises from the floor ahead of you.  You brace for combat.
         enemies:
 #          - *death-slaad
           - *goblin

@@ -114,3 +114,41 @@ func TestSequencer_IsDone_NoEnemies(t *testing.T) {
 
 	assert.True(t, seq.IsDone())
 }
+
+func TestSequencer_Terminate(t *testing.T) {
+	monster1 := actors.NewMonster(
+		actors.MonsterParams{
+			CombatantParams: actors.CombatantParams{
+				Name:      "monster1",
+				AC:        0,
+				HP:        0,
+				BaseStats: stats.BaseStats{},
+				Inventory: nil,
+				Attacks:   nil,
+			},
+		},
+	)
+	monster2 := actors.NewMonster(
+		actors.MonsterParams{
+			CombatantParams: actors.CombatantParams{
+				Name:      "monster2",
+				AC:        0,
+				HP:        0,
+				BaseStats: stats.BaseStats{},
+				Inventory: nil,
+				Attacks:   nil,
+			},
+		},
+	)
+
+	seq := NewCombatSequencer(healthyPlayer, []actors.Monster{
+		monster1,
+		monster2,
+	}, WithHasher(hasher.InitiativeDeclared))
+
+	seq.Terminate(monster1)
+
+	assert.Equal(t, "2", seq.(*sequencer)._turnOrder.Value)
+	assert.Equal(t, monster2, seq.(*sequencer)._fighters["1"])
+	assert.Equal(t, 2, seq.(*sequencer)._turnOrder.Len())
+}

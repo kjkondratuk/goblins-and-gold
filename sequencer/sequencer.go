@@ -68,14 +68,12 @@ func (s *sequencer) DoTurn(handler Handler) {
 }
 
 func (s *sequencer) Terminate(c actors.Combatant) {
-	// TODO : finish this logic
-	//s.
-	pterm.Debug.Printfln("Attempting to remove %s from the turn order", c.Name())
-	pterm.Debug.Printfln("%+v", s._turnOrder)
-	//for _, f := range s._fighters {
-	pterm.Debug.Printfln("%+v", s._fighters)
-	//s._turnOrder.Unlink()
-	//}
+	for i := 0; i < s._turnOrder.Len(); i++ {
+		if s._fighters[s._turnOrder.Next().Value.(string)] == c {
+			s._turnOrder.Unlink(1)
+		}
+		s._turnOrder = s._turnOrder.Move(1)
+	}
 }
 
 func (s *sequencer) IsDone() bool {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	encounter2 "github.com/kjkondratuk/goblins-and-gold/encounter"
 	"github.com/kjkondratuk/goblins-and-gold/model/encounter"
+	"github.com/kjkondratuk/goblins-and-gold/model/item"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/pterm/pterm"
@@ -61,7 +62,7 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 		return errors.New(fmt.Sprintf("could not locate room [%s]", rm))
 	}
 	s.UpdateCurrentRoom(&nr)
-	RunEncounters(s)
+	g.runEncounters(s)
 	if s.Player().Unconscious() {
 		_ = pterm.DefaultBigText.WithLetters(
 			pterm.NewLettersFromStringWithStyle("You died.", pterm.NewStyle(pterm.FgRed)),
@@ -71,13 +72,29 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 	return nil
 }
 
-func RunEncounters(s state.State) {
+func (g *goCommand) runEncounters(s state.State) {
 	for _, e := range s.CurrentRoom().MandatoryEncounters {
 		// TODO : returns an outcome.  do we need it?
-		encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
+		result := encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
+
+		if result.Won {
+			var lootableInventory []item.Item
+			var itemDesc []ux.Described
+			for _, m := range result.Slain {
+				for _, i := range m.Inventory() {
+					lootableInventory = append(lootableInventory, i)
+					itemDesc = append(itemDesc, i)
+				}
+			}
+			pterm.Debug.Printfln("You won.  Lootable inventory is: %+v", lootableInventory)
+			i, _, _ := s.Prompter().Select("Which items do you want to loot?", ux.DescribeToList(itemDesc))
+
+		}
+
 		p := s.Player()
 		if p.Unconscious() {
 			break
 		}
 	}
+
 }

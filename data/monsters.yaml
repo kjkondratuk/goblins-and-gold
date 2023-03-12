@@ -58,7 +58,19 @@ monsters:
       int: 10
       wis: 8
       cha: 8
-    inventory: []
+    inventory:
+      - type: Armor
+        description: A rough-hewn suit of leather armor
+        quantity: 1
+        unit: suit
+      - type: Weapon
+        description: A rusty scimitar
+        quantity: 1
+        unit: weapon
+      - type: Weapon
+        description: A roughly hewn shortbow
+        quantity: 1
+        unit: weapon
     attacks:
       scimitar: &goblin-scimitar
         bonus: 4
