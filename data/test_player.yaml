@@ -20,3 +20,10 @@ attacks:
       - roll: 1d4
         bonus: 3
         damage_type: Piercing
+  greatsword:
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 1d10
+        bonus: 4
+        damage_type: Slashing

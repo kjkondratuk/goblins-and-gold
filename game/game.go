@@ -85,9 +85,9 @@ func Run(appArgs []string, exit chan os.Signal) {
 		for {
 			// TODO : figure out how to implement this completer
 			// prompt the user and read the input
-			line := prompt.Input(" >> ", func(document prompt.Document) []prompt.Suggest {
-				return []prompt.Suggest{}
-			}, /*completer(app.Commands())*/ prompt.OptionPrefixTextColor(prompt.Yellow))
+			line := prompt.Input(" >> ", /*func(document prompt.Document) []prompt.Suggest {
+					return []prompt.Suggest{}
+				}, */command.DefaultCommandCompleter{}.Completer(app), prompt.OptionPrefixTextColor(prompt.Yellow))
 
 			// tokenize the command arguments for processing
 			args := strings.Split(line, " ")

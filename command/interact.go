@@ -23,7 +23,7 @@ func NewInteractCommand(cc container.ContainerController, sa state.Applier[inter
 		usage:       `interact [help]`,
 	}, cc, sa}
 
-	c.subcommands = append(c.subcommands, NewHelpCommand(c))
+	c.subcommands = append(c.subcommands, NewHelpCommand(c), NewContainerCommand())
 
 	return c
 }
