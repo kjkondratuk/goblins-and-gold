@@ -30,7 +30,7 @@ func NewInteractCommand(cc container.ContainerController, sa state.Applier[inter
 
 func (ic *interactCommand) Run(s state.State, args ...string) error {
 	if len(args) > 0 {
-		return ic.execSubcommand(s, "help")
+		return ic.execSubcommand(s, args...)
 	}
 	// coerce to ux.Described
 	ia := s.CurrentRoom().Containers

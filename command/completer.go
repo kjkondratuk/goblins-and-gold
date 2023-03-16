@@ -40,15 +40,17 @@ func getChildByName(cmd Command, name string) Command {
 	if len(name) <= 0 {
 		return cmd
 	}
-	for _, c := range cmd.Subcommands() {
-		hasAlias := false
-		for _, a := range c.Aliases() {
-			if a == name {
-				hasAlias = true
+	if cmd != nil {
+		for _, c := range cmd.Subcommands() {
+			hasAlias := false
+			for _, a := range c.Aliases() {
+				if a == name {
+					hasAlias = true
+				}
 			}
-		}
-		if c.Name() == name || hasAlias {
-			return c
+			if c.Name() == name || hasAlias {
+				return c
+			}
 		}
 	}
 	return nil

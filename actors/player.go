@@ -3,15 +3,19 @@ package actors
 import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/loadout"
 	"time"
 )
 
 type player struct {
 	combatant
+	equipped loadout.Loadout
 }
 
 type PlayerParams struct {
 	CombatantParams `yaml:",inline"`
+	//Loadout         string `yaml:"loadout"`
+	loadout.Loadout `yaml:"loadout"`
 }
 
 type Player interface {
@@ -39,7 +43,7 @@ func NewPlayer(pd PlayerParams, opts ...PlayerOption) Player {
 			_baseStats: pd.BaseStats,
 			_inventory: pd.Inventory,
 			_attacks:   pd.Attacks,
-		},
+		}, pd.Loadout,
 	}
 
 	for _, o := range opts {
@@ -60,7 +64,8 @@ func (p *player) Summary() PlayerParams {
 			AC:        p._ac,
 			HP:        p._hp,
 			BaseStats: p._baseStats,
+			Attacks:   p._attacks,
 			Inventory: p._inventory,
-		},
+		}, Loadout: p.equipped,
 	}
 }

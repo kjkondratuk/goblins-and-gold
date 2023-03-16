@@ -10,6 +10,15 @@ stats:
   int: 8
   cha: 11
   wis: 10
+loadout:
+  torso:
+    type: Armor
+    equip_info:
+      slot: Torso
+      ac_bonus: 2
+    description: Breastplate
+    quantity: 1
+    unit: piece
 attacks:
 # TODO : this should probably be derived from unarmed attacks and weapons the player has equipped
   dagger:
