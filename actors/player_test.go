@@ -3,6 +3,7 @@ package actors
 import (
 	"github.com/kjkondratuk/goblins-and-gold/dice"
 	"github.com/kjkondratuk/goblins-and-gold/model/item"
+	"github.com/kjkondratuk/goblins-and-gold/model/loadout"
 	"github.com/kjkondratuk/goblins-and-gold/model/stats"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -17,7 +18,7 @@ func TestNewPlayer(t *testing.T) {
 			BaseStats: stats.BaseStats{},
 			Inventory: nil,
 			Attacks:   nil,
-		}})
+		}, loadout.Loadout{}})
 
 		assert.NotNil(t, p)
 		assert.Equal(t, "some player", p.Name())
@@ -36,7 +37,7 @@ func TestNewPlayer(t *testing.T) {
 			BaseStats: stats.BaseStats{},
 			Inventory: nil,
 			Attacks:   nil,
-		}}, WithPlayerDice(d))
+		}, loadout.Loadout{}}, WithPlayerDice(d))
 
 		assert.NotNil(t, p)
 		assert.Equal(t, "some player", p.Name())
@@ -52,6 +53,7 @@ func Test_combatant_Acquire(t *testing.T) {
 		itemList := []item.Item{
 			{
 				"Armor",
+				nil,
 				"Shiny plate armor",
 				1,
 				"suit",
@@ -59,7 +61,7 @@ func Test_combatant_Acquire(t *testing.T) {
 		}
 		p := NewPlayer(PlayerParams{CombatantParams{
 			Inventory: nil,
-		}})
+		}, loadout.Loadout{}})
 
 		p.Acquire(itemList...)
 
@@ -86,7 +88,7 @@ func Test_combatant_Acquire(t *testing.T) {
 			Inventory: []item.Item{
 				existingItem,
 			},
-		}})
+		}, loadout.Loadout{}})
 
 		p.Acquire(itemList...)
 

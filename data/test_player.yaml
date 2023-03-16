@@ -16,6 +16,14 @@ loadout:
     equip_info:
       slot: Torso
       ac_bonus: 2
+      attacks:
+        scimitar:
+          bonus: 4
+          range: 5
+          damage:
+            - roll: 1d6
+              bonus: 2
+              damage_type: Slashing
     description: Breastplate
     quantity: 1
     unit: piece

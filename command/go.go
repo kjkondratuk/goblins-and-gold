@@ -32,11 +32,7 @@ func NewGoCommand(quit Command, look Command) Command {
 func (g *goCommand) Run(s state.State, args ...string) error {
 	// TODO : need to refactor this so it isn't in every command
 	if len(args) > 0 {
-		err := g.execSubcommand(s, args...)
-		if err != nil {
-			return err
-		}
-		return nil
+		return g.execSubcommand(s, args...)
 	}
 	if len(s.CurrentRoom().Paths) <= 0 {
 		pterm.Error.Println("Nowhere to go!")

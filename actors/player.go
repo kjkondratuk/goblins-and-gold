@@ -14,7 +14,6 @@ type player struct {
 
 type PlayerParams struct {
 	CombatantParams `yaml:",inline"`
-	//Loadout         string `yaml:"loadout"`
 	loadout.Loadout `yaml:"loadout"`
 }
 

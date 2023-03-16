@@ -23,14 +23,14 @@ func NewInteractCommand(cc container.ContainerController, sa state.Applier[inter
 		usage:       `interact [help]`,
 	}, cc, sa}
 
-	c.subcommands = append(c.subcommands, NewHelpCommand(c), NewContainerCommand())
+	c.subcommands = append(c.subcommands, NewHelpCommand(c))
 
 	return c
 }
 
 func (ic *interactCommand) Run(s state.State, args ...string) error {
 	if len(args) > 0 {
-		return ic.execSubcommand(s, args...)
+		return ic.execSubcommand(s, "help")
 	}
 	// coerce to ux.Described
 	ia := s.CurrentRoom().Containers

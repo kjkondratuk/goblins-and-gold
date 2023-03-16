@@ -1,3 +1,12 @@
+weapons:
+  scimitar: &scimitar
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 1d6
+        bonus: 2
+        damage_type: Slashing
+
 monsters:
   death-slaad: &death-slaad
     name: Death Slaad
@@ -61,10 +70,15 @@ monsters:
     inventory:
       - type: Armor
         description: A rough-hewn suit of leather armor
+        equip_info:
+          slot: Torso
+          ac_bonus: 2
         quantity: 1
         unit: suit
       - type: Weapon
         description: A rusty scimitar
+        attacks:
+          scimitar: *scimitar
         quantity: 1
         unit: weapon
       - type: Weapon
@@ -72,13 +86,7 @@ monsters:
         quantity: 1
         unit: weapon
     attacks:
-      scimitar: &goblin-scimitar
-        bonus: 4
-        range: 5
-        damage:
-          - roll: 1d6
-            bonus: 2
-            damage_type: Slashing
+      scimitar: *scimitar
       shortbow: &goblin-shortbow
         bonus: 4
         range: 80
