@@ -6,7 +6,6 @@ import (
 
 type promptLib struct{}
 
-//go:generate mockery --name PromptLib
 type PromptLib interface {
 	Prompt(label string, defaultValue string) (string, error)
 	Select(label string, items []string) (int, string, error)
