@@ -18,6 +18,20 @@ rooms:
         enemies:
 #          - *death-slaad
           - *goblin
+  new-test-room:
+    name: An Empty Room
+    description: The room is empty except for the door you entered through
+    paths:
+      - room: starting-room
+        description: *empty_archway
+      - room: treasure-room-1
+        description: *empty_archway
+    mandatory_encounters:
+      - type: Combat
+        description: A small humanoid figure rises from the floor ahead of you.  You brace for combat.
+        enemies:
+          #          - *death-slaad
+          - *goblin
   treasure-room-1:
     name: Treasure Room
     description: There are three chests located against the far wall.
@@ -55,6 +69,8 @@ rooms:
     paths:
       - room: starting-room
         description: *fancy_treasure_door_easy
+      - room: new-test-room
+        description: *empty_archway
   dirt-hall-1:
     name: Dirt Hall
     description: *stone_tunnel

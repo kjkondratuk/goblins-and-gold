@@ -27,7 +27,7 @@ func TestWorldCommand_Run(t *testing.T) {
 
 	t.Run("should not error if the world is invalid", func(t *testing.T) {
 		c := NewWorldCommand()
-		err := c.Run(state.New(nil, nil, nil, nil))
+		err := c.Run(state.New(nil, nil, "", nil))
 		assert.NoError(t, err)
 	})
 }

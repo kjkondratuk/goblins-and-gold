@@ -62,9 +62,11 @@ func Test_GoCommand_Run(t *testing.T) {
 				qc: nil,
 			},
 			args{
-				s: state.New(nil, nil, &room.RoomDefinition{
-					Paths: []*path.PathDefinition{},
-				}, nil),
+				s: state.New(nil, nil, "start-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+					"start-room": {
+						Description: "some room",
+					},
+				}}),
 				args: []string{},
 			},
 			func(t assert.TestingT, err error, i ...interface{}) bool {
@@ -74,14 +76,13 @@ func Test_GoCommand_Run(t *testing.T) {
 			"should stay in the current room when selected",
 			fields{qc: nil},
 			args{
-				s: state.New(sameRoomReturningSelectPrompt, nil, &room.RoomDefinition{
-					Paths: []*path.PathDefinition{
-						{
-							"next-room",
-							"a dark hallway",
-						},
+				s: state.New(sameRoomReturningSelectPrompt, nil, "next-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+					"next-room": {
+						Description: "some room 1 description",
+					}, "another-room": {
+						Description: "some other room description",
 					},
-				}, nil),
+				}}),
 				args: nil,
 			},
 			func(t assert.TestingT, err error, i ...interface{}) bool {
@@ -91,19 +92,17 @@ func Test_GoCommand_Run(t *testing.T) {
 			"should return an error if there was an error prompting the user for a choice",
 			fields{qc: nil},
 			args{
-				s: state.New(errorReturningSelectPrompt, nil, &room.RoomDefinition{
-					Paths: []*path.PathDefinition{
-						{
-							"next-room",
-							"a dark hallway",
-						},
-					},
-				}, &world.WorldDefinition{
+				s: state.New(errorReturningSelectPrompt, nil, "start-room", &world.WorldDefinition{
 					Rooms: map[string]*room.RoomDefinition{
 						"start-room": {
-							Name:                "start-room",
-							Description:         "",
-							Paths:               nil,
+							Name:        "start-room",
+							Description: "",
+							Paths: []*path.PathDefinition{
+								{
+									Room:        "next-room",
+									Description: "A dark hallway",
+								},
+							},
 							Containers:          nil,
 							MandatoryEncounters: nil,
 						},
@@ -126,14 +125,7 @@ func Test_GoCommand_Run(t *testing.T) {
 			"should return an error if the room being traversed to does not exist",
 			fields{qc: nil},
 			args{
-				s: state.New(nextRoomReturningSelectPrompt, nil, &room.RoomDefinition{
-					Paths: []*path.PathDefinition{
-						{
-							"next-room",
-							"a dark hallway",
-						},
-					},
-				}, &world.WorldDefinition{
+				s: state.New(nextRoomReturningSelectPrompt, nil, "next-room", &world.WorldDefinition{
 					Rooms: map[string]*room.RoomDefinition{
 						"start-room": {
 							"start-room",
@@ -163,14 +155,7 @@ func Test_GoCommand_Run(t *testing.T) {
 						nil,
 						nil,
 					}}),
-					&room.RoomDefinition{
-						Paths: []*path.PathDefinition{
-							{
-								"next-room",
-								"a dark hallway",
-							},
-						},
-					}, &world.WorldDefinition{
+					"next-room", &world.WorldDefinition{
 						Rooms: map[string]*room.RoomDefinition{
 							"start-room": {
 								"start-room",
@@ -206,14 +191,7 @@ func Test_GoCommand_Run(t *testing.T) {
 						nil,
 						nil,
 					}}),
-					&room.RoomDefinition{
-						Paths: []*path.PathDefinition{
-							{
-								"next-room",
-								"a dark hallway",
-							},
-						},
-					}, &world.WorldDefinition{
+					"next-room", &world.WorldDefinition{
 						Rooms: map[string]*room.RoomDefinition{
 							"start-room": {
 								"start-room",

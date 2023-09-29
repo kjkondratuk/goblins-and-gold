@@ -50,7 +50,7 @@ func TestStatsCommand_Run(t *testing.T) {
 					Cha: 16,
 				},
 			},
-		}), nil, nil))
+		}), "", nil))
 		assert.NoError(t, err)
 	})
 }

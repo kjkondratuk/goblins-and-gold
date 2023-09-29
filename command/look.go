@@ -30,8 +30,9 @@ func (lc *lookCommand) Run(s state.State, args ...string) error {
 		}
 		return nil
 	}
-	if s != nil && s.CurrentRoom() != nil {
-		pterm.Info.Println(s.CurrentRoom().Description)
+	rm := s.World().Rooms[s.CurrentRoom()]
+	if s != nil && s.CurrentRoom() != "" {
+		pterm.Info.Println(rm.Description)
 	}
 	return nil
 }

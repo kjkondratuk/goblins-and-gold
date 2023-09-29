@@ -1,5 +1,5 @@
 name: Arthur Sotheby
-hp: 12
+hp: 57
 # TODO : AC should probably be derived from class, armor, proficiency, and respective modifiers: https://olddungeonmaster.com/2020/03/09/dd-5e-armor-class-ac/
 ac: 15
 stats:

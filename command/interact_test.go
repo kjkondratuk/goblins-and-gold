@@ -6,6 +6,7 @@ import (
 	"github.com/kjkondratuk/goblins-and-gold/interaction"
 	container2 "github.com/kjkondratuk/goblins-and-gold/model/container"
 	"github.com/kjkondratuk/goblins-and-gold/model/room"
+	"github.com/kjkondratuk/goblins-and-gold/model/world"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"github.com/stretchr/testify/assert"
@@ -56,9 +57,9 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(nil, nil, &room.RoomDefinition{
-			Name: "some-room",
-		}, nil))
+		err := c.Run(state.New(nil, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {},
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -73,10 +74,11 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(nil, nil, &room.RoomDefinition{
-			Name:       "some-room",
-			Containers: []*container2.Container{},
-		}, nil))
+		err := c.Run(state.New(nil, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{},
+			},
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -95,15 +97,16 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.Error(t, err)
 	})
 
@@ -122,15 +125,16 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -153,19 +157,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.Error(t, err)
 	})
 
@@ -186,19 +191,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -221,19 +227,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.Error(t, err)
 	})
 
@@ -256,19 +263,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(0)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -291,19 +299,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -326,19 +335,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 
@@ -361,19 +371,20 @@ func TestInteractCommand_Run(t *testing.T) {
 		ma.EXPECT().Apply(mock2.Anything, mock2.Anything).Times(1)
 
 		c := NewInteractCommand(mc, ma)
-		err := c.Run(state.New(pm, nil, &room.RoomDefinition{
-			Name: "some-room",
-			Containers: []*container2.Container{
-				{
-					Type:        "Chest",
-					Description: "some container",
-					SupportedInteractions: []container2.Type{
-						"Open",
-						"Loot",
+		err := c.Run(state.New(pm, nil, "some-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"some-room": {
+				Containers: []*container2.Container{
+					{
+						Type:        "Chest",
+						Description: "some container",
+						SupportedInteractions: []container2.Type{
+							"Open",
+							"Loot",
+						},
 					},
 				},
 			},
-		}, nil))
+		}}))
 		assert.NoError(t, err)
 	})
 }

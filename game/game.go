@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"github.com/c-bata/go-prompt"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
 	"github.com/kjkondratuk/goblins-and-gold/async"
@@ -43,8 +44,7 @@ func Run(appArgs []string, exit chan os.Signal) {
 		start.Increment()
 	})
 
-	sr, _ := w.Room(w.StartRoom)
-	s := state.New(ux.NewPromptUiLib(), p, &sr, w)
+	s := state.New(ux.NewPromptUiLib(), p, w.StartRoom, w)
 	pterm.Success.Println("Game state initialized.")
 	start.Increment()
 
@@ -80,7 +80,9 @@ func Run(appArgs []string, exit chan os.Signal) {
 
 	// REPL Loop
 	go func() {
-		// TODO : do we need to recover here?
+		if r := recover(); r != nil {
+			fmt.Println("Recovered. Error: ", r)
+		}
 
 		for {
 			// TODO : figure out how to implement this completer

@@ -34,12 +34,17 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 	if len(args) > 0 {
 		return g.execSubcommand(s, args...)
 	}
-	if len(s.CurrentRoom().Paths) <= 0 {
+
+	rm, ok := s.World().Rooms[s.CurrentRoom()]
+	if !ok {
+		return errors.New(fmt.Sprintf("could not locate room [%s]", s.CurrentRoom()))
+	}
+	paths := make([]ux.Described, len(rm.Paths))
+	if len(rm.Paths) == 0 {
 		pterm.Error.Println("Nowhere to go!")
 		return nil
 	}
-	paths := make([]ux.Described, len(s.CurrentRoom().Paths))
-	for i, p := range s.CurrentRoom().Paths {
+	for i, p := range rm.Paths {
 		paths[i] = p
 	}
 
@@ -52,12 +57,7 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 	}
 
 	// Update the current room based on the selection, unless the user cancels navigation
-	rm := s.CurrentRoom().Paths[idx-1].Room
-	nr, ok := s.World().Room(rm)
-	if !ok {
-		return errors.New(fmt.Sprintf("could not locate room [%s]", rm))
-	}
-	s.UpdateCurrentRoom(&nr)
+	s.UpdateCurrentRoom(rm.Paths[idx-1].Room)
 	g.runEncounters(s)
 	if s.Player().Unconscious() {
 		_ = pterm.DefaultBigText.WithLetters(
@@ -65,17 +65,31 @@ func (g *goCommand) Run(s state.State, args ...string) error {
 		).Render()
 		_ = g.qc.Run(s)
 	}
+
 	return g.lc.Run(s)
 }
 
 func (g *goCommand) runEncounters(s state.State) {
-	for _, e := range s.CurrentRoom().MandatoryEncounters {
+	r := s.World().Rooms[s.CurrentRoom()]
+	for i, e := range r.MandatoryEncounters {
 		// TODO : returns an outcome.  do we need it?
 		_ = encounter2.NewRunner().Run(s, encounter.NewEncounter(*e))
 
-		p := s.Player()
-		if p.Unconscious() {
+		// exit if the player is knocked unconscious -- otherwise remove the encounter
+		if s.Player().Unconscious() {
 			break
+		} else {
+			if len(r.MandatoryEncounters) > 2 {
+				s.World().Rooms[s.CurrentRoom()].MandatoryEncounters = append(r.MandatoryEncounters[:i], r.MandatoryEncounters[i+1:]...)
+			} else {
+				if i == 0 {
+					//r.MandatoryEncounters = r.MandatoryEncounters[i+1:]
+					s.World().Rooms[s.CurrentRoom()].MandatoryEncounters = r.MandatoryEncounters[i+1:]
+				} else {
+					//r.MandatoryEncounters = r.MandatoryEncounters[:i]
+					s.World().Rooms[s.CurrentRoom()].MandatoryEncounters = r.MandatoryEncounters[:i]
+				}
+			}
 		}
 	}
 

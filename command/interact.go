@@ -33,7 +33,8 @@ func (ic *interactCommand) Run(s state.State, args ...string) error {
 		return ic.execSubcommand(s, "help")
 	}
 	// coerce to ux.Described
-	ia := s.CurrentRoom().Containers
+	rm, _ := s.World().Rooms[s.CurrentRoom()]
+	ia := rm.Containers
 	if len(ia) <= 0 {
 		return nil
 	}

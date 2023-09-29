@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/kjkondratuk/goblins-and-gold/model/room"
+	"github.com/kjkondratuk/goblins-and-gold/model/world"
 	"github.com/kjkondratuk/goblins-and-gold/state"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -29,13 +30,15 @@ func TestLookCommand_Run(t *testing.T) {
 
 	t.Run("should run successfully when state and room are populated", func(t *testing.T) {
 		c := NewLookCommand()
-		err := c.Run(state.New(nil, nil, &room.RoomDefinition{
-			Name:                "",
-			Description:         "",
-			Paths:               nil,
-			Containers:          nil,
-			MandatoryEncounters: nil,
-		}, nil))
+		err := c.Run(state.New(nil, nil, "start-room", &world.WorldDefinition{Rooms: map[string]*room.RoomDefinition{
+			"start-room": {
+				Name:                "",
+				Description:         "some description",
+				Paths:               nil,
+				Containers:          nil,
+				MandatoryEncounters: nil,
+			},
+		}}))
 		assert.NoError(t, err)
 	})
 }

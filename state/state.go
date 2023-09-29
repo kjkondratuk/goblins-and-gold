@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"github.com/kjkondratuk/goblins-and-gold/actors"
-	"github.com/kjkondratuk/goblins-and-gold/model/room"
 	"github.com/kjkondratuk/goblins-and-gold/model/world"
 	"github.com/kjkondratuk/goblins-and-gold/ux"
 	"time"
@@ -27,12 +26,12 @@ type State interface {
 	Player() actors.Player
 	Prompter() ux.PromptLib
 	SetPrompter(p ux.PromptLib)
-	CurrentRoom() *room.RoomDefinition
-	UpdateCurrentRoom(r *room.RoomDefinition)
+	CurrentRoom() string
+	UpdateCurrentRoom(r string)
 	World() *world.WorldDefinition
 }
 
-func New(pr ux.PromptLib, p actors.Player, r *room.RoomDefinition, w *world.WorldDefinition) State {
+func New(pr ux.PromptLib, p actors.Player, r string, w *world.WorldDefinition) State {
 	s := &state{}
 	// TODO : not sure if this is the best move, but it stops errors in unit tests
 	if s._c == nil {
@@ -65,11 +64,11 @@ func (s *state) SetPrompter(p ux.PromptLib) {
 	s._c = context.WithValue(s._c, PromptLibKey, p)
 }
 
-func (s *state) CurrentRoom() *room.RoomDefinition {
-	return s._c.Value(RoomKey).(*room.RoomDefinition)
+func (s *state) CurrentRoom() string {
+	return s._c.Value(RoomKey).(string)
 }
 
-func (s *state) UpdateCurrentRoom(r *room.RoomDefinition) {
+func (s *state) UpdateCurrentRoom(r string) {
 	s._c = context.WithValue(s._c, RoomKey, r)
 }
 

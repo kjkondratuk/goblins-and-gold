@@ -13,11 +13,11 @@ type WorldDefinition struct {
 //
 // Return:
 //   - room.PathDefinition - the room
-//   - bool - whether or not the room could be located
-func (w WorldDefinition) Room(key string) (room.RoomDefinition, bool) {
-	if r, ok := w.Rooms[key]; ok {
-		return *r, true
-	} else {
-		return room.RoomDefinition{}, false
-	}
-}
+//   - bool - whether the room could be located
+//func (w WorldDefinition) Room(key string) (string, room.RoomDefinition, bool) {
+//	if r, ok := w.Rooms[key]; ok {
+//		return key, *r, true
+//	} else {
+//		return "", room.RoomDefinition{}, false
+//	}
+//}
