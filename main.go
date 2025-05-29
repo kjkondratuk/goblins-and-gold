@@ -12,7 +12,8 @@ func main() {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
-	game.Run(os.Args, exit)
+	// Run the game with the bubbletea UI
+	game.RunWithBubbleTea(os.Args, exit)
 
 	<-exit
 }
