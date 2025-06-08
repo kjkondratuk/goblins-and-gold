@@ -17,8 +17,8 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// RunWithBubbleTea initializes and runs the game with a bubbletea UI
-func RunWithBubbleTea(appArgs []string, exit chan os.Signal) {
+// Run initializes and runs the game with a bubbletea UI
+func Run(appArgs []string, exit chan os.Signal) {
 	isDebug := strings.EqualFold(os.Getenv("DEBUG"), "true")
 
 	// Initialize the bubbletea program
@@ -31,11 +31,11 @@ func RunWithBubbleTea(appArgs []string, exit chan os.Signal) {
 	var w *world.WorldDefinition
 	var player actors.Player
 	async.InParallel(func() {
-		wl := config.Read[world.WorldDefinition]("./data/worlds/test_world.yaml", "./data/monsters.yaml")
+		wl := config.Read[world.WorldDefinition]("./data/worlds/dnd_world.yaml", "./data/monsters_dnd.yaml", "./data/weapons.yml")
 		w = &wl
 		pterm.Success.Println("World loaded.")
 	}, func() {
-		ps := config.Read[actors.PlayerParams]("./data/test_player.yaml")
+		ps := config.Read[actors.PlayerParams]("./data/test_player.yaml", "./data/weapons.yml")
 		player = actors.NewPlayer(ps)
 		pterm.Success.Println("Player loaded.")
 	})

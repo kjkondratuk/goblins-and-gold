@@ -1,0 +1,49 @@
+name: Test on Push
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Process and display coverage
+        run: |
+          # Parse coverage file and calculate total coverage
+          TOTAL_COVERAGE=$(go tool cover -func=coverage.txt | grep total: | awk '{print $3}')
+          echo "Total coverage: $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
+
+          # Calculate patch coverage (lines covered)
+          COVERED_LINES=$(grep -v "^mode:" coverage.txt | awk '$3 > 0 {covered++} END {print covered}')
+          TOTAL_LINES=$(grep -v "^mode:" coverage.txt | wc -l)
+          PATCH_COVERAGE=$(awk "BEGIN {printf \"%.2f%%\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
+          PATCH_COVERAGE_NUM=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
+
+          echo "Patch coverage (lines): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+
+          # Display detailed coverage by package
+          echo "## Coverage by package" >> $GITHUB_STEP_SUMMARY
+          go tool cover -func=coverage.txt >> $GITHUB_STEP_SUMMARY
+
+          # Check if patch coverage is less than 75%
+          if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 75)}') )); then
+            echo "::warning::Patch coverage is below 75% (current: $PATCH_COVERAGE)"
+            echo "⚠️ **Warning**: Patch coverage is below 75% (current: $PATCH_COVERAGE)" >> $GITHUB_STEP_SUMMARY
+          fi

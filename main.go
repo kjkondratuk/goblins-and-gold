@@ -13,7 +13,7 @@ func main() {
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
 	// Run the game with the bubbletea UI
-	game.RunWithBubbleTea(os.Args, exit)
+	game.Run(os.Args, exit)
 
 	<-exit
 }

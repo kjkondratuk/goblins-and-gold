@@ -16,31 +16,10 @@ loadout:
     equip_info:
       slot: Torso
       ac_bonus: 2
-      attacks:
-        scimitar:
-          bonus: 4
-          range: 5
-          damage:
-            - roll: 1d6
-              bonus: 2
-              damage_type: Slashing
     description: Breastplate
     quantity: 1
     unit: piece
 attacks:
 # TODO : this should probably be derived from unarmed attacks and weapons the player has equipped
-  dagger:
-# TODO : This should probably be derived from the base stats for players
-    bonus: 3
-    range: 5
-    damage:
-      - roll: 1d4
-        bonus: 3
-        damage_type: Piercing
-  greatsword:
-    bonus: 4
-    range: 5
-    damage:
-      - roll: 1d10
-        bonus: 4
-        damage_type: Slashing
+  dagger: *player_dagger
+  greatsword: *player_greatsword
