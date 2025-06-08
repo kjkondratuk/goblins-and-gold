@@ -1,0 +1,395 @@
+common_descriptors:
+  stone_tunnel: &stone_tunnel A winding passage where moss-covered stone walls glisten with moisture, and your footsteps echo on the compacted dirt floor. The air carries a faint earthy scent.
+  simple_door: &simple_door A weathered wooden door with iron hinges that creak softly, its surface marked with countless scratches telling tales of past adventurers.
+  sturdy_door: &sturdy_door A formidable oak door reinforced with blackened iron bands, standing defiant against time and intruders alike. Its ancient wood seems to hum with quiet resilience.
+  iron_door: &iron_door A massive iron door etched with forgotten battle scenes, its cold metal surface radiating an otherworldly chill that makes your fingertips tingle upon approach.
+  flimsy_door: &flimsy_door A splintered wooden door hanging precariously from rusted hinges, swaying slightly with each draft as if whispering secrets of what lies beyond.
+  empty_archway: &empty_archway A yawning archway where shadows dance at its edges, beckoning you forward while the cool air flowing through it carries distant, indistinguishable whispers.
+  ornate_archway: &ornate_archway A magnificent stone archway adorned with intricate runes that seem to shimmer with an inner light when viewed from the corner of your eye, their ancient magic pulsing faintly.
+  treasure_door_easy: &treasure_door_easy An elegant iron door embellished with gold filigree depicting heroic deeds of forgotten champions, its polished surface reflecting your anticipation like a mirror.
+  treasure_door_medium: &treasure_door_medium A mysterious door inlaid with flowing silver patterns resembling constellations, its complex lock mechanism occasionally emitting soft clicks as if counting down to something momentous.
+  treasure_door_hard: &treasure_door_hard An imposing door banded with platinum that gleams with unnatural brightness even in darkness, its locking mechanism a mesmerizing puzzle of gears and arcane symbols that shift subtly as you watch.
+  cave_entrance: &cave_entrance A jagged opening torn from the living rock, where stalactites hang like stone teeth and warm, musty air billows outward carrying the scent of earth's deep secrets.
+  narrow_passage: &narrow_passage A claustrophobic corridor where rough stone walls press in from both sides, forcing you to turn sideways as the weight of the mountain above seems to bear down upon your shoulders.
+  hidden_door: &hidden_door A masterfully concealed portal that reveals itself only to the most observant eye, its edges blending seamlessly with surrounding stone save for the faintest outline visible when light strikes at just the right angle.
+
+rooms:
+  entrance-hall:
+    name: Entrance Hall
+    description: A once-majestic hall where shafts of dusty light pierce through high stained-glass windows, illuminating faded tapestries that depict ancient battles. The marble floor, cracked with age, still bears the ghostly echoes of countless footsteps from a more glorious era.
+    paths:
+      - room: main-corridor
+        description: *sturdy_door
+      - room: guard-room
+        description: *simple_door
+      - room: storage-room
+        description: *flimsy_door
+
+  guard-room:
+    name: Guard Room
+    description: A neglected sentry post where the acrid scent of old torches lingers. Broken chairs lie scattered across the floor like fallen soldiers, and rusted weapon racks stand as silent witnesses to battles long past. Faded bloodstains on the walls tell stories of desperate last stands.
+    paths:
+      - room: entrance-hall
+        description: *simple_door
+    mandatory_encounters:
+      - type: Combat
+        description: Two goblins hunched over crude bone dice freeze mid-game, their yellow eyes widening with malicious glee as they spot fresh prey entering their domain. With surprising agility, they snatch up their weapons and bare their jagged teeth in anticipation.
+        enemies:
+          - *goblin
+          - *goblin
+
+  storage-room:
+    name: Storage Room
+    description: A forgotten repository where time stands still, thick with dust that dances in the rare shafts of light. The musty air carries hints of exotic spices and aged leather from long-abandoned expeditions. Cobwebs stretch like silver tapestries between stacks of decaying crates and barrels, their contents a mystery waiting to be uncovered.
+    paths:
+      - room: entrance-hall
+        description: *flimsy_door
+    containers:
+      - type: Barrel
+        description: An oak barrel bound with tarnished iron bands, its wood darkened with age and bearing strange merchant markings from distant lands
+        interactions: [Open, Loot]
+        items:
+          - type: Gold
+            description: A handful of ancient gold coins bearing the profiles of forgotten kings
+            quantity: 15
+            unit: Coins
+      - type: Crate
+        description: A weathered cedar crate with intricate carvings along its edges and a brass latch turned green with verdigris
+        interactions: [Open, Loot]
+        items:
+          - type: Potion
+            description: A delicate crystal vial containing a swirling crimson liquid that seems to pulse with its own heartbeat
+            quantity: 1
+            unit: Vial
+
+  main-corridor:
+    name: Main Corridor
+    description: A sweeping passageway where ancient torches cast dancing shadows that seem to move with minds of their own. The vaulted ceiling bears frescoes of celestial bodies, now darkened by centuries of smoke. Worn flagstones, polished smooth by countless footsteps, occasionally reveal glints of embedded quartz that sparkle like fallen stars in the flickering light.
+    paths:
+      - room: entrance-hall
+        description: *sturdy_door
+      - room: dining-hall
+        description: *ornate_archway
+      - room: east-passage
+        description: *empty_archway
+
+  dining-hall:
+    name: Dining Hall
+    description: A cavernous banquet chamber where time has frozen a feast long abandoned. Massive oak tables stretch the length of the room, their surfaces stained with ancient wine spills and adorned with tarnished silver platters. Ornate iron chandeliers hang from chains above, draped with gossamer cobwebs that sway like spectral dancers in the stale air. Faded tapestries depicting lavish feasts and hunts line the walls, their colors muted by decades of dust and neglect.
+    paths:
+      - room: main-corridor
+        description: *ornate_archway
+      - room: kitchen
+        description: *simple_door
+    mandatory_encounters:
+      - type: Combat
+        description: The air suddenly grows cold as a hollow scraping sound emerges from beneath the tables. Bony fingers clutch the table edges as three skeletal figures rise with unnatural grace, their empty eye sockets somehow fixing upon you with malevolent intent. The jawbones of these former revelers clack rhythmically as they reach for rusted weapons still clutched in their fleshless hands.
+        enemies:
+          - *skeleton
+          - *skeleton
+          - *skeleton
+
+  kitchen:
+    name: Kitchen
+    description: A once-bustling culinary workshop now frozen in eerie stillness. Copper pots hang from blackened ceiling hooks, their surfaces mottled with verdigris. A massive stone oven dominates one wall, its maw still containing the charred remnants of a final meal never served. Rusted utensils lie scattered across worn preparation tables, while mysterious stains on the flagstone floor hint at more sinister activities than mere cooking. The air carries a peculiar blend of old spices, mold, and something faintly metallic.
+    paths:
+      - room: dining-hall
+        description: *simple_door
+      - room: pantry
+        description: *flimsy_door
+    containers:
+      - type: Cabinet
+        description: An ornately carved oak cabinet with tarnished brass fittings and a small lock that appears to have been forced open multiple times before being secured again
+        interactions: [Open, Loot, Unlock]
+        locked:
+          dc: 8
+          type: Dex
+          success:
+            description: With a satisfying click, the worn lock mechanism yields to your deft manipulation, revealing the cabinet's long-hidden contents.
+          fail:
+            description: The stubborn lock refuses to budge despite your efforts, as if guarding its secrets with spiteful determination.
+        items:
+          - type: Gold
+            description: A velvet pouch embroidered with faded kitchen guild insignia, heavy with gold coins that clink softly against each other
+            quantity: 25
+            unit: Coins
+          - type: Weapon
+            description: A chef's dagger with an ivory handle carved to resemble a dragon's head, its blade gleaming with an unnatural sharpness despite its age
+            attacks:
+              dagger: *dagger
+            quantity: 1
+            unit: weapon
+
+  pantry:
+    name: Pantry
+    description: A cramped chamber where the ghosts of forgotten feasts linger. Warped wooden shelves line the walls, sagging under the weight of dusty jars containing preserved fruits and meats in various states of mysterious transformation. Cobweb-draped wine racks hold bottles whose contents have turned to strange elixirs over countless years. The pungent aroma of aged vinegar, fermented herbs, and something sweetly rotten permeates the stale air, creating an oddly intoxicating atmosphere.
+    paths:
+      - room: kitchen
+        description: *flimsy_door
+    containers:
+      - type: Barrel
+        description: An exquisite oak wine barrel bound with silver hoops, its wood stained deep purple from decades of storing rare vintages, with a loose-fitting lid carved with dancing grape vines
+        interactions: [Open, Loot]
+        items:
+          - type: Potion
+            description: A slender crystal bottle containing a deep burgundy liquid that catches the light like liquid rubies, sealed with an ornate silver stopper bearing the crest of a long-forgotten noble house
+            quantity: 1
+            unit: Bottle
+
+  east-passage:
+    name: East Passage
+    description: A winding corridor where ancient military processions once marched. The stone walls bear faded carvings of armored warriors standing at attention, their features worn smooth by time yet still conveying a sense of eternal vigilance. Rusty wall sconces hold the remnants of torches long extinguished, and the occasional alcove reveals crumbling statues of forgotten heroes. Your footsteps echo with an almost musical quality, as if the passage itself remembers the rhythmic march of soldiers from ages past.
+    paths:
+      - room: main-corridor
+        description: *empty_archway
+      - room: armory
+        description: *iron_door
+      - room: barracks
+        description: *simple_door
+
+  armory:
+    name: Armory
+    description: A cavernous chamber that once housed the weapons of a mighty garrison. Tall weapon racks stand like skeletal sentinels, most now bare save for a few rusted blades too worthless to steal. Armor stands cast eerie humanoid shadows in the dim light, their empty forms seeming to watch your every move. Faded banners of forgotten military orders hang from the vaulted ceiling, occasionally stirring in unfelt drafts. The walls are lined with intricate murals depicting epic battles, the victorious warriors always facing inward as if guarding the room's contents for eternity.
+    paths:
+      - room: east-passage
+        description: *iron_door
+    containers:
+      - type: Chest
+        description: A formidable iron war chest reinforced with adamantine bands and adorned with bas-relief scenes of ancient battles, its heavy lock mechanism resembling a dragon's maw ready to snap shut on unwary fingers
+        interactions: [Open, Loot, Unlock]
+        locked:
+          dc: 15
+          type: Dex
+          success:
+            description: Your fingers dance across the intricate mechanism with practiced precision, and the lock yields with a satisfying series of clicks that echo through the chamber like distant applause.
+          fail:
+            description: The masterfully crafted lock mechanism refuses your attempts, its internal workings shifting and resetting with each failed probe as if alive and defending its contents.
+          crit_fail:
+            damage:
+              hp: 2
+              type: Piercing
+            description: As you fumble with the delicate mechanism, your lockpick snaps with a sharp crack, driving a jagged metal shard deep into your fingertip. A drop of blood falls onto the lock, which seems to absorb it hungrily.
+        items:
+          - type: Gold
+            description: A commander's payment chest filled with gleaming gold coins bearing the profiles of conquerors from a bygone empire, each piece polished to a mirror shine by the hands of countless owners
+            quantity: 100
+            unit: Coins
+          - type: Armor
+            description: A masterwork chainmail shirt of extraordinary craftsmanship, its interlocking rings forged from a silvery metal with bluish highlights that seems too light for its strength, each link bearing microscopic runes of protection
+            equip_info:
+              slot: Torso
+              ac_bonus: 5
+            quantity: 1
+            unit: suit
+
+  barracks:
+    name: Barracks
+    description: A long dormitory where the ghosts of soldiers past seem to linger. Rows of dilapidated bunk beds line the walls, their straw mattresses rotted and sunken. Personal effects still remain scattered about—a carved wooden figurine, a tarnished locket, a half-written letter home never completed. Iron-bound footlockers rest at the foot of each bed, most hanging open and emptied long ago. The ceiling bears smoke stains from countless nights of pipe smoking and storytelling, while crude graffiti and tallies of kills adorn the walls—silent testaments to the warriors who once called this chamber home.
+    paths:
+      - room: east-passage
+        description: *simple_door
+      - room: captain-quarters
+        description: *sturdy_door
+    mandatory_encounters:
+      - type: Combat
+        description: A hulking orc sprawls across one of the lower bunks, its massive frame causing the ancient wood to creak ominously. At your entrance, its bloodshot eyes snap open with primal alertness. With a guttural roar that sends spittle flying, it lunges to its feet, knocking the bed frame aside with casual strength as it reaches for the wicked-looking axe leaning against the wall.
+        enemies:
+          - *orc
+
+  captain-quarters:
+    name: Captain's Quarters
+    description: A chamber that exudes faded authority and military precision. A massive four-poster bed dominates one wall, its once-luxurious curtains now tattered but still bearing the insignia of a forgotten regiment. Maps of ancient campaigns cover the walls, their corners curling with age, pins and notations marking battles long concluded. A suit of ornate ceremonial armor stands at attention in one corner, its breastplate dented from some final, fatal blow. The air carries the lingering scent of leather-bound books, aged parchment, and the ghost of expensive tobacco that once marked the captain's privileged status.
+    paths:
+      - room: barracks
+        description: *sturdy_door
+      - room: secret-passage
+        description: *hidden_door
+    containers:
+      - type: Desk
+        description: A commanding oak desk with intricate carvings of battlefield scenes along its edges, its surface covered with half-written orders and tactical diagrams, one drawer secured with a brass lock bearing the captain's personal seal
+        interactions: [Open, Loot, Unlock]
+        locked:
+          dc: 12
+          type: Dex
+          success:
+            description: Your lockpicks find the subtle pressure points within the mechanism, and with a gentle twist, the captain's private lock surrenders its secrets with a soft click of submission.
+          fail:
+            description: The captain's lock proves stubborn, its internal mechanisms more sophisticated than expected, refusing to yield to your current approach.
+        items:
+          - type: Gold
+            description: A commander's pay pouch of supple leather embossed with military insignia, heavy with gold coins set aside for bribes and emergency operations
+            quantity: 75
+            unit: Coins
+          - type: Key
+            description: An enigmatic key of unusual design, its shaft inscribed with arcane symbols that seem to shift subtly when not directly observed, emanating a faint warmth when held
+            quantity: 1
+            unit: Key
+
+  secret-passage:
+    name: Secret Passage
+    description: A claustrophobic tunnel carved with painstaking secrecy, its walls bearing chisel marks from desperate hands. Moisture seeps through the stone, creating rivulets that glisten like silver veins in the darkness. The passage slopes steadily downward, forcing you to brace against the slick walls as you descend. Occasionally, niches carved into the walls hold the remnants of long-extinguished candles and forgotten personal effects—perhaps left by those who used this escape route in times of dire need. The air grows increasingly cool and damp as you progress, carrying whispers of the depths that await below.
+    paths:
+      - room: captain-quarters
+        description: *hidden_door
+      - room: underground-chamber
+        description: *narrow_passage
+
+  underground-chamber:
+    name: Underground Chamber
+    description: A vast subterranean cathedral carved by the patient hands of water and time. Massive stalactites descend from the vaulted ceiling like petrified waterfalls, some meeting their stalagmite counterparts to form ancient columns that seem to support the very mountain above. Phosphorescent fungi cling to the damp walls, casting an ethereal blue-green glow across the chamber and creating dancing shadows when disturbed by the occasional draft from unseen depths. The air is thick with mineral-rich moisture that coats your skin and carries the metallic taste of the earth's blood. Distant water droplets create a natural, haunting melody as they strike hidden pools, their echoes multiplying in the cavernous space like whispers of forgotten civilizations that once dwelled in these depths.
+    paths:
+      - room: secret-passage
+        description: *narrow_passage
+      - room: crystal-cave
+        description: *cave_entrance
+      - room: crypt-entrance
+        description: *ornate_archway
+
+  crystal-cave:
+    name: Crystal Cave
+    description: A breathtaking natural gallery where countless crystals of every imaginable hue protrude from the walls, ceiling, and floor. The formations pulse with an inner light that seems to respond to your presence, shifting in intensity and color as you move through the space. Rainbow refractions dance across the chamber, creating ever-changing patterns that mesmerize and disorient. The air itself feels charged with arcane energy, causing the fine hairs on your arms to stand on end and your breath to emerge as faintly luminescent mist. Occasional musical tones ring out when certain crystals resonate with each other, creating an otherworldly symphony that seems to follow no human composition.
+    paths:
+      - room: underground-chamber
+        description: *cave_entrance
+      - room: hidden-cave
+        description: *narrow_passage
+      - room: kobold-warren
+        description: *cave_entrance
+    containers:
+      - type: Crystal Formation
+        description: A magnificent cluster of intergrown amethyst and citrine crystals the size of a small shrine, with peculiar shadows visible deep within its translucent structure, suggesting something valuable trapped during the crystal's formation eons ago
+        interactions: [Break, Loot]
+        items:
+          - type: Gold
+            description: Ancient gold coins somehow suspended within the crystal matrix, their surfaces untarnished by time and bearing the profile of a ruler whose name has been lost to history
+            quantity: 50
+            unit: Coins
+          - type: Gem
+            description: A flawless blood-red ruby the size of a robin's egg that seems to capture and intensify the ambient light, pulsing gently like a disembodied heart when held in your palm
+            quantity: 1
+            unit: Gem
+
+  crypt-entrance:
+    name: Crypt Entrance
+    description: A grim threshold between the world of the living and the domain of the dead. Massive stone doors stand partially ajar, their surfaces covered in weathered carvings depicting souls in torment and ancient deities of death and judgment. Faded warnings in a dozen forgotten languages line the archway, their message clear despite the barrier of time and tongue—"Disturb not the eternal rest." Tarnished bronze braziers flank the entrance, somehow still burning with pale blue flames that cast no heat yet illuminate the bone fragments and funerary offerings scattered across the threshold. The air flowing outward carries the dry, musty scent of ancient dust and the faint, sweet undertone of decay, while whispered voices seem to echo from within, just below the threshold of comprehension.
+    paths:
+      - room: underground-chamber
+        description: *ornate_archway
+      - room: crypt-hall
+        description: *iron_door
+
+  crypt-hall:
+    name: Crypt Hall
+    description: A solemn corridor of remembrance stretching into shadow, where generations of the honored dead lie in eternal repose. Ornate stone sarcophagi line the central path, their lids carved with lifelike effigies of warriors, nobles, and priests in peaceful repose, hands clasped over ancient weapons or holy symbols. Along the walls, tiered burial niches hold countless urns and smaller coffins, each marked with family crests and personal tokens. Faded murals depicting the afterlife journey cover the vaulted ceiling, their once-vibrant colors now muted by centuries of dust and incense smoke. Ceremonial censers hang from chains, occasionally swaying without any discernible breeze, releasing the faint scent of ancient spices and embalming herbs that somehow still linger after countless years.
+    paths:
+      - room: crypt-entrance
+        description: *iron_door
+      - room: ritual-chamber
+        description: *ornate_archway
+    mandatory_encounters:
+      - type: Combat
+        description: The oppressive silence is broken by the grating sound of stone scraping against stone. With inexorable slowness, the lids of several sarcophagi begin to slide aside, pushed by gray, mottled hands whose flesh hangs in decaying tatters. Two corpses rise with unnatural fluidity, their grave clothes rotted and their flesh in various states of decay. Their clouded eyes fix upon you with malevolent hunger as putrid fluid drips from their gaping mouths, and a low, rattling moan escapes their throats—a sound no living being should make.
+        enemies:
+          - *zombie
+          - *zombie
+
+  ritual-chamber:
+    name: Ritual Chamber
+    description: A perfect circle of ancient stone where the veil between worlds grows thin. At the chamber's heart stands a massive obsidian altar, its surface stained dark with centuries of sacrificial offerings and carved with symbols that hurt the eye to look upon directly. Concentric rings of arcane glyphs spiral outward across the floor in patterns that seem to shift subtly when not directly observed. Tall black candles in corroded silver holders surround the altar, their flames burning an unnatural violet hue and casting writhing shadows that move independently of their sources. The walls are lined with niches containing mummified remains of ritual participants or victims, their desiccated faces frozen in expressions of ecstasy or terror. The air feels charged with potential energy, and whispered voices seem to emanate from the very stones, speaking words just beyond comprehension.
+    paths:
+      - room: crypt-hall
+        description: *ornate_archway
+      - room: treasure-vault
+        description: *treasure_door_hard
+    mandatory_encounters:
+      - type: Combat
+        description: A hulking bugbear shaman stands at the altar, its massive form draped in robes adorned with bones and strange fetishes that clack together with its movements. Its fur is painted with spiraling sigils that pulse with an inner light, and it chants in a guttural tongue while making complex gestures over a bubbling cauldron. As you enter, the creature's eyes snap open—revealing orbs of solid black—and it snarls with rage at the interruption. With surprising speed, it snatches up a gnarled staff topped with a crystallized humanoid skull and turns to face you, the air around it shimmering with barely contained magical energy.
+        enemies:
+          - *bugbear
+
+  treasure-vault:
+    name: Treasure Vault
+    description: A breathtaking repository of wealth that dazzles the senses upon entry. The chamber's high dome is inlaid with gold and silver in patterns representing the celestial heavens, catching and multiplying the light from enchanted sconces that never dim. Piles of coins from countless fallen kingdoms form small hills throughout the room, interspersed with gleaming weapons, armor stands bearing magnificent plate mail, and display cases containing jewels the size of bird eggs. The very air seems to shimmer with protective enchantments, and the accumulated magic of so many powerful items creates a subtle humming sensation against your skin. Ancient tapestries depicting the vault's creation hang between ornate pillars of marble veined with precious metals, while the floor itself is a mosaic of semiprecious stones forming a map of a realm that may no longer exist.
+    paths:
+      - room: ritual-chamber
+        description: *treasure_door_hard
+    containers:
+      - type: Chest
+        description: A masterwork ironwood chest reinforced with mithril bands and adorned with intricate gold inlays depicting dragons guarding hoards, its lock mechanism resembling a miniature puzzle box with multiple moving parts that occasionally realign themselves
+        interactions: [Open, Loot, Unlock]
+        locked:
+          dc: 18
+          type: Dex
+          success:
+            description: Your fingers dance across the intricate mechanism with extraordinary precision, solving the mechanical riddle as tumblers click into place one by one until the final satisfying thunk signals your victory over this masterful lock.
+          fail:
+            description: The lock's complexity defies your attempts, its internal components shifting and rearranging themselves as if alive and determined to protect what lies within, leaving you frustrated at its doorstep.
+          crit_fail:
+            damage:
+              hp: 3
+              type: Piercing
+            description: As you probe the delicate mechanism, a hidden needle springs forth with vicious speed, driving deep into your hand. The metal burns like ice as some ancient poison enters your bloodstream, sending waves of pain up your arm.
+        items:
+          - type: Gold
+            description: A legendary hoard of ancient gold coins from a dozen fallen empires, each piece perfectly preserved and worth far more to collectors than their considerable weight in precious metal
+            quantity: 500
+            unit: Coins
+          - type: Weapon
+            description: A breathtaking longsword with a blade that seems forged from captured starlight, its hilt wrapped in midnight-blue dragonhide and pommel set with a diamond that contains a swirling galaxy within its depths
+            attacks:
+              longsword: *longsword
+            quantity: 1
+            unit: weapon
+      - type: Pedestal
+        description: An alabaster pedestal carved to resemble intertwined serpents whose eyes are set with hypnotic opals, supporting a pulsating crystalline orb that hovers several inches above its surface, rotating slowly in defiance of natural laws
+        interactions: [Take]
+        items:
+          - type: Artifact
+            description: A mesmerizing orb that contains what appears to be a miniature storm system complete with swirling clouds and occasional flashes of lightning, its surface warm to the touch and emanating a subtle vibration that resonates with something deep within your consciousness
+            quantity: 1
+            unit: Artifact
+      - type: Statue
+        description: A life-sized marble statue of a regal figure with features of impossible perfection, its outstretched hands offering a crown as if in supplication or warning, the statue's eyes following your movements with unsettling awareness
+        interactions: [Take]
+        items:
+          - type: Crown
+            description: A magnificent crown of platinum and white gold, set with seven perfect gems of different colors that seem to contain their own internal light sources, each stone rumored to contain the soul of an ancient ruler who willingly sacrificed themselves to imbue the crown with their wisdom and power
+            quantity: 1
+            unit: Crown
+
+  hidden-cave:
+    name: Hidden Cave
+    description: A secret sanctuary concealed behind a shimmering curtain of falling water, its entrance visible only when light strikes at just the right angle. Inside, the perpetual mist from the waterfall creates a dreamlike atmosphere where rainbow prisms dance across the walls. The cave's natural acoustics transform the waterfall's roar into a soothing melody that seems to wash away concerns from the outside world. At the chamber's heart lies a perfectly circular pool of impossibly clear water, so still it resembles a mirror of polished obsidian until disturbed. Luminescent moss clings to the walls, bathing the space in a gentle blue-green glow that reflects off the water's surface, creating the illusion of infinite depth. The constant moisture has encouraged the growth of delicate crystal formations that resemble frozen flowers, their facets capturing and amplifying the ambient light.
+    paths:
+      - room: crystal-cave
+        description: *narrow_passage
+    containers:
+      - type: Pool
+        description: A mesmerizing pool of crystal-clear water that seems deeper than physically possible, its surface occasionally rippling without cause while mysterious lights dance in its depths, revealing tantalizing glimpses of treasures lost to time
+        interactions: [Search]
+        items:
+          - type: Gold
+            description: Ancient gold coins scattered across the pool's bottom like fallen stars, their surfaces cleaned to pristine condition by centuries in the mineral-rich water, each bearing the profile of a forgotten elven queen
+            quantity: 30
+            unit: Coins
+          - type: Ring
+            description: An exquisite silver ring of elven craftsmanship, set with a sapphire that seems to contain actual flowing water within its depths, the band inscribed with flowing script that changes language depending on who reads it
+            quantity: 1
+            unit: Ring
+
+  kobold-warren:
+    name: Kobold Warren
+    description: A chaotic labyrinth of cramped tunnels and irregular chambers carved by generations of industrious clawed hands. The ceiling hangs uncomfortably low for human visitors, forcing you to stoop as you navigate passages that twist and branch with bewildering frequency. Crude drawings in mineral pigments adorn the walls, depicting hunting scenes, dragon worship, and territorial boundaries. The warren teems with evidence of kobold ingenuity—makeshift furniture crafted from scavenged materials, intricate rope-and-pulley systems for moving goods, and cleverly concealed pit traps marked with subtle warnings visible only to those who know what to look for. The air carries the mingled scents of cooking fires, reptilian musk, and the distinctive odor of the luminous fungi they cultivate in dark corners. Everywhere are signs of a complex society operating by its own inscrutable rules, with designated areas for sleeping, crafting, food storage, and what appears to be a primitive shrine to a draconic deity.
+    paths:
+      - room: crystal-cave
+        description: *cave_entrance
+    mandatory_encounters:
+      - type: Combat
+        description: The warren suddenly erupts with activity as four kobolds spring from cunningly disguised hiding spots among the rock formations and debris piles. Their scales gleam in shades of rust and copper as they brandish an assortment of crude but effective weapons. The smallest one blows a shrill alarm on a bone whistle while the others spread out with surprising tactical coordination, their reptilian eyes gleaming with cunning intelligence as they seek to flank you. Their tails lash excitedly as they chitter to each other in their rapid, yipping language, clearly executing some rehearsed ambush strategy.
+        enemies:
+          - *kobold
+          - *kobold
+          - *kobold
+          - *kobold
+
+startingRoom: entrance-hall

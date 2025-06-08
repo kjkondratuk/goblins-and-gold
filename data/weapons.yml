@@ -1,1 +1,114 @@
 weapons:
+  # Standard weapons
+  scimitar: &scimitar
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 1d6
+        bonus: 2
+        damage_type: Slashing
+
+  longsword: &longsword
+    bonus: 5
+    range: 5
+    damage:
+      - roll: 1d8
+        bonus: 3
+        damage_type: Slashing
+
+  greataxe: &greataxe
+    bonus: 6
+    range: 5
+    damage:
+      - roll: 1d12
+        bonus: 4
+        damage_type: Slashing
+
+  shortsword: &shortsword
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 1d6
+        bonus: 2
+        damage_type: Piercing
+
+  dagger: &dagger
+    bonus: 3
+    range: 5
+    damage:
+      - roll: 1d4
+        bonus: 2
+        damage_type: Piercing
+
+  shortbow: &shortbow
+    bonus: 4
+    range: 80
+    falloff: 320
+    damage:
+      - roll: 1d6
+        bonus: 2
+        damage_type: Piercing
+
+  longbow: &longbow
+    bonus: 5
+    range: 150
+    falloff: 600
+    damage:
+      - roll: 1d8
+        bonus: 3
+        damage_type: Piercing
+
+  # Monster-specific weapons
+  morningstar: &morningstar
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 2d8
+        bonus: 2
+        damage_type: Piercing
+
+  # Player-specific weapons (if they differ from standard)
+  player_dagger: &player_dagger
+    bonus: 3
+    range: 5
+    damage:
+      - roll: 1d4
+        bonus: 3  # Note: Player's dagger has +3 bonus instead of +2
+        damage_type: Piercing
+
+  player_greatsword: &player_greatsword
+    bonus: 4
+    range: 5
+    damage:
+      - roll: 1d10
+        bonus: 4
+        damage_type: Slashing
+
+  # Death Slaad specific weapons
+  death_slaad_bite: &death_slaad_bite
+    bonus: 9
+    range: 5
+    damage:
+      - roll: 1d8
+        bonus: 5
+        damage_type: Piercing
+
+  death_slaad_claws: &death_slaad_claws
+    bonus: 9
+    range: 5
+    damage:
+      - roll: 1d10
+        bonus: 5
+        damage_type: Slashing
+      - roll: 2d6
+        damage_type: Necrotic
+
+  death_slaad_greatsword: &death_slaad_greatsword
+    bonus: 9
+    range: 5
+    damage:
+      - roll: 2d6
+        bonus: 5
+        damage_type: Slashing
+      - roll: 2d6
+        damage_type: Necrotic

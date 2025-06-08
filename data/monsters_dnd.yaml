@@ -1,0 +1,230 @@
+monsters:
+  goblin: &goblin
+    name: Goblin
+    ac: 15
+    hp: 7
+    description: A short humanoid, in rags, wielding a scimitar
+    stats:
+      str: 8
+      dex: 14
+      con: 10
+      int: 10
+      wis: 8
+      cha: 8
+    inventory:
+      - type: Armor
+        description: A rough-hewn suit of leather armor
+        equip_info:
+          slot: Torso
+          ac_bonus: 2
+        quantity: 1
+        unit: suit
+      - type: Weapon
+        description: A rusty scimitar
+        attacks:
+          scimitar: *scimitar
+        quantity: 1
+        unit: weapon
+    attacks:
+      scimitar: *scimitar
+      shortbow: &goblin-shortbow
+        bonus: 4
+        range: 80
+        falloff: 320
+        damage:
+          - roll: 1d6
+            bonus: 2
+            damage_type: Piercing
+
+  orc: &orc
+    name: Orc
+    ac: 13
+    hp: 15
+    description: A muscular humanoid with greenish skin and tusks, wielding a greataxe
+    stats:
+      str: 16
+      dex: 12
+      con: 16
+      int: 7
+      wis: 11
+      cha: 10
+    inventory:
+      - type: Armor
+        description: Hide armor
+        equip_info:
+          slot: Torso
+          ac_bonus: 3
+        quantity: 1
+        unit: suit
+      - type: Weapon
+        description: A well-used greataxe
+        attacks:
+          greataxe: *greataxe
+        quantity: 1
+        unit: weapon
+    attacks:
+      greataxe: *greataxe
+
+  skeleton: &skeleton
+    name: Skeleton
+    ac: 13
+    hp: 13
+    description: A humanoid skeleton animated by dark magic, wielding a shortsword
+    stats:
+      str: 10
+      dex: 14
+      con: 15
+      int: 6
+      wis: 8
+      cha: 5
+    inventory:
+      - type: Armor
+        description: Remnants of leather armor
+        equip_info:
+          slot: Torso
+          ac_bonus: 1
+        quantity: 1
+        unit: suit
+      - type: Weapon
+        description: A rusty shortsword
+        attacks:
+          shortsword: *shortsword
+        quantity: 1
+        unit: weapon
+    attacks:
+      shortsword: *shortsword
+      shortbow: &skeleton-shortbow
+        bonus: 4
+        range: 80
+        falloff: 320
+        damage:
+          - roll: 1d6
+            bonus: 2
+            damage_type: Piercing
+
+  zombie: &zombie
+    name: Zombie
+    ac: 8
+    hp: 22
+    description: A rotting corpse that moves with a shambling gait
+    stats:
+      str: 13
+      dex: 6
+      con: 16
+      int: 3
+      wis: 6
+      cha: 5
+    inventory: []
+    attacks:
+      slam: &zombie-slam
+        bonus: 3
+        range: 5
+        damage:
+          - roll: 1d6
+            bonus: 1
+            damage_type: Bludgeoning
+
+  kobold: &kobold
+    name: Kobold
+    ac: 12
+    hp: 5
+    description: A small, reptilian humanoid with a doglike head
+    stats:
+      str: 7
+      dex: 15
+      con: 9
+      int: 8
+      wis: 7
+      cha: 8
+    inventory:
+      - type: Weapon
+        description: A small dagger
+        attacks:
+          dagger: *dagger
+        quantity: 1
+        unit: weapon
+    attacks:
+      dagger: *dagger
+      sling: &kobold-sling
+        bonus: 4
+        range: 30
+        falloff: 120
+        damage:
+          - roll: 1d4
+            bonus: 2
+            damage_type: Bludgeoning
+
+  bugbear: &bugbear
+    name: Bugbear
+    ac: 16
+    hp: 27
+    description: A large, hairy goblinoid with a bearlike snout
+    stats:
+      str: 15
+      dex: 14
+      con: 13
+      int: 8
+      wis: 11
+      cha: 9
+    inventory:
+      - type: Armor
+        description: Hide armor
+        equip_info:
+          slot: Torso
+          ac_bonus: 3
+        quantity: 1
+        unit: suit
+      - type: Weapon
+        description: A morningstar
+        attacks:
+          morningstar: &morningstar
+            bonus: 4
+            range: 5
+            damage:
+              - roll: 2d8
+                bonus: 2
+                damage_type: Piercing
+        quantity: 1
+        unit: weapon
+    attacks:
+      morningstar: *morningstar
+
+  death-slaad: &death-slaad
+    name: Death Slaad
+    ac: 18
+    hp: 170
+    description: A terrifying frog-like creature with razor-sharp claws
+    stats:
+      str: 20
+      dex: 15
+      con: 19
+      int: 15
+      wis: 10
+      cha: 16
+    inventory: []
+    attacks:
+      bite: &death-slaad-bite
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 1d8
+            bonus: 5
+            damage_type: Piercing
+      claws: &death-slaad-claws
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 1d10
+            bonus: 5
+            damage_type: Slashing
+          - roll: 2d6
+            damage_type: Necrotic
+      greatsword: &death-slaad-greatsword
+        bonus: 9
+        range: 5
+        damage:
+          - roll: 2d6
+            bonus: 5
+            damage_type: Slashing
+          - roll: 2d6
+            damage_type: Necrotic
