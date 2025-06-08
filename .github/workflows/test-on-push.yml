@@ -36,11 +36,11 @@ jobs:
           TOTAL_COVERAGE=$(go tool cover -func=filtered_coverage.txt | grep total: | awk '{print $3}')
           TOTAL_COVERAGE_NUM=$(echo $TOTAL_COVERAGE | tr -d '%')
 
-          # Format total coverage with color based on percentage
+          # Format total coverage with emoji based on percentage
           if (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' >= 75)}') )); then
-            echo "Total coverage (excluding mock files): <span style=\"color:green\">$TOTAL_COVERAGE</span>" >> $GITHUB_STEP_SUMMARY
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE ✅" >> $GITHUB_STEP_SUMMARY
           elif (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' < 50)}') )); then
-            echo "Total coverage (excluding mock files): <span style=\"color:red\">$TOTAL_COVERAGE</span>" >> $GITHUB_STEP_SUMMARY
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE ❌" >> $GITHUB_STEP_SUMMARY
           else
             echo "Total coverage (excluding mock files): $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
           fi
@@ -51,19 +51,19 @@ jobs:
           PATCH_COVERAGE=$(awk "BEGIN {printf \"%.2f%%\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
           PATCH_COVERAGE_NUM=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
 
-          # Format patch coverage with color based on percentage
+          # Format patch coverage with emoji based on percentage
           if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' >= 75)}') )); then
-            echo "Patch coverage (lines, excluding mock files): <span style=\"color:green\">$PATCH_COVERAGE</span> ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ✅ ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
           elif (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 50)}') )); then
-            echo "Patch coverage (lines, excluding mock files): <span style=\"color:red\">$PATCH_COVERAGE</span> ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ❌ ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
           else
             echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Display detailed coverage by package with colored percentages
+          # Display detailed coverage by package with emoji indicators
           echo "## Coverage by package (excluding mock files)" >> $GITHUB_STEP_SUMMARY
 
-          # Process coverage by package and add color formatting
+          # Process coverage by package and add emoji indicators
           go tool cover -func=filtered_coverage.txt | while read line; do
             if [[ $line == *"total:"* ]]; then
               # Skip the total line as we've already displayed it
@@ -75,16 +75,15 @@ jobs:
               # Extract the percentage value
               PERCENTAGE=$(echo $line | grep -o '[0-9]\+\.[0-9]\+%' | tr -d '%')
 
-              # Format with color based on percentage value
+              # Add emoji based on percentage value
               if (( $(awk 'BEGIN {print ('$PERCENTAGE' >= 75)}') )); then
-                # Replace the percentage with colored version
-                COLORED_LINE=$(echo "$line" | sed "s/$PERCENTAGE%/<span style=\"color:green\">$PERCENTAGE%<\/span>/g")
-                echo "$COLORED_LINE" >> $GITHUB_STEP_SUMMARY
+                # Add green checkmark emoji after the percentage
+                echo "$line ✅" >> $GITHUB_STEP_SUMMARY
               elif (( $(awk 'BEGIN {print ('$PERCENTAGE' < 50)}') )); then
-                # Replace the percentage with colored version
-                COLORED_LINE=$(echo "$line" | sed "s/$PERCENTAGE%/<span style=\"color:red\">$PERCENTAGE%<\/span>/g")
-                echo "$COLORED_LINE" >> $GITHUB_STEP_SUMMARY
+                # Add red X emoji after the percentage
+                echo "$line ❌" >> $GITHUB_STEP_SUMMARY
               else
+                # No emoji for percentages between 50% and 75%
                 echo "$line" >> $GITHUB_STEP_SUMMARY
               fi
             else
