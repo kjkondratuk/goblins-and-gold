@@ -34,7 +34,16 @@ jobs:
 
           # Parse filtered coverage file and calculate total coverage
           TOTAL_COVERAGE=$(go tool cover -func=filtered_coverage.txt | grep total: | awk '{print $3}')
-          echo "Total coverage (excluding mock files): $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
+          TOTAL_COVERAGE_NUM=$(echo $TOTAL_COVERAGE | tr -d '%')
+
+          # Format total coverage with color based on percentage
+          if (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' >= 75)}') )); then
+            echo "Total coverage (excluding mock files): <span style=\"color:green\">$TOTAL_COVERAGE</span>" >> $GITHUB_STEP_SUMMARY
+          elif (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' < 50)}') )); then
+            echo "Total coverage (excluding mock files): <span style=\"color:red\">$TOTAL_COVERAGE</span>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
+          fi
 
           # Calculate patch coverage (lines covered)
           COVERED_LINES=$(grep -v "^mode:" filtered_coverage.txt | awk '$3 > 0 {covered++} END {print covered}')
@@ -42,11 +51,47 @@ jobs:
           PATCH_COVERAGE=$(awk "BEGIN {printf \"%.2f%%\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
           PATCH_COVERAGE_NUM=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
 
-          echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          # Format patch coverage with color based on percentage
+          if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' >= 75)}') )); then
+            echo "Patch coverage (lines, excluding mock files): <span style=\"color:green\">$PATCH_COVERAGE</span> ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          elif (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 50)}') )); then
+            echo "Patch coverage (lines, excluding mock files): <span style=\"color:red\">$PATCH_COVERAGE</span> ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          fi
 
-          # Display detailed coverage by package
+          # Display detailed coverage by package with colored percentages
           echo "## Coverage by package (excluding mock files)" >> $GITHUB_STEP_SUMMARY
-          go tool cover -func=filtered_coverage.txt >> $GITHUB_STEP_SUMMARY
+
+          # Process coverage by package and add color formatting
+          go tool cover -func=filtered_coverage.txt | while read line; do
+            if [[ $line == *"total:"* ]]; then
+              # Skip the total line as we've already displayed it
+              continue
+            fi
+
+            # Check if the line contains a coverage percentage
+            if [[ $line == *"%"* ]]; then
+              # Extract the percentage value
+              PERCENTAGE=$(echo $line | grep -o '[0-9]\+\.[0-9]\+%' | tr -d '%')
+
+              # Format with color based on percentage value
+              if (( $(awk 'BEGIN {print ('$PERCENTAGE' >= 75)}') )); then
+                # Replace the percentage with colored version
+                COLORED_LINE=$(echo "$line" | sed "s/$PERCENTAGE%/<span style=\"color:green\">$PERCENTAGE%<\/span>/g")
+                echo "$COLORED_LINE" >> $GITHUB_STEP_SUMMARY
+              elif (( $(awk 'BEGIN {print ('$PERCENTAGE' < 50)}') )); then
+                # Replace the percentage with colored version
+                COLORED_LINE=$(echo "$line" | sed "s/$PERCENTAGE%/<span style=\"color:red\">$PERCENTAGE%<\/span>/g")
+                echo "$COLORED_LINE" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "$line" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              # Line doesn't contain a percentage, output as is
+              echo "$line" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
 
           # Check if patch coverage is less than 75%
           if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 75)}') )); then
