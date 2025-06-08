@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GIT_KEY }}
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -32,7 +33,6 @@ jobs:
           NEW_TAG=$(svu next)
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git remote set-url origin https://x-access-token:${{secrets.GIT_KEY}}@github.com/${{ github.repository }}
           git config --list
           git tag -a $NEW_TAG -m "Release $NEW_TAG"
           git push --tags
