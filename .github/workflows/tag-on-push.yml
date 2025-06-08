@@ -37,6 +37,8 @@ jobs:
           git push --tags
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
           echo "old_tag=$OLD_TAG" >> $GITHUB_OUTPUT
+          echo "New Tag: $NEW_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "Old Tag: $OLD_TAG" >> $GITHUB_STEP_SUMMARY
 
       - name: Output Tag
         run: echo "Created and pushed tag ${{ steps.tag.outputs.tag }} (previous was ${{ steps.tag.outputs.old_tag }})"
