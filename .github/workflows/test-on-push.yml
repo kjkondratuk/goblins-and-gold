@@ -26,21 +26,27 @@ jobs:
 
       - name: Process and display coverage
         run: |
-          # Parse coverage file and calculate total coverage
-          TOTAL_COVERAGE=$(go tool cover -func=coverage.txt | grep total: | awk '{print $3}')
-          echo "Total coverage: $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
+          # Filter out mock files from coverage
+          grep -v "mock_" coverage.txt > filtered_coverage.txt
+          echo "mode: atomic" > filtered_coverage.txt.tmp
+          grep -v "^mode:" filtered_coverage.txt >> filtered_coverage.txt.tmp
+          mv filtered_coverage.txt.tmp filtered_coverage.txt
+
+          # Parse filtered coverage file and calculate total coverage
+          TOTAL_COVERAGE=$(go tool cover -func=filtered_coverage.txt | grep total: | awk '{print $3}')
+          echo "Total coverage (excluding mock files): $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
 
           # Calculate patch coverage (lines covered)
-          COVERED_LINES=$(grep -v "^mode:" coverage.txt | awk '$3 > 0 {covered++} END {print covered}')
-          TOTAL_LINES=$(grep -v "^mode:" coverage.txt | wc -l)
+          COVERED_LINES=$(grep -v "^mode:" filtered_coverage.txt | awk '$3 > 0 {covered++} END {print covered}')
+          TOTAL_LINES=$(grep -v "^mode:" filtered_coverage.txt | wc -l)
           PATCH_COVERAGE=$(awk "BEGIN {printf \"%.2f%%\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
           PATCH_COVERAGE_NUM=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
 
-          echo "Patch coverage (lines): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
 
           # Display detailed coverage by package
-          echo "## Coverage by package" >> $GITHUB_STEP_SUMMARY
-          go tool cover -func=coverage.txt >> $GITHUB_STEP_SUMMARY
+          echo "## Coverage by package (excluding mock files)" >> $GITHUB_STEP_SUMMARY
+          go tool cover -func=filtered_coverage.txt >> $GITHUB_STEP_SUMMARY
 
           # Check if patch coverage is less than 75%
           if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 75)}') )); then
