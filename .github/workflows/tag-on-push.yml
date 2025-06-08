@@ -33,8 +33,9 @@ jobs:
           NEW_TAG=$(svu next)
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag -a $NEW_TAG -m "Release $NEW_TAG"
-          git push --tags
+          git tag "$NEW_TAG" -m "Release $NEW_TAG"
+          git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}
+          git push origin "$NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
           echo "old_tag=$OLD_TAG" >> $GITHUB_OUTPUT
 
