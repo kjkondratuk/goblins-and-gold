@@ -1,0 +1,99 @@
+name: Test on Push
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Process and display coverage
+        run: |
+          # Filter out mock files from coverage
+          grep -v "mock_" coverage.txt > filtered_coverage.txt
+          echo "mode: atomic" > filtered_coverage.txt.tmp
+          grep -v "^mode:" filtered_coverage.txt >> filtered_coverage.txt.tmp
+          mv filtered_coverage.txt.tmp filtered_coverage.txt
+
+          # Parse filtered coverage file and calculate total coverage
+          TOTAL_COVERAGE=$(go tool cover -func=filtered_coverage.txt | grep total: | awk '{print $3}')
+          TOTAL_COVERAGE_NUM=$(echo $TOTAL_COVERAGE | tr -d '%')
+
+          # Format total coverage with emoji based on percentage
+          if (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' >= 75)}') )); then
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE ✅" >> $GITHUB_STEP_SUMMARY
+          elif (( $(awk 'BEGIN {print ('$TOTAL_COVERAGE_NUM' < 50)}') )); then
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE ❌" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Total coverage (excluding mock files): $TOTAL_COVERAGE" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Calculate patch coverage (lines covered)
+          COVERED_LINES=$(grep -v "^mode:" filtered_coverage.txt | awk '$3 > 0 {covered++} END {print covered}')
+          TOTAL_LINES=$(grep -v "^mode:" filtered_coverage.txt | wc -l)
+          PATCH_COVERAGE=$(awk "BEGIN {printf \"%.2f%%\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
+          PATCH_COVERAGE_NUM=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES / $TOTAL_LINES) * 100}")
+
+          # Format patch coverage with emoji based on percentage
+          if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' >= 75)}') )); then
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ✅ ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          elif (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 50)}') )); then
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ❌ ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Patch coverage (lines, excluding mock files): $PATCH_COVERAGE ($COVERED_LINES of $TOTAL_LINES lines)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Display detailed coverage by package with emoji indicators
+          echo "## Coverage by package (excluding mock files)" >> $GITHUB_STEP_SUMMARY
+
+          # Process coverage by package and add emoji indicators
+          go tool cover -func=filtered_coverage.txt | while read line; do
+            if [[ $line == *"total:"* ]]; then
+              # Skip the total line as we've already displayed it
+              continue
+            fi
+
+            # Check if the line contains a coverage percentage
+            if [[ $line == *"%"* ]]; then
+              # Extract the percentage value
+              PERCENTAGE=$(echo $line | grep -o '[0-9]\+\.[0-9]\+%' | tr -d '%')
+
+              # Add emoji based on percentage value
+              if (( $(awk 'BEGIN {print ('$PERCENTAGE' >= 75)}') )); then
+                # Add green checkmark emoji after the percentage
+                echo "$line ✅" >> $GITHUB_STEP_SUMMARY
+              elif (( $(awk 'BEGIN {print ('$PERCENTAGE' < 50)}') )); then
+                # Add red X emoji after the percentage
+                echo "$line ❌" >> $GITHUB_STEP_SUMMARY
+              else
+                # No emoji for percentages between 50% and 75%
+                echo "$line" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              # Line doesn't contain a percentage, output as is
+              echo "$line" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          # Check if patch coverage is less than 75%
+          if (( $(awk 'BEGIN {print ('$PATCH_COVERAGE_NUM' < 75)}') )); then
+            echo "::warning::Patch coverage is below 75% (current: $PATCH_COVERAGE)"
+            echo "⚠️ **Warning**: Patch coverage is below 75% (current: $PATCH_COVERAGE)" >> $GITHUB_STEP_SUMMARY
+          fi
