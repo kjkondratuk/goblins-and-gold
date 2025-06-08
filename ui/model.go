@@ -1,13 +1,17 @@
 package ui
 
 import (
+	"fmt"
 	"os"
+	"runtime"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjkondratuk/goblins-and-gold/command"
 	"github.com/kjkondratuk/goblins-and-gold/state"
+	"golang.org/x/term"
 )
 
 // InitMsg is sent to initialize the model with state and app
@@ -30,6 +34,9 @@ type ShowPromptMsg struct {
 	ResultCh     chan<- PromptResult
 }
 
+// WindowSizeTickMsg is sent by the window size ticker
+type WindowSizeTickMsg time.Time
+
 // Model is the main bubbletea model for the application
 type Model struct {
 	state       state.State
@@ -42,6 +49,7 @@ type Model struct {
 	width       int
 	height      int
 	exit        chan os.Signal
+	tooSmall    bool // Flag to track if the window is too small
 }
 
 // NewModel creates a new bubbletea model
@@ -53,13 +61,31 @@ func NewModel(s state.State, app command.Command, exit chan os.Signal) Model {
 		commandView: NewCommandView(s, app),
 		messageView: NewMessageView(),
 		exit:        exit,
+		tooSmall:    false, // Initialize as false, will be updated on first WindowSizeMsg
 	}
 }
 
 // Init initializes the model
 func (m Model) Init() tea.Cmd {
+	// Check if we're running on Windows
+	if runtime.GOOS == "windows" {
+		return m.startWindowSizeTicker()
+	}
 	return nil
 }
+
+// startWindowSizeTicker starts a ticker to check window size on Windows
+func (m Model) startWindowSizeTicker() tea.Cmd {
+	return tea.Tick(time.Millisecond*250, func(t time.Time) tea.Msg {
+		return WindowSizeTickMsg(t)
+	})
+}
+
+// Minimum window dimensions
+const (
+	minWidth  = 80
+	minHeight = 24
+)
 
 // Update handles messages and user input
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -113,6 +139,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		// If we have an active select view, handle its key events
 		if m.selectView != nil {
+			// First check for page up/down keys for message view scrolling
+			switch msg.String() {
+			case "pgup", "pgdown", "home", "end":
+				// Update message view for scrolling
+				var messageViewCmd tea.Cmd
+				m.messageView, messageViewCmd = m.messageView.Update(msg)
+				return m, messageViewCmd
+			}
+
+			// Then handle select-specific keys
 			switch msg.String() {
 			case "up", "k":
 				if m.selectView.cursor > 0 {
@@ -141,6 +177,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		// If we have an active prompt view, handle its key events
 		if m.promptView != nil {
+			// First check for page up/down keys for message view scrolling
+			switch msg.String() {
+			case "pgup", "pgdown", "home", "end":
+				// Update message view for scrolling
+				var messageViewCmd tea.Cmd
+				m.messageView, messageViewCmd = m.messageView.Update(msg)
+				return m, messageViewCmd
+			}
+
 			switch msg.Type {
 			case tea.KeyEnter:
 				// Send the result and clear the prompt view
@@ -161,9 +206,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		// Only handle special keys here, command execution happens in CommandView
 		// when Enter is pressed
+	case WindowSizeTickMsg:
+		// Continue the ticker
+		cmds = append(cmds, m.startWindowSizeTicker())
+
+		// Get the current terminal size
+		width, height, err := term.GetSize(int(os.Stdout.Fd()))
+		if err == nil && (width != m.width || height != m.height) {
+			// If the size has changed, send a WindowSizeMsg
+			cmds = append(cmds, func() tea.Msg {
+				return tea.WindowSizeMsg{Width: width, Height: height}
+			})
+		}
+
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+
+		// Check if the window is too small
+		wasTooSmall := m.tooSmall
+		m.tooSmall = m.width < minWidth || m.height < minHeight
+
+		// If the window was too small but is now big enough, add a message
+		if wasTooSmall && !m.tooSmall {
+			m.messageView.AddMessage("Window size is now acceptable.", LogSuccess)
+		}
 	}
 
 	// Update components
@@ -187,19 +254,66 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View renders the UI
 func (m Model) View() string {
-	// Calculate layout
-	roomHeight := m.height / 2
-	messageHeight := m.height / 4
-	commandHeight := m.height - roomHeight - messageHeight
+	// Check if the window is too small
+	if m.tooSmall {
+
+		// Create an error message for small window
+		errorStyle := lipgloss.NewStyle().
+			Foreground(lipgloss.Color("196")). // Red color
+			Bold(true).
+			Padding(1).
+			Align(lipgloss.Center)
+
+		message := "Window is too small!\n\n" +
+			"Please resize your terminal to at least " +
+			fmt.Sprintf("%d×%d", minWidth, minHeight) +
+			" characters."
+
+		return errorStyle.Render(message)
+	}
+
+	// Calculate layout with adjustments for borders and padding
+	// Border and padding take up approximately 4 lines (2 for borders, 2 for padding)
+	borderAndPaddingHeight := 4
+
+	// Adjust total available height to account for borders and padding of all three components
+	availableHeight := m.height - (borderAndPaddingHeight * 3)
+
+	// Ensure availableHeight is not negative
+	if availableHeight < 0 {
+		availableHeight = 0
+	}
+
+	// Allocate proportions of the available height with minimum values
+	roomHeight := availableHeight * 4 / 10 // 40% of available height
+	if roomHeight < 3 {
+		roomHeight = 3 // minimum 3
+	}
+
+	messageHeight := availableHeight * 3 / 10 // 30% of available height
+	if messageHeight < 3 {
+		messageHeight = 3 // minimum 3
+	}
+
+	commandHeight := availableHeight * 3 / 10 // 30% of available height
+	if commandHeight < 3 {
+		commandHeight = 3 // minimum 3
+	}
+
+	// Ensure width is not too small
+	width := m.width
+	if width < 10 {
+		width = 10 // minimum width of 10
+	}
 
 	// Render room and message views
 	roomView := lipgloss.NewStyle().
-		Width(m.width).
+		Width(width).
 		Height(roomHeight).
 		Render(m.roomView.View())
 
 	messageView := lipgloss.NewStyle().
-		Width(m.width).
+		Width(width).
 		Height(messageHeight).
 		Render(m.messageView.View())
 
@@ -207,26 +321,32 @@ func (m Model) View() string {
 	var commandAreaContent string
 	if m.selectView != nil {
 		// Render select view in place of command view
+		// Adjust width to account for border (2 characters)
+		borderWidth := 2
+		adjustedWidth := width - borderWidth
 		commandAreaContent = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("63")).
 			Padding(1).
-			Width(m.width).
+			Width(adjustedWidth).
 			Height(commandHeight).
 			Render(m.selectView.View())
 	} else if m.promptView != nil {
 		// Render prompt view in place of command view
+		// Adjust width to account for border (2 characters)
+		borderWidth := 2
+		adjustedWidth := width - borderWidth
 		commandAreaContent = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("63")).
 			Padding(1).
-			Width(m.width).
+			Width(adjustedWidth).
 			Height(commandHeight).
 			Render(m.promptView.label + "\n" + m.promptView.textInput.View())
 	} else {
 		// Render normal command view
 		commandAreaContent = lipgloss.NewStyle().
-			Width(m.width).
+			Width(width).
 			Height(commandHeight).
 			Render(m.commandView.View())
 	}

@@ -14,9 +14,9 @@ type PromptResult struct {
 
 // SelectResult is sent when a selection is made
 type SelectResult struct {
-	Index  int
-	Value  string
-	Error  error
+	Index int
+	Value string
+	Error error
 }
 
 // BubbleTeaPromptLib is an implementation of ux.PromptLib using bubbletea
@@ -145,12 +145,42 @@ func (m selectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m selectModel) View() string {
 	s := m.label + "\n\n"
 
-	for i, item := range m.items {
+	// Show at most 3 items at a time
+	maxVisible := 3
+
+	// Calculate which items to show based on cursor
+	startIdx := m.cursor - maxVisible/2
+	if startIdx < 0 {
+		startIdx = 0
+	}
+
+	endIdx := startIdx + maxVisible
+	if endIdx > len(m.items) {
+		endIdx = len(m.items)
+		// Adjust startIdx if we're at the end
+		startIdx = endIdx - maxVisible
+		if startIdx < 0 {
+			startIdx = 0
+		}
+	}
+
+	// Add scroll indicator if needed
+	if startIdx > 0 {
+		s += "↑ more options\n"
+	}
+
+	// Render visible items
+	for i := startIdx; i < endIdx; i++ {
 		cursor := " "
 		if i == m.cursor {
 			cursor = ">"
 		}
-		s += cursor + " " + item + "\n"
+		s += cursor + " " + m.items[i] + "\n"
+	}
+
+	// Add scroll indicator if needed
+	if endIdx < len(m.items) {
+		s += "↓ more options\n"
 	}
 
 	return s

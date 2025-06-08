@@ -37,8 +37,14 @@ type formattedMessage struct {
 
 // NewMessageView creates a new message view
 func NewMessageView() MessageView {
+	// Create a viewport with initial dimensions
+	// The actual size will be adjusted based on the terminal size
 	vp := viewport.New(80, 10)
 	vp.SetContent("")
+
+	// Enable mouse wheel for scrolling
+	vp.YPosition = 0
+	vp.MouseWheelEnabled = true
 
 	return MessageView{
 		messages: []formattedMessage{},
@@ -74,6 +80,18 @@ func (m MessageView) Update(msg tea.Msg) (MessageView, tea.Cmd) {
 			m.viewport.SetContent(m.formatMessages())
 			m.viewport.GotoBottom()
 		}
+	case tea.KeyMsg:
+		// Handle scrolling with page up/down keys
+		switch msg.String() {
+		case "pgup":
+			m.viewport.LineUp(5)
+		case "pgdown":
+			m.viewport.LineDown(5)
+		case "home":
+			m.viewport.GotoTop()
+		case "end":
+			m.viewport.GotoBottom()
+		}
 	}
 
 	// Update the viewport
@@ -83,16 +101,64 @@ func (m MessageView) Update(msg tea.Msg) (MessageView, tea.Cmd) {
 
 // View renders the message view
 func (m MessageView) View() string {
-	return m.style.Render(m.viewport.View())
+	// Add help text for scrolling
+	helpStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")). // Dark gray color
+		Italic(true).
+		Align(lipgloss.Right)
+
+	helpText := helpStyle.Render("PgUp/PgDn to scroll")
+
+	// Combine viewport content with help text
+	content := m.viewport.View() + "\n" + helpText
+
+	return m.style.Render(content)
 }
 
 // formatMessages formats all messages for display
 func (m MessageView) formatMessages() string {
 	var content string
+
+	// Get the width of the viewport (accounting for padding)
+	viewportWidth := m.viewport.Width - 2
+
 	for _, msg := range m.messages {
-		content += msg.style.Render(msg.text) + "\n"
+		// Check if the message needs wrapping
+		if len(msg.text) > viewportWidth {
+			// Wrap the text
+			wrappedText := wrapText(msg.text, viewportWidth)
+			content += msg.style.Render(wrappedText) + "\n"
+		} else {
+			content += msg.style.Render(msg.text) + "\n"
+		}
 	}
 	return content
+}
+
+// wrapText wraps text to the specified width and adds a continuation indicator
+func wrapText(text string, width int) string {
+	if len(text) <= width {
+		return text
+	}
+
+	var result string
+	remaining := text
+
+	for len(remaining) > width {
+		// Take the first 'width' characters
+		line := remaining[:width-1] + "↪" // Add continuation indicator
+		result += line + "\n"
+
+		// Move to the next chunk
+		remaining = remaining[width-1:]
+	}
+
+	// Add the last part
+	if len(remaining) > 0 {
+		result += remaining
+	}
+
+	return result
 }
 
 // formatLogMessage formats a log message based on its level

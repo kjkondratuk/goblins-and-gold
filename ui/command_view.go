@@ -92,7 +92,53 @@ func (c CommandView) Update(msg tea.Msg) (CommandView, tea.Cmd) {
 	return c, cmd
 }
 
+// getContextSensitiveHints generates command hints based on the current game state
+func (c CommandView) getContextSensitiveHints() string {
+	// If state or world is nil, return basic commands
+	if c.state == nil || c.state.World() == nil {
+		return "Commands: look, help, quit"
+	}
+
+	// Get current room ID
+	currentRoomID := c.state.CurrentRoom()
+
+	// Get current room definition
+	currentRoom, exists := c.state.World().Rooms[currentRoomID]
+	if !exists {
+		return "Commands: look, help, quit"
+	}
+
+	// Build hint based on context
+	hint := "Commands: "
+
+	// Always available commands
+	hint += "look, stats, help, quit"
+
+	// Add movement options if there are paths
+	if len(currentRoom.Paths) > 0 {
+		hint += ", go"
+	}
+
+	// Add interact if there are containers
+	if len(currentRoom.Containers) > 0 {
+		hint += ", interact"
+	}
+
+	return hint
+}
+
 // View renders the command prompt
 func (c CommandView) View() string {
-	return c.style.Render(c.textInput.View())
+	// Get the context-sensitive hints
+	hints := c.getContextSensitiveHints()
+
+	// Style the hints with a muted color
+	hintStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")). // Dark gray color
+		Italic(true)
+
+	styledHints := hintStyle.Render(hints)
+
+	// Render the command input with styled hints below it
+	return c.style.Render(c.textInput.View() + "\n" + styledHints)
 }
