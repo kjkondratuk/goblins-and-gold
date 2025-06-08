@@ -1,6 +1,6 @@
 module github.com/kjkondratuk/goblins-and-gold
 
-go 1.24.4
+go 1.24
 
 require (
 	github.com/c-bata/go-prompt v0.2.6
