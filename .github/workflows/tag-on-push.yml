@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   tag:
     name: Create Tag
@@ -33,7 +36,7 @@ jobs:
           git tag -a $NEW_TAG -m "Release $NEW_TAG"
           git push origin $NEW_TAG
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
-          echo "tag=$OLD_TAG" >> $GITHUB_OUTPUT
+          echo "old_tag=$OLD_TAG" >> $GITHUB_OUTPUT
 
       - name: Output Tag
-        run: echo "Created and pushed tag ${{ steps.tag.outputs.tag }}"
+        run: echo "Created and pushed tag ${{ steps.tag.outputs.tag }} (previous was ${{ steps.tag.outputs.old_tag }})"
