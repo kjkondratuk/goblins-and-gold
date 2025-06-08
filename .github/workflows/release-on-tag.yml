@@ -2,10 +2,10 @@ name: Release on Tag
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - 'v*.*.*-alpha.*'
-      - 'v*.*.*-beta.*'
-      - 'v*.*.*-rc.*'
+      - "v*.*.*"
+      - "v*.*.*-alpha.*"
+      - "v*.*.*-beta.*"
+      - "v*.*.*-rc.*"
 
 permissions:
   contents: write
